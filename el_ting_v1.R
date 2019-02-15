@@ -18,41 +18,41 @@ dates_temp <- seq(ymd("1000-01-01"), ymd("1000-12-31"), by="days")
 dates<-format(dates_temp, format="%d-%m")
 
 # Samler hvert aar for DK2 i en data frame.
-DK2 <- data.frame(numeric(365))
-row.names(DK2) <- dates
+DK2f <- data.frame(numeric(365))
+row.names(DK2f) <- dates
 l <- 1
 for (i in 2014:2018) {
-  DK2[,l] <- get(paste("dat", i, sep=""))[,9]
-  names(DK2)[l] <- i
+  DK2f[,l] <- get(paste("dat", i, sep=""))[,9]
+  names(DK2f)[l] <- i
   l <- l + 1
 }
 
+fq <- 7
+DK2 <- list(Y14 = ts(DK2f[,1], frequency = fq), Y15 = ts(DK2f[,2], frequency = fq), Y16 = ts(DK2f[,3], frequency = fq), Y17 = ts(DK2f[,4], frequency = fq), Y18 = ts(DK2f[,5], frequency = fq))
+
 # Nogle plots.
-plot(DK2[,1], type = "l")
-lines(DK2[,3], col = "red")
+plot(DK2$Y14, type = "l")
+lines(DK2$Y15, col = "red")
 
 par(mfrow = c(2,2))
-acf(DK2[,4])
-acf(DK2[,3])
+acf(DK2$Y16)
+acf(DK2$Y17)
 
-pacf(DK2[,4])
-pacf(DK2[,3])
+pacf(DK2$Y16)
+pacf(DK2$Y16)
 par(mfrow = c(1,1))
 
-# Laver DK2ts som er en tids serie.
-DK2ts <- ts(DK2, frequency = 7)
-
-plot(decompose(DK2ts[,3]))
+plot(decompose(DK2$Y14))
 
 
 # Scatter plot med lag.
-par(mfrow = c(1,2))
-n <- nrow(DK2)
-plot(DK2[1:(n-1),4], DK2[2:n,4], main = "2017", xlab = "x_t", ylab = "x_{t-1}")
-
-plot(DK2ts[,2], lag(DK2ts[,2],2),main = "2015", xlab = "x_t", ylab = "x_{t-1}")
+par(mfrow = c(2,1))
+plot(DK2$Y14, lag(DK2$Y14,2),main = "2014", xlab = "x_t", ylab = "x_{t-1}")
+plot(DK2$Y15, lag(DK2$Y15,2),main = "2015", xlab = "x_t", ylab = "x_{t-1}")
 par(mfrow = c(1,1))
 
-# test
-
-# Ændring
+diffDK2Y14 <- diff(DK2$Y14, differences = 1)
+par(mfrow = c(2,1))
+plot(diffDK2Y14)
+plot(DK2$Y14, type = "l")
+par(mfrow = c(1,1))

@@ -1,25 +1,23 @@
 library(stats)
 library(lubridate)
 
-setwd("~/Desktop/P6/P6/Data")
-
-# Indl??ser csv filerne som "dat20xx".
-path <- file.path("~/Desktop/P6/Data")
-years <- list.files(path,pattern =".csv")
+# Indlaeser csv filerne som "dat20xx".
+path <- file.path("./Data")
+years <- list.files(path,pattern =".csv",full.names = 1)
 years_names <- seq(2014, length.out = length(years))
 
 for (l in 1:length(years_names)) {
   assign(paste("dat", years_names[l], sep = ""), read.csv2(years[l], skip = 2))
 }
 
-# Fjerner den skud??r i 2016.
+# Fjerner den skudaar i 2016.
 dat2016 <- dat2016[-60,] 
 
 # Laver datoer.
 dates_temp <- seq(ymd("1000-01-01"), ymd("1000-12-31"), by="days")
 dates<-format(dates_temp, format="%d-%m")
 
-# Samler hvert ??r for DK2 i ??n data frame.
+# Samler hvert aar for DK2 i en data frame.
 DK2 <- data.frame(numeric(365))
 row.names(DK2) <- dates
 l <- 1

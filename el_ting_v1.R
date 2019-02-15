@@ -59,3 +59,4 @@ par(mfrow = c(1,1))
 =======
 # Ændring
 >>>>>>> 9cad77f4ccb4b095774cd08b601fc4e7ea3a92cb
+

@@ -53,4 +53,4 @@ plot(DK2[1:(n-1),4], DK2[2:n,4], main = "2017", xlab = "x_t", ylab = "x_{t-1}")
 plot(DK2ts[,2], lag(DK2ts[,2],2),main = "2015", xlab = "x_t", ylab = "x_{t-1}")
 par(mfrow = c(1,1))
 
-
+# Ændring

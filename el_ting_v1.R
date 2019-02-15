@@ -10,7 +10,7 @@ for (l in 1:length(years_names)) {
   assign(paste("dat", years_names[l], sep = ""), read.csv2(years[l], skip = 2))
 }
 
-# Fjerner den skudaar i 2016.
+# Fjerner skudaar i 2016.
 dat2016 <- dat2016[-60,] 
 
 # Laver datoer.
@@ -31,12 +31,13 @@ for (i in 2014:2018) {
 plot(DK2[,1], type = "l")
 lines(DK2[,3], col = "red")
 
+par(mfrow = c(2,2))
 acf(DK2[,4])
 acf(DK2[,3])
 
 pacf(DK2[,4])
 pacf(DK2[,3])
-
+par(mfrow = c(1,1))
 
 # Laver DK2ts som er en tids serie.
 DK2ts <- ts(DK2, frequency = 7)
@@ -44,11 +45,12 @@ DK2ts <- ts(DK2, frequency = 7)
 plot(decompose(DK2ts[,3]))
 
 
-# Scatetr plot med lag.
+# Scatter plot med lag.
+par(mfrow = c(1,2))
 n <- nrow(DK2)
 plot(DK2[1:(n-1),4], DK2[2:n,4], main = "2017", xlab = "x_t", ylab = "x_{t-1}")
 
 plot(DK2ts[,2], lag(DK2ts[,2],2),main = "2015", xlab = "x_t", ylab = "x_{t-1}")
-
+par(mfrow = c(1,1))
 
 

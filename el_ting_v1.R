@@ -30,6 +30,12 @@ for (i in 2014:2018) {
 fq <- 7
 DK2 <- list(Y14 = ts(DK2f[,1], frequency = fq), Y15 = ts(DK2f[,2], frequency = fq), Y16 = ts(DK2f[,3], frequency = fq), Y17 = ts(DK2f[,4], frequency = fq), Y18 = ts(DK2f[,5], frequency = fq))
 
+
+# Mean, sd og andre gode sager
+apply(DK2f, 2, mean)
+
+apply(DK2f, 2, sd)
+
 # Nogle plots.
 plot(DK2$Y14, type = "l")
 lines(DK2$Y15, col = "red")

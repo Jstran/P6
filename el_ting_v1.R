@@ -1,5 +1,7 @@
 library(stats)
 library(lubridate)
+library(ggplot2)
+
 
 # Indlaeser csv filerne som "dat20xx".
 path <- file.path("./Data")
@@ -28,7 +30,7 @@ for (i in 2014:2018) {
 }
 
 fq <- 7
-DK2 <- list(Y14 = ts(DK2f[,1], frequency = fq), Y15 = ts(DK2f[,2], frequency = fq), Y16 = ts(DK2f[,3], frequency = fq), Y17 = ts(DK2f[,4], frequency = fq), Y18 = ts(DK2f[,5], frequency = fq))
+DK2 <- data.frame(Y14 = ts(DK2f[,1], frequency = fq), Y15 = ts(DK2f[,2], frequency = fq), Y16 = ts(DK2f[,3], frequency = fq), Y17 = ts(DK2f[,4], frequency = fq), Y18 = ts(DK2f[,5], frequency = fq))
 
 
 # Mean, sd og andre gode sager
@@ -63,5 +65,4 @@ plot(diffDK2Y14)
 plot(DK2$Y14, type = "l")
 par(mfrow = c(1,1))
 
-#HEJ NY BRANCH
-hocus_pocus
+ggplot(data = DK2f, x = seq(1:length(nrow(DK2f))), y = DK2f$2014)

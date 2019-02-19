@@ -62,3 +62,6 @@ par(mfrow = c(2,1))
 plot(diffDK2Y14)
 plot(DK2$Y14, type = "l")
 par(mfrow = c(1,1))
+
+#HEJ NY BRANCH
+hocus_pocus

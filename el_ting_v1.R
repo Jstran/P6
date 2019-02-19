@@ -1,5 +1,7 @@
 library(stats)
 library(lubridate)
+library(ggplot2)
+# DK1 : Jylland og Fyn, DK2: Sjælland , DK : Det hele 
 
 # Indlaeser csv filerne som "dat20xx".
 path <- file.path("./Data")
@@ -28,7 +30,11 @@ for (i in 2014:2018) {
 }
 
 fq <- 7
-DK2 <- list(Y14 = ts(DK2f[,1], frequency = fq), Y15 = ts(DK2f[,2], frequency = fq), Y16 = ts(DK2f[,3], frequency = fq), Y17 = ts(DK2f[,4], frequency = fq), Y18 = ts(DK2f[,5], frequency = fq))
+DK2 <- list(Y14 = ts(DK2f[,1], frequency = fq), 
+            Y15 = ts(DK2f[,2], frequency = fq), 
+            Y16 = ts(DK2f[,3], frequency = fq), 
+            Y17 = ts(DK2f[,4], frequency = fq), 
+            Y18 = ts(DK2f[,5], frequency = fq))
 
 
 # Mean, sd og andre gode sager
@@ -37,7 +43,7 @@ apply(DK2f, 2, mean)
 apply(DK2f, 2, sd)
 
 # Nogle plots.
-plot(DK2$Y14, type = "l")
+plot(DK2$Y14)
 lines(DK2$Y15, col = "red")
 
 par(mfrow = c(2,2))
@@ -46,7 +52,6 @@ acf(DK2$Y17)
 
 pacf(DK2$Y16)
 pacf(DK2$Y16)
-par(mfrow = c(1,1))
 
 plot(decompose(DK2$Y14))
 
@@ -55,10 +60,15 @@ plot(decompose(DK2$Y14))
 par(mfrow = c(2,1))
 plot(DK2$Y14, lag(DK2$Y14,2),main = "2014", xlab = "x_t", ylab = "x_{t-1}")
 plot(DK2$Y15, lag(DK2$Y15,2),main = "2015", xlab = "x_t", ylab = "x_{t-1}")
-par(mfrow = c(1,1))
+
 
 diffDK2Y14 <- diff(DK2$Y14, differences = 1)
-par(mfrow = c(2,1))
-plot(diffDK2Y14)
-plot(DK2$Y14, type = "l")
+
+plot(diffDK2Y14 ,panel.first = grid(col = "white",lty = 1))
+plot(DK2$Y14)
 par(mfrow = c(1,1))
+p <- ggplot(data.frame(X1 = time(DK2$Y14) , 
+                       X2 = DK2$Y14) , 
+                       aes(x = X1 , y = X2))+
+                       geom_line()+
+                       geom_smooth(); p

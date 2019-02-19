@@ -28,8 +28,28 @@ for (i in 2014:2018) {
 }
 
 fq <- 7
-DK2 <- list(Y14 = ts(DK2f[,1], frequency = fq), Y15 = ts(DK2f[,2], frequency = fq), Y16 = ts(DK2f[,3], frequency = fq), Y17 = ts(DK2f[,4], frequency = fq), Y18 = ts(DK2f[,5], frequency = fq))
+DK2 <- list(Y14 = ts(DK2f[,1], frequency = fq), 
+            Y15 = ts(DK2f[,2], frequency = fq), 
+            Y16 = ts(DK2f[,3], frequency = fq), 
+            Y17 = ts(DK2f[,4], frequency = fq), 
+            Y18 = ts(DK2f[,5], frequency = fq))
 
+# Samler hvert aar for DK1 i en data frame.
+DK1f <- data.frame(numeric(365))
+row.names(DK1f) <- dates
+l <- 1
+for (i in 2014:2018) {
+  DK1f[,l] <- get(paste("dat", i, sep=""))[,8]
+  names(DK1f)[l] <- i
+  l <- l + 1
+}
+
+fq <- 7
+DK1 <- list(Y14 = ts(DK1f[,1], frequency = fq), 
+            Y15 = ts(DK1f[,2], frequency = fq), 
+            Y16 = ts(DK1f[,3], frequency = fq), 
+            Y17 = ts(DK1f[,4], frequency = fq), 
+            Y18 = ts(DK1f[,5], frequency = fq))
 
 # Mean, sd og andre gode sager
 apply(DK2f, 2, mean)

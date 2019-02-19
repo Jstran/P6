@@ -36,15 +36,33 @@ DK2 <- list(Y14 = ts(DK2f[,1], frequency = fq),
             Y17 = ts(DK2f[,4], frequency = fq), 
             Y18 = ts(DK2f[,5], frequency = fq))
 
+# Samler hvert aar for DK1 i en data frame.
+DK1f <- data.frame(numeric(365))
+row.names(DK1f) <- dates
+l <- 1
+for (i in 2014:2018) {
+  DK1f[,l] <- get(paste("dat", i, sep=""))[,8]
+  names(DK1f)[l] <- i
+  l <- l + 1
+}
+
+fq <- 7
+DK1 <- list(Y14 = ts(DK1f[,1], frequency = fq), 
+            Y15 = ts(DK1f[,2], frequency = fq), 
+            Y16 = ts(DK1f[,3], frequency = fq), 
+            Y17 = ts(DK1f[,4], frequency = fq), 
+            Y18 = ts(DK1f[,5], frequency = fq))
+
 
 # Mean, sd og andre gode sager
 apply(DK2f, 2, mean)
+apply(DK1f, 2, mean)
 
 apply(DK2f, 2, sd)
 
 # Nogle plots.
 plot(DK2$Y14)
-lines(DK2$Y15, col = "red")
+lines(DK1$Y14, col = "red")
 
 par(mfrow = c(2,2))
 acf(DK2$Y16)
@@ -67,6 +85,8 @@ diffDK2Y14 <- diff(DK2$Y14, differences = 1)
 plot(diffDK2Y14 ,panel.first = grid(col = "white",lty = 1))
 plot(DK2$Y14)
 par(mfrow = c(1,1))
+
+# ggplot
 p <- ggplot(data.frame(X1 = time(DK2$Y14) , 
                        X2 = DK2$Y14) , 
                        aes(x = X1 , y = X2))+

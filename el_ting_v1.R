@@ -60,7 +60,7 @@ apply(DK2f, 2, sd)
 
 # Nogle plots.
 plot(DK2$Y14, type = "l")
-lines(DK2$Y15, col = "red")
+lines(DK1$Y1, col = "red")
 
 par(mfrow = c(2,2))
 acf(DK2$Y16)
@@ -89,11 +89,14 @@ par(mfrow = c(1,1))
 p <-  ggplot(data.frame(X1 = time(DK2$Y14), 
                         X2 = DK2$Y14), 
                         aes(x = X1 , y = X2))+
-      geom_line(aes(col = "DK2Y14"))+
+      geom_line(aes(col = "DK2Y14"),
+                alpha = 0.5)+
       geom_line(data = data.frame(X1 = time(DK1$Y14), 
                                   X2 = DK1$Y14), 
-                                  aes(color = "DK1Y14"))+
-      labs(x = "Tid", y = "Pris i DKK", title = "DK1 vs. DK2 Y2014")
+                                  aes(col = "DK1Y14"),
+                                  alpha=0.5)+
+      labs(x = "Tid", y = "Pris i DKK", title = "DK1 vs. DK2 Y2014", color = "")+
+      scale_color_manual(values = c('red','blue'))
   
 p
 

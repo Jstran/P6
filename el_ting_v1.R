@@ -1,5 +1,7 @@
 library(stats)
 library(lubridate)
+library(ggplot2)
+library(ggthemes)
 
 # Indlaeser csv filerne som "dat20xx".
 path <- file.path("./Data")
@@ -82,3 +84,16 @@ par(mfrow = c(2,1))
 plot(diffDK2Y14)
 plot(DK2$Y14, type = "l")
 par(mfrow = c(1,1))
+
+# ggplot
+p <-  ggplot(data.frame(X1 = time(DK2$Y14), 
+                        X2 = DK2$Y14), 
+                        aes(x = X1 , y = X2))+
+      geom_line(aes(col = "DK2Y14"))+
+      geom_line(data = data.frame(X1 = time(DK1$Y14), 
+                                  X2 = DK1$Y14), 
+                                  aes(color = "DK1Y14"))+
+      labs(x = "Tid", y = "Pris i DKK", title = "DK1 vs. DK2 Y2014")
+  
+p
+

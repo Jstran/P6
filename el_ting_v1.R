@@ -6,7 +6,7 @@ library(ggplot2)
 # Indlaeser csv filerne som "dat20xx".
 path <- file.path("./Data")
 years <- list.files(path,pattern =".csv",full.names = 1)
-years_names <- seq(2014, length.out = length(years))
+years_names <- seq(2013, length.out = length(years))
 
 for (l in 1:length(years_names)) {
   assign(paste("dat", years_names[l], sep = ""), read.csv2(years[l], skip = 2))

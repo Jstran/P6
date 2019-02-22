@@ -1,7 +1,8 @@
 library(stats)
 library(lubridate)
 library(ggplot2)
-
+library(pracma)
+library(forecast)
 
 # Indlaeser csv filerne som "dat20xx".
 path <- file.path("./Data")
@@ -42,27 +43,12 @@ apply(DK2f, 2, sd)
 plot(DK2$Y14, type = "l")
 lines(DK2$Y15, col = "red")
 
-par(mfrow = c(2,2))
-acf(DK2$Y16)
-acf(DK2$Y17)
-
-pacf(DK2$Y16)
-pacf(DK2$Y16)
-par(mfrow = c(1,1))
-
 plot(decompose(DK2$Y14))
 
-
-# Scatter plot med lag.
-par(mfrow = c(2,1))
-plot(DK2$Y14, lag(DK2$Y14,2),main = "2014", xlab = "x_t", ylab = "x_{t-1}")
-plot(DK2$Y15, lag(DK2$Y15,2),main = "2015", xlab = "x_t", ylab = "x_{t-1}")
-par(mfrow = c(1,1))
-
 diffDK2Y14 <- diff(DK2$Y14, differences = 1)
-par(mfrow = c(2,1))
-plot(diffDK2Y14)
-plot(DK2$Y14, type = "l")
-par(mfrow = c(1,1))
 
-ggplot(data = DK2f, x = seq(1:length(nrow(DK2f))), y = DK2f$2014)
+detrend = detrend(dat2016[,9], 'linear'); plot(ts(detrend, frequency = 7))
+trend2016 = ma(DK2$Y16, order = 7); plot(DK2$Y16 - trend2016)
+
+
+

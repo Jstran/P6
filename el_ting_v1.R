@@ -149,4 +149,6 @@ p2 <-  ggplot(data.frame(X1 = time(DK2$YAll),
   labs(x = "Tid", y = "Pris i DKK", title = "DK1 vs. DK2 2013-2018", color = "")+
   scale_color_manual(values = c('red','blue'))
 
-p2
+p2 + ylim(-100,600)
+
+

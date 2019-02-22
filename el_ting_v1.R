@@ -29,6 +29,7 @@ for (i in 2014:2018) {
   l <- l + 1
 }
 
+
 fq <- 7
 DK2 <- list(Y14 = ts(DK2f[,1], frequency = fq), 
             Y15 = ts(DK2f[,2], frequency = fq), 

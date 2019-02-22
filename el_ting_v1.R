@@ -47,8 +47,9 @@ plot(decompose(DK2$Y14))
 
 diffDK2Y14 <- diff(DK2$Y14, differences = 1)
 
-detrend = detrend(dat2016[,9], 'linear'); plot(ts(detrend, frequency = 7))
+detrend = detrend(dat2016[,9], 'linear'); plot(ts(detrend, frequency = 365))
 trend2016 = ma(DK2$Y16, order = 7); plot(DK2$Y16 - trend2016)
 
-
-
+data_ts = c(dat2014[,9],dat2015[,9],dat2016[,9],dat2017[,9],dat2018[,9],dat2019[,9])
+timeseries = ts(data_ts, frequency = 365, start= c(2014,1))
+timeseries

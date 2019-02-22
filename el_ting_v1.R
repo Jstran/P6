@@ -83,10 +83,8 @@ DK1 <- list(Y13 = ts(DK1f[,1], frequency = fq),
 
 
 # Mean, sd og andre gode sager
-apply(DK2, 2, mean)
-apply(DK1, 2, mean)
-
-apply(DK2f, 2, sd)
+mean(DK1$Y13)
+mean(DK2$YAll)
 
 # Nogle plots.
 plot(DK2$Y14)

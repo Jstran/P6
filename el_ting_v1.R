@@ -141,11 +141,11 @@ p2 <-  ggplot(data.frame(X1 = time(DK2$YAll),
                          X2 = DK2$YAll), 
               aes(x = X1 , y = X2))+
   geom_line(aes(col = "DK2"),
-            alpha = 0.5)+
+            alpha = 1)+
   geom_line(data = data.frame(X1 = time(DK1$YAll), 
                               X2 = DK1$YAll), 
             aes(col = "DK1"),
-            alpha=0.5)+
+            alpha=1)+
   labs(x = "Tid", y = "Pris i DKK", title = "DK1 vs. DK2 2013-2018", color = "")+
   scale_color_manual(values = c('red','blue'))
 

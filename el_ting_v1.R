@@ -31,28 +31,40 @@ for (i in 2013:2018) {
 }
 
 # Samler alle aar for DK2 i samme data frama.
-dfDK2 <- data.frame(numeric(2191))
+dfDK2 <- data.frame(DK2 = numeric(2191), sat = numeric(2191), sun = numeric(2191))
 row.names(dfDK2) <- datesY
-dfDK2 <- c(DK2f[,1], 
+dfDK2[,1] <- c(DK2f[,1], 
            DK2f[,2],
            DK2f[,3],
            dat2016LY[,9],
            DK2f[,5],
            DK2f[,6])
 
+# Lørdag dummy, 01-01-13 er en tirsdag
+sat <- numeric(nrow(dfDK2))
+sat[seq(5, 2191, by = 7)] <- 1
+dfDK2[,2] <- sat
+
+# Søndag dummy, 01-01-13 er en tirsdag
+sun <- numeric(nrow(dfDK2))
+sun[seq(6, 2191, by = 7)] <- 1
+dfDK2[,3] <- sun
+
 # Samler hvert aar samt alle år sammen for DK1 i en liste
-fq <- 7
+fq <- 1
 DK2 <- list(Y13 = ts(DK2f[,1], frequency = fq),
             Y14 = ts(DK2f[,2], frequency = fq), 
             Y15 = ts(DK2f[,3], frequency = fq), 
             Y16 = ts(DK2f[,4], frequency = fq), 
             Y17 = ts(DK2f[,5], frequency = fq), 
             Y18 = ts(DK2f[,6], frequency = fq),
-            YAll = ts(dfDK2,   frequency = fq))
+            YAll = ts(dfDK2[,1],   frequency = fq),
+            sat = sat,
+            sun = sun)
 
 
 # Samler hvert aar for DK1 i en data frame.
-DK1f <- data.frame(numeric(365))
+DK1f <- data.frame(DK1 = numeric(365))
 row.names(DK1f) <- dates
 l <- 1
 for (i in 2013:2018) {
@@ -62,14 +74,24 @@ for (i in 2013:2018) {
 }
 
 # Data frama der indeholder alle år for DK1
-dfDK1 <- data.frame(numeric(2191))
+dfDK1 <- data.frame(DK1 = numeric(2191), sat = numeric(2191), sun = numeric(2191))
 row.names(dfDK1) <- datesY
-dfDK1 <- c(DK1f[,1], 
+dfDK1[,1] <- c(DK1f[,1], 
            DK1f[,2],
            DK1f[,3],
            dat2016LY[,8],
            DK1f[,5],
            DK1f[,6])
+
+# Lørdag dummy, 01-01-13 er en tirsdag
+sat <- numeric(nrow(dfDK1))
+sat[seq(5, 2191, by = 7)] <- 1
+dfDK1[,2] <- sat
+
+# Søndag dummy, 01-01-13 er en tirsdag
+sun <- numeric(nrow(dfDK1))
+sun[seq(6, 2191, by = 7)] <- 1
+dfDK1[,3] <- sun
 
 # Samler hvert aar samt alle år sammen for DK1 i en liste
 fq <- 7
@@ -79,7 +101,9 @@ DK1 <- list(Y13 = ts(DK1f[,1], frequency = fq),
             Y16 = ts(DK1f[,4], frequency = fq), 
             Y17 = ts(DK1f[,5], frequency = fq), 
             Y18 = ts(DK1f[,6], frequency = fq),
-            YAll = ts(dfDK1,   frequency = fq))
+            YAll = ts(dfDK1[,1],   frequency = fq),
+            sat = sat,
+            sun = sun)
 
 
 # Mean, sd og andre gode sager
@@ -146,7 +170,14 @@ p2 <-  ggplot(data.frame(X1 = datesY,
                               X2 = DK1$YAll), 
             aes(col = "DK1"),
             alpha=1)+
-  labs(x = "Tid", y = "Pris i DKK", title = "DK1 vs. DK2 2013-2018", color = "")+
+  labs(x = "Tid", y = "Spotpris i DKK", title = "DK1 vs. DK2 2013-2018: Dagligepriser", color = "")+
   scale_color_manual(values = c('red','blue'))
 
 p2 + ylim(-100,600)
+
+# Regression
+t <- time(DK2$YAll)
+
+nls(dfDK2[,1] ~ B0 + BT * t + C1 * sin((C2 + t) * 2*pi/365.25) + C3 * sin((C4 + t) * 4*pi/365.25) + D1 * DK2$sat + D2 * DK2$sun,
+    start = c(B0 = 1, BT = 1, C1 = 1, C2 = 1, C3 = 1, C4 = 1, D1 = 1, D2 = 1))
+

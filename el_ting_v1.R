@@ -191,8 +191,8 @@ modEsc <- nls(dfDK2[,1] ~ B0 + BT * t + C1 * sin((C2 + t) * 2*pi/365.25) + C3 * 
 
 modEscCoef <- coefficients(modEsc)
 
-EscModS <- modEscCoef[1] + modEscCoef[2] * t + modEscCoef[3] * sin((modEscCoef[4] + t) * 2*pi/365.25) 
-           + modEscCoef[5] * sin((modEscCoef[6] + t) * 4*pi/365.25) + modEscCoef[7] * DK2$sat + modEscCoef[8] * DK2$sun
+EscModS <- invisible(modEscCoef[1] + modEscCoef[2] * t + modEscCoef[3] * sin((modEscCoef[4] + t) * 2*pi/365.25) 
+           + modEscCoef[5] * sin((modEscCoef[6] + t) * 4*pi/365.25) + modEscCoef[7] * DK2$sat + modEscCoef[8] * DK2$sun)
 
 
 

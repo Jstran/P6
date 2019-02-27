@@ -3,6 +3,7 @@ library(lubridate)
 library(ggplot2)
 # DK1 : Jylland og Fyn, DK2: Sjælland , DK : Det hele 
 
+### Indlæsning af data --------------------
 # Indlaeser csv filerne som "dat20xx".
 path <- file.path("./Data")
 years <- list.files(path,pattern =".csv",full.names = 1)
@@ -16,6 +17,8 @@ for (l in 1:length(years_names)) {
 dat2016LY <- dat2016
 dat2016 <- dat2016[-60,] 
 
+
+### Data frame og lister med data --------------------
 # Laver datoer.
 datesY <- seq(ymd("2013-01-01"), ymd("2018-12-31"), by="days")
 dates<-format(datesY, format="%d-%m")[1:365]
@@ -105,6 +108,7 @@ DK1 <- list(Y13 = ts(DK1f[,1], frequency = fq),
             sat = sat,
             sun = sun)
 
+### Leg med data --------------------
 
 # Mean, sd og andre gode sager
 apply(DK2, 2, mean)
@@ -138,7 +142,9 @@ plot(diffDK2Y14 ,panel.first = grid(col = "white",lty = 1))
 plot(DK2$Y14)
 par(mfrow = c(1,1))
 
-# ggplot
+
+
+### ggplot --------------------
 p <- ggplot(data.frame(X1 = time(DK2$Y14) , 
                        X2 = DK2$Y14) , 
             aes(x = X1 , y = X2))+
@@ -175,9 +181,20 @@ p2 <-  ggplot(data.frame(X1 = datesY,
 
 p2 + ylim(-100,600)
 
-# Regression
+### Regression --------------------
 t <- time(DK2$YAll)
 
-nls(dfDK2[,1] ~ B0 + BT * t + C1 * sin((C2 + t) * 2*pi/365.25) + C3 * sin((C4 + t) * 4*pi/365.25) + D1 * DK2$sat + D2 * DK2$sun,
-    start = c(B0 = 1, BT = 1, C1 = 1, C2 = 1, C3 = 1, C4 = 1, D1 = 1, D2 = 1))
+# Regression på Escribano model  
+modEsc <- nls(dfDK2[,1] ~ B0 + BT * t + C1 * sin((C2 + t) * 2*pi/365.25) + C3 * sin((C4 + t) * 4*pi/365.25) 
+                          + D1 * DK2$sat + D2 * DK2$sun,
+             start = c(B0 = 1, BT = 1, C1 = 1, C2 = 1, C3 = 1, C4 = 1, D1 = 1, D2 = 1))
+
+modEscCoef <- coefficients(modEsc)
+
+EscModS <- modEscCoef[1] + modEscCoef[2] * t + modEscCoef[3] * sin((modEscCoef[4] + t) * 2*pi/365.25) 
+           + modEscCoef[5] * sin((modEscCoef[6] + t) * 4*pi/365.25) + modEscCoef[7] * DK2$sat + modEscCoef[8] * DK2$sun
+
+
+
+
 

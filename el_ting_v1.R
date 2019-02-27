@@ -224,7 +224,8 @@ pEscModSDK1 <- ggplot(data.frame(X1 = datesY,
                               X2 = DK1$EscMod), 
                    aes(x = X1 , y = X2)) +
   geom_point(colour = colors[1], size = 0.7) +
-  labs(x = "Tid", y = "DKK", title = "Escribano model DK1", color = "")
+  labs(x = "Tid", y = "DKK", title = "Escribano model DK1", color = "") +
+  scale_x_date(breaks = pretty(datesY, n = 12))
 pEscModSDK1
 
 pObsVEscDK1 <-  ggplot(data.frame(X1 = datesY, 

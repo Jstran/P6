@@ -97,7 +97,7 @@ sun[seq(6, 2191, by = 7)] <- 1
 dfDK1[,3] <- sun
 
 # Samler hvert aar samt alle år sammen for DK1 i en liste
-fq <- 7
+fq <- 1
 DK1 <- list(Y13 = ts(DK1f[,1], frequency = fq),
             Y14 = ts(DK1f[,2], frequency = fq), 
             Y15 = ts(DK1f[,3], frequency = fq), 
@@ -145,56 +145,111 @@ par(mfrow = c(1,1))
 
 
 ### ggplot --------------------
-p <- ggplot(data.frame(X1 = time(DK2$Y14) , 
+colors <- c("royalblue4" ,
+            "firebrick4" ,
+            "darkorchid4",
+            "chartreuse4",
+            "black")
+
+pY14 <- ggplot(data.frame(X1 = time(DK2$Y14) , 
                        X2 = DK2$Y14) , 
             aes(x = X1 , y = X2))+
   geom_line()+
-  geom_smooth(); p
+  geom_smooth()
+pY14
 
 
 
-p1 <-  ggplot(data.frame(X1 = time(DK2$Y14), 
+pDK1vDK2Y14 <-  ggplot(data.frame(X1 = time(DK2$Y14), 
                          X2 = DK2$Y14), 
               aes(x = X1 , y = X2))+
-  geom_line(aes(col = "DK2Y14"),
-            alpha = 0.8)+
+  geom_line(aes(col = "DK2Y14")) +
   geom_line(data = data.frame(X1 = time(DK1$Y14), 
                               X2 = DK1$Y14), 
-            aes(col = "DK1Y14"),
-            alpha=0.8)+
+            aes(col = "DK1Y14")) +
   labs(x = "Tid", y = "Pris i DKK", title = "DK1 vs. DK2 Y2014", color = "")+
-  scale_color_manual(values = c('red','blue'))
+  scale_color_manual(values = colors[1:2])
 
-p1
+pDK1vDK2Y14
 
-p2 <-  ggplot(data.frame(X1 = datesY, 
-                         X2 = DK2$YAll), 
-              aes(x = X1 , y = X2))+
-  geom_line(aes(col = "DK2"),
-            alpha = 1)+
+pDK1vDK2Yall <-  ggplot(data.frame(X1 = datesY, 
+                                   X2 = DK2$YAll), 
+                        aes(x = X1 , y = X2)) +
+  geom_line(aes(col = "DK2")) +
   geom_line(data = data.frame(X1 = datesY, 
                               X2 = DK1$YAll), 
-            aes(col = "DK1"),
-            alpha=1)+
-  labs(x = "Tid", y = "Spotpris i DKK", title = "DK1 vs. DK2 2013-2018: Dagligepriser", color = "")+
-  scale_color_manual(values = c('red','blue'))
+            aes(col = "DK1"))+
+  labs(x = "Tid", y = "Spotpris i DKK", title = "DK1 vs. DK2 2013-2018: Spotpriser", color = "") +
+  scale_color_manual(values = colors[1:2]) + 
+  ylim(-100,600)
 
-p2 + ylim(-100,600)
+pDK1vDK2Yall
 
 ### Regression --------------------
 t <- time(DK2$YAll)
 
-# Regression på Escribano model  
-modEsc <- nls(dfDK2[,1] ~ B0 + BT * t + C1 * sin((C2 + t) * 2*pi/365.25) + C3 * sin((C4 + t) * 4*pi/365.25) 
+# DK1 regression på Escribano model  
+modEscDK1 <- nls(dfDK1[,1] ~ B0 + BT * t + C1 * sin((C2 + t) * 2*pi/365.25) + C3 * sin((C4 + t) * 4*pi/365.25) 
+                 + D1 * DK1$sat + D2 * DK1$sun,
+                 start = c(B0 = 1, BT = 1, C1 = 1, C2 = 1, C3 = 1, C4 = 1, D1 = 1, D2 = 1))
+
+modEscCoefDK1 <- coefficients(modEscDK1)
+
+EscModDK1 <- invisible(modEscCoefDK1[1] + modEscCoefDK1[2] * t + modEscCoefDK1[3] * sin((modEscCoefDK1[4] + t) * 2*pi/365.25) 
+                     + modEscCoefDK1[5] * sin((modEscCoefDK1[6] + t) * 4*pi/365.25) + modEscCoefDK1[7] * DK2$sat + modEscCoefDK1[8] * DK2$sun)
+
+DK1[[length(DK1)+1]] <- c(EscModDK1)
+names(DK1)[[length(DK1)]] <- "EscMod"
+
+DK1[[length(DK1)+1]] <- c(DK1$YAll - EscModDK1)
+names(DK1)[[length(DK1)]] <- "Decomposed"
+
+
+# DK2 regression på Escribano model  
+modEscDK2 <- nls(dfDK2[,1] ~ B0 + BT * t + C1 * sin((C2 + t) * 2*pi/365.25) + C3 * sin((C4 + t) * 4*pi/365.25) 
                           + D1 * DK2$sat + D2 * DK2$sun,
              start = c(B0 = 1, BT = 1, C1 = 1, C2 = 1, C3 = 1, C4 = 1, D1 = 1, D2 = 1))
 
-modEscCoef <- coefficients(modEsc)
+modEscCoefDK2 <- coefficients(modEscDK2)
 
-EscModS <- invisible(modEscCoef[1] + modEscCoef[2] * t + modEscCoef[3] * sin((modEscCoef[4] + t) * 2*pi/365.25) 
-           + modEscCoef[5] * sin((modEscCoef[6] + t) * 4*pi/365.25) + modEscCoef[7] * DK2$sat + modEscCoef[8] * DK2$sun)
+EscModDK2 <- invisible(modEscCoefDK2[1] + modEscCoefDK2[2] * t + modEscCoefDK2[3] * sin((modEscCoefDK2[4] + t) * 2*pi/365.25) 
+           + modEscCoefDK2[5] * sin((modEscCoefDK2[6] + t) * 4*pi/365.25) + modEscCoefDK2[7] * DK2$sat + modEscCoefDK2[8] * DK2$sun)
+
+DK2[[length(DK2)+1]] <- c(EscModDK2)
+names(DK2)[[length(DK2)]] <- "EscMod"
 
 
+# Plots
+pEscModSDK1 <- ggplot(data.frame(X1 = datesY, 
+                              X2 = DK1$EscMod), 
+                   aes(x = X1 , y = X2)) +
+  geom_point(colour = colors[1], size = 0.7) +
+  labs(x = "Tid", y = "DKK", title = "Escribano model DK1", color = "")
+pEscModSDK1
+
+pObsVEscDK1 <-  ggplot(data.frame(X1 = datesY, 
+                                         X2 = DK1$EscMod), 
+                              aes(x = X1 , y = X2)) +
+  geom_point(aes(col = "Escribano model")) +
+  geom_line(data = data.frame(X1 = datesY, 
+                              X2 = DK1$YAll), 
+            aes(col = "Raw"))+
+  labs(x = "Tid", y = "DKK", title = "DK1: Observationer vs. Escribane", color = "") +
+  scale_color_manual(values = colors[1:2]) +
+  ylim(-200,600)
+
+pObsVEscDK1
 
 
+pRawVDecDK1 <-  ggplot(data.frame(X1 = datesY, 
+                                  X2 = DK1$Decomposed), 
+                       aes(x = X1 , y = X2)) +
+  geom_line(aes(col = "Decomposed")) +
+  geom_line(data = data.frame(X1 = datesY, 
+                              X2 = DK1$YAll), 
+            aes(col = "Raw"))+
+  labs(x = "Tid", y = "DKK", title = "DK1: Rå vs. Decomposed", color = "") +
+  scale_color_manual(values = colors[1:2]) +
+  ylim(-200,600)
 
+pRawVDecDK1

@@ -50,16 +50,14 @@ diffDK2Y14 <- diff(DK2$Y14, differences = 1)
 detrend = detrend(dat2016[,9], 'linear'); plot(ts(detrend, frequency = 365))
 trend2016 = ma(DK2$Y16, order = 7); plot(DK2$Y16 - trend2016)
 
-data_ts = c(dat2014[,9],dat2015[,9],dat2016[,9],dat2017[,9],dat2018[,9],dat2019[,9])
+data_ts = ts(c(dat2014[,8],dat2015[,8],dat2016[,8],dat2017[,8],dat2018[,8],dat2019[,8]))
 timeseries = ts(data_ts, frequency = 365, start= c(2014,1))
-timeseries
-  
-plot(ts(dat2018[,9]))
+
+plot(data_ts)
+plot(ts(dat2018[,8]))
 par(new = T)
 plot(ts(dat2018[,10]),col="red")
 
-plot(stl(timeseries, s.window = "periodic"))
 plot(decompose(timeseries))
-
-lol = auto.arima(timeseries)
-plot(lol)
+acf(timeseries, lag = 50)
+pacf(timeseries, lag = 50)

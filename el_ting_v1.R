@@ -3,14 +3,14 @@ library(lubridate)
 library(ggplot2)
 # DK1 : Jylland og Fyn, DK2: Sjælland , DK : Det hele 
 
-### Farver til brug i plots --------------------
+### Farver til brug i plots -------------------------------------------------------------
 colors <- c("royalblue4" ,
             "firebrick4" ,
             "darkorchid4",
             "chartreuse4",
             "black")
 
-### Indlæsning af data --------------------
+### Indlæsning af data ------------------------------------------------------------------
 # Indlaeser csv filerne som "dat20xx".
 path <- file.path("./Data")
 years <- list.files(path,pattern =".csv",full.names = 1)
@@ -25,7 +25,7 @@ dat2016LY <- dat2016
 dat2016 <- dat2016[-60,] 
 
 
-### Data frame og lister med data --------------------
+### Data frame og lister med data -------------------------------------------------------
 # Laver datoer.
 datesY <- seq(ymd("2013-01-01"), ymd("2018-12-31"), by="days")
 dates<-format(datesY, format="%d-%m")[1:365]
@@ -116,7 +116,7 @@ DK1 <- list(Y13  = ts(DK1f[,1],  frequency = fq),
             sun  = sun)
 
 
-### Mean, sd, acf, pacf, decompose, plot med lag --------------------
+### Mean, sd, acf, pacf, decompose, plot med lag ----------------------------------------
 
 # Mean
 mean(DK1$YAll)
@@ -142,7 +142,7 @@ plot(DK1$Y15, lag(DK1$Y15,2),main = "2015", xlab = "x_t", ylab = "x_{t-1}")
 par(mfrow = c(1,1))
 
 
-### ggplot af rå data --------------------
+### ggplot af rå data -------------------------------------------------------------------
 pDK1vDK2Yall <-  ggplot(data.frame(X1 = datesY, 
                                    X2 = DK2$YAll), 
                         aes(x = X1 , y = X2)) +
@@ -158,7 +158,7 @@ pDK1vDK2Yall <-  ggplot(data.frame(X1 = datesY,
 pDK1vDK2Yall
 
 
-### Regression --------------------
+### Regression --------------------------------------------------------------------------
 t <- time(DK2$YAll)
 
 # DK1 regression på Escribano model  

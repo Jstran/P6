@@ -61,16 +61,16 @@ sun[seq(6, 2191, by = 7)] <- 1
 dfDK2[,3] <- sun
 
 # Samler hvert aar samt alle år sammen for DK1 i en liste
-fq <- 1
-DK2 <- list(Y13 = ts(DK2f[,1], frequency = fq),
-            Y14 = ts(DK2f[,2], frequency = fq), 
-            Y15 = ts(DK2f[,3], frequency = fq), 
-            Y16 = ts(DK2f[,4], frequency = fq), 
-            Y17 = ts(DK2f[,5], frequency = fq), 
-            Y18 = ts(DK2f[,6], frequency = fq),
-            YAll = ts(dfDK2[,1],   frequency = fq),
-            sat = sat,
-            sun = sun)
+fq <- 1 
+DK2 <- list(Y13  = ts(DK2f[,1],  frequency = fq),
+            Y14  = ts(DK2f[,2],  frequency = fq), 
+            Y15  = ts(DK2f[,3],  frequency = fq), 
+            Y16  = ts(DK2f[,4],  frequency = fq), 
+            Y17  = ts(DK2f[,5],  frequency = fq), 
+            Y18  = ts(DK2f[,6],  frequency = fq),
+            YAll = ts(dfDK2[,1], frequency = fq),
+            sat  = sat,
+            sun  = sun)
 
 
 # Samler hvert aar for DK1 i en data frame.
@@ -105,15 +105,15 @@ dfDK1[,3] <- sun
 
 # Samler hvert aar samt alle år sammen for DK1 i en liste
 fq <- 1
-DK1 <- list(Y13 = ts(DK1f[,1], frequency = fq),
-            Y14 = ts(DK1f[,2], frequency = fq), 
-            Y15 = ts(DK1f[,3], frequency = fq), 
-            Y16 = ts(DK1f[,4], frequency = fq), 
-            Y17 = ts(DK1f[,5], frequency = fq), 
-            Y18 = ts(DK1f[,6], frequency = fq),
-            YAll = ts(dfDK1[,1],   frequency = fq),
-            sat = sat,
-            sun = sun)
+DK1 <- list(Y13  = ts(DK1f[,1],  frequency = fq),
+            Y14  = ts(DK1f[,2],  frequency = fq), 
+            Y15  = ts(DK1f[,3],  frequency = fq), 
+            Y16  = ts(DK1f[,4],  frequency = fq), 
+            Y17  = ts(DK1f[,5],  frequency = fq), 
+            Y18  = ts(DK1f[,6],  frequency = fq),
+            YAll = ts(dfDK1[,1], frequency = fq),
+            sat  = sat,
+            sun  = sun)
 
 
 ### Mean, sd, acf, pacf, decompose, plot med lag --------------------
@@ -150,7 +150,8 @@ pDK1vDK2Yall <-  ggplot(data.frame(X1 = datesY,
   geom_line(data = data.frame(X1 = datesY, 
                               X2 = DK1$YAll), 
             aes(col = "DK1"))+
-  labs(x = "Tid", y = "Spotpris i DKK", title = "DK1 vs. DK2 2013-2018: Spotpriser", color = "") +
+  labs(x = "Tid", y = "Spotpris i DKK", title = "DK1 vs. DK2 2013-2018: Spotpriser", 
+       color = "") +
   scale_color_manual(values = colors[1:2]) + 
   ylim(-100,600)
 
@@ -161,14 +162,16 @@ pDK1vDK2Yall
 t <- time(DK2$YAll)
 
 # DK1 regression på Escribano model  
-modEscDK1 <- nls(dfDK1[,1] ~ B0 + BT * t + C1 * sin((C2 + t) * 2*pi/365.25) + C3 * sin((C4 + t) * 4*pi/365.25) 
-                 + D1 * DK1$sat + D2 * DK1$sun,
+modEscDK1 <- nls(dfDK1[,1] ~ B0 + BT * t + C1 * sin((C2 + t) * 2*pi/365.25) + C3 * 
+                 sin((C4 + t) * 4*pi/365.25) + D1 * DK1$sat + D2 * DK1$sun,
                  start = c(B0 = 1, BT = 1, C1 = 1, C2 = 1, C3 = 1, C4 = 1, D1 = 1, D2 = 1))
 
 modEscCoefDK1 <- coefficients(modEscDK1)
 
-EscModDK1 <- invisible(modEscCoefDK1[1] + modEscCoefDK1[2] * t + modEscCoefDK1[3] * sin((modEscCoefDK1[4] + t) * 2*pi/365.25) 
-                       + modEscCoefDK1[5] * sin((modEscCoefDK1[6] + t) * 4*pi/365.25) + modEscCoefDK1[7] * DK2$sat + modEscCoefDK1[8] * DK2$sun)
+EscModDK1 <- invisible(modEscCoefDK1[1] + modEscCoefDK1[2] * t + modEscCoefDK1[3] * 
+                       sin((modEscCoefDK1[4] + t) * 2*pi/365.25) + modEscCoefDK1[5] * 
+                       sin((modEscCoefDK1[6] + t) * 4*pi/365.25) + modEscCoefDK1[7] * 
+                       DK2$sat + modEscCoefDK1[8] * DK2$sun)
 
 DK1[[length(DK1)+1]] <- c(EscModDK1)
 names(DK1)[[length(DK1)]] <- "EscMod"

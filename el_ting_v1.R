@@ -228,6 +228,26 @@ pEscModSDK1 <- ggplot(data.frame(X1 = datesY,
   scale_x_date(breaks = pretty(datesY, n = 12))
 pEscModSDK1
 
+pEscModSDK2 <- ggplot(data.frame(X1 = datesY, 
+                                 X2 = DK2$EscMod), 
+                      aes(x = X1 , y = X2)) +
+  geom_point(colour = colors[1], size = 0.7) +
+  labs(x = "Tid", y = "DKK", title = "Escribano model DK2", color = "") +
+  scale_x_date(breaks = pretty(datesY, n = 12))
+pEscModSDK2
+
+pEscModSDK1vDK2 <- ggplot(data.frame(X1 = datesY, 
+                                     X2 = DK1$EscMod), 
+                          aes(x = X1 , y = X2)) +
+  geom_point(aes(col = "DK1"), size = 0.7) +
+  geom_point(data = data.frame(X1 = datesY, 
+                               X2 = DK2$EscMod), size = 0.7, aes(col = "DK2")) +
+  scale_color_manual(values = colors[1:2]) + 
+  labs(x = "Tid", y = "DKK", title = "Escribano model DK1 vs. DK2", color = "") +
+  scale_x_date(breaks = pretty(datesY, n = 12))
+pEscModSDK1vDK2
+
+
 pObsVEscDK1 <-  ggplot(data.frame(X1 = datesY, 
                                          X2 = DK1$EscMod), 
                               aes(x = X1 , y = X2)) +
@@ -237,7 +257,7 @@ pObsVEscDK1 <-  ggplot(data.frame(X1 = datesY,
             aes(col = "Raw"))+
   labs(x = "Tid", y = "DKK", title = "DK1: Observationer vs. Escribane", color = "") +
   scale_color_manual(values = colors[1:2]) +
-  ylim(-200,600)
+  ylim(-150,600)
 
 pObsVEscDK1
 

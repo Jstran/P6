@@ -10,7 +10,7 @@ colors <- c("royalblue4" ,
             "chartreuse4",
             "black")
 
-### Indlæsnings af data --------------------
+### Indlæsnings af data og opsætning af lister med data --------------------
 # Indlaeser csv filerne som "dat20xx".
 path <- file.path("./Data")
 years <- list.files(path,pattern =".csv",full.names = 1)
@@ -123,41 +123,18 @@ par(mfrow = c(1,1))
 
 
 ### ggplot af rå data --------------------
-p <- ggplot(data.frame(X1 = time(DK2$Y14) , 
-                       X2 = DK2$Y14) , 
-                       aes(x = X1 , y = X2))+
-                       geom_line()+
-                       geom_smooth(); p
-
-
-
-p1 <-  ggplot(data.frame(X1 = time(DK2$Y14), 
-                        X2 = DK2$Y14), 
-             aes(x = X1 , y = X2))+
-  geom_line(aes(col = "DK2Y14"),
-            alpha = 0.8)+
-  geom_line(data = data.frame(X1 = time(DK1$Y14), 
-                              X2 = DK1$Y14), 
-            aes(col = "DK1Y14"),
-            alpha=0.8)+
-  labs(x = "Tid", y = "Pris i DKK", title = "DK1 vs. DK2 Y2014", color = "")+
-  scale_color_manual(values = c('red','blue'))
-
-p1
-
-p2 <-  ggplot(data.frame(X1 = time(DK2$YAll), 
-                         X2 = DK2$YAll), 
-              aes(x = X1 , y = X2))+
-  geom_line(aes(col = "DK2"),
-            alpha = 1)+
-  geom_line(data = data.frame(X1 = time(DK1$YAll), 
+pDK1vDK2Yall <-  ggplot(data.frame(X1 = datesY, 
+                                   X2 = DK2$YAll), 
+                        aes(x = X1 , y = X2)) +
+  geom_line(aes(col = "DK2")) +
+  geom_line(data = data.frame(X1 = datesY, 
                               X2 = DK1$YAll), 
-            aes(col = "DK1"),
-            alpha=1)+
-  labs(x = "Tid", y = "Pris i DKK", title = "DK1 vs. DK2 2013-2018", color = "")+
-  scale_color_manual(values = c('red','blue'))
+            aes(col = "DK1"))+
+  labs(x = "Tid", y = "Spotpris i DKK", title = "DK1 vs. DK2 2013-2018: Spotpriser", color = "") +
+  scale_color_manual(values = colors[1:2]) + 
+  ylim(-100,600)
 
-p2 + ylim(-100,600)
+pDK1vDK2Yall
 
 
 ### Regression --------------------

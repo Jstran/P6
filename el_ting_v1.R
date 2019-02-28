@@ -3,6 +3,14 @@ library(lubridate)
 library(ggplot2)
 # DK1 : Jylland og Fyn, DK2: Sjælland , DK : Det hele 
 
+### Farver til forbrug --------------------
+colors <- c("royalblue4" ,
+            "firebrick4" ,
+            "darkorchid4",
+            "chartreuse4",
+            "black")
+
+### Indlæsnings af data --------------------
 # Indlaeser csv filerne som "dat20xx".
 path <- file.path("./Data")
 years <- list.files(path,pattern =".csv",full.names = 1)
@@ -82,6 +90,7 @@ DK1 <- list(Y13 = ts(DK1f[,1], frequency = fq),
             YAll = ts(dfDK1,   frequency = fq))
 
 
+### Mean, sd, acf, pacf, decompose, plot med lag --------------------
 # Mean, sd og andre gode sager
 mean(DK1$Y13)
 mean(DK2$YAll)
@@ -112,7 +121,8 @@ plot(diffDK2Y14 ,panel.first = grid(col = "white",lty = 1))
 plot(DK2$Y14)
 par(mfrow = c(1,1))
 
-# ggplot
+
+### ggplot af rå data --------------------
 p <- ggplot(data.frame(X1 = time(DK2$Y14) , 
                        X2 = DK2$Y14) , 
                        aes(x = X1 , y = X2))+

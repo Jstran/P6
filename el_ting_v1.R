@@ -10,7 +10,7 @@ colors <- c("royalblue4" ,
             "chartreuse4",
             "black")
 
-### Indlæsnings af data og opsætning af lister med data --------------------
+### Indlæsning af data --------------------
 # Indlaeser csv filerne som "dat20xx".
 path <- file.path("./Data")
 years <- list.files(path,pattern =".csv",full.names = 1)
@@ -24,6 +24,8 @@ for (l in 1:length(years_names)) {
 dat2016LY <- dat2016
 dat2016 <- dat2016[-60,] 
 
+
+### Data frame og lister med data --------------------
 # Laver datoer.
 datesY <- seq(ymd("2013-01-01"), ymd("2018-12-31"), by="days")
 dates<-format(datesY, format="%d-%m")[1:365]
@@ -39,28 +41,40 @@ for (i in 2013:2018) {
 }
 
 # Samler alle aar for DK2 i samme data frama.
-dfDK2 <- data.frame(numeric(2191))
+dfDK2 <- data.frame(DK2 = numeric(2191), sat = numeric(2191), sun = numeric(2191))
 row.names(dfDK2) <- datesY
-dfDK2 <- c(DK2f[,1], 
-           DK2f[,2],
-           DK2f[,3],
-           dat2016LY[,9],
-           DK2f[,5],
-           DK2f[,6])
+dfDK2[,1] <- c(DK2f[,1], 
+               DK2f[,2],
+               DK2f[,3],
+               dat2016LY[,9],
+               DK2f[,5],
+               DK2f[,6])
+
+# Lørdag dummy, 01-01-13 er en tirsdag
+sat <- numeric(nrow(dfDK2))
+sat[seq(5, 2191, by = 7)] <- 1
+dfDK2[,2] <- sat
+
+# Søndag dummy, 01-01-13 er en tirsdag
+sun <- numeric(nrow(dfDK2))
+sun[seq(6, 2191, by = 7)] <- 1
+dfDK2[,3] <- sun
 
 # Samler hvert aar samt alle år sammen for DK1 i en liste
-fq <- 7
+fq <- 1
 DK2 <- list(Y13 = ts(DK2f[,1], frequency = fq),
             Y14 = ts(DK2f[,2], frequency = fq), 
             Y15 = ts(DK2f[,3], frequency = fq), 
             Y16 = ts(DK2f[,4], frequency = fq), 
             Y17 = ts(DK2f[,5], frequency = fq), 
             Y18 = ts(DK2f[,6], frequency = fq),
-            YAll = ts(dfDK2,   frequency = fq))
+            YAll = ts(dfDK2[,1],   frequency = fq),
+            sat = sat,
+            sun = sun)
 
 
 # Samler hvert aar for DK1 i en data frame.
-DK1f <- data.frame(numeric(365))
+DK1f <- data.frame(DK1 = numeric(365))
 row.names(DK1f) <- dates
 l <- 1
 for (i in 2013:2018) {
@@ -70,55 +84,61 @@ for (i in 2013:2018) {
 }
 
 # Data frama der indeholder alle år for DK1
-dfDK1 <- data.frame(numeric(2191))
+dfDK1 <- data.frame(DK1 = numeric(2191), sat = numeric(2191), sun = numeric(2191))
 row.names(dfDK1) <- datesY
-dfDK1 <- c(DK1f[,1], 
-           DK1f[,2],
-           DK1f[,3],
-           dat2016LY[,8],
-           DK1f[,5],
-           DK1f[,6])
+dfDK1[,1] <- c(DK1f[,1], 
+               DK1f[,2],
+               DK1f[,3],
+               dat2016LY[,8],
+               DK1f[,5],
+               DK1f[,6])
+
+# Lørdag dummy, 01-01-13 er en tirsdag
+sat <- numeric(nrow(dfDK1))
+sat[seq(5, 2191, by = 7)] <- 1
+dfDK1[,2] <- sat
+
+# Søndag dummy, 01-01-13 er en tirsdag
+sun <- numeric(nrow(dfDK1))
+sun[seq(6, 2191, by = 7)] <- 1
+dfDK1[,3] <- sun
 
 # Samler hvert aar samt alle år sammen for DK1 i en liste
-fq <- 7
+fq <- 1
 DK1 <- list(Y13 = ts(DK1f[,1], frequency = fq),
             Y14 = ts(DK1f[,2], frequency = fq), 
             Y15 = ts(DK1f[,3], frequency = fq), 
             Y16 = ts(DK1f[,4], frequency = fq), 
             Y17 = ts(DK1f[,5], frequency = fq), 
             Y18 = ts(DK1f[,6], frequency = fq),
-            YAll = ts(dfDK1,   frequency = fq))
+            YAll = ts(dfDK1[,1],   frequency = fq),
+            sat = sat,
+            sun = sun)
 
 
 ### Mean, sd, acf, pacf, decompose, plot med lag --------------------
-# Mean, sd og andre gode sager
-mean(DK1$Y13)
-mean(DK2$YAll)
+
+# Mean
+mean(DK1$YAll)
+
+# var
+var(DK1$YAll)
 
 # Nogle plots.
-plot(DK2$Y14)
-lines(DK1$Y14, col = "red")
-
 par(mfrow = c(2,2))
-acf(DK2$Y16)
-acf(DK2$Y17)
+acf(DK1$YAll)
+acf(DK1$YAll)
 
-pacf(DK2$Y16)
-pacf(DK2$Y16)
+pacf(DK1$YAll)
+pacf(DK1$YAll)
 
-plot(decompose(DK2$Y14))
+plot(decompose(DK1$YAll))
 
 
 # Scatter plot med lag.
 par(mfrow = c(2,1))
-plot(DK2$Y14, lag(DK2$Y14,2),main = "2014", xlab = "x_t", ylab = "x_{t-1}")
-plot(DK2$Y15, lag(DK2$Y15,2),main = "2015", xlab = "x_t", ylab = "x_{t-1}")
-
-
-diffDK2Y14 <- diff(DK2$Y14, differences = 1)
-
-plot(diffDK2Y14 ,panel.first = grid(col = "white",lty = 1))
-plot(DK2$Y14)
+plot(DK1$Y14, lag(DK1$Y14,2),main = "2014", xlab = "x_t", ylab = "x_{t-1}")
+plot(DK1$Y15, lag(DK1$Y15,2),main = "2015", xlab = "x_t", ylab = "x_{t-1}")
 par(mfrow = c(1,1))
 
 

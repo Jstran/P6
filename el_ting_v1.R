@@ -3,7 +3,7 @@ library(lubridate)
 library(ggplot2)
 # DK1 : Jylland og Fyn, DK2: Sjælland , DK : Det hele 
 
-### Farver til forbrug --------------------
+### Farver til brug i plots --------------------
 colors <- c("royalblue4" ,
             "firebrick4" ,
             "darkorchid4",

@@ -154,41 +154,46 @@ pDK1YAll
 
 
 ### Regression --------------------------------------------------------------------------
-t <- time(DK2$YAll)
+t <- time(DK1$YAll)
+df <- data.frame(Obs = DK1$YAll,
+                 t   = time(DK1$YAll),
+                 sat = DK1$sat,
+                 sun = DK1$sun)
+
 
 # DK1 regression på Escribano model  
-modEscDK1 <- nls(dfDK1[,1] ~ B0 + BT * t + C1 * sin((C2 + t) * 2*pi/365.25) + C3 * 
-                 sin((C4 + t) * 4*pi/365.25) + D1 * DK1$sat + D2 * DK1$sun,
-                 start = c(B0 = 1, BT = 1, C1 = 1, C2 = 1, C3 = 1, C4 = 1, D1 = 1, D2 = 1))
+modEsc <- nls(Obs ~ B0 + BT * t + C1 * sin((C2 + t) * 2*pi/365.25) + C3 * 
+                sin((C4 + t) * 4*pi/365.25) + D1 * sat + D2 * sun,
+              start = c(B0 = 1, BT = 1, C1 = 1, C2 = 1, C3 = 1, C4 = 1, D1 = 1, D2 = 1), data = df)
 
-modEscCoefDK1 <- coefficients(modEscDK1)
+modEscCoef <- coefficients(modEsc)
 
-EscModDK1 <- invisible(modEscCoefDK1[1] + modEscCoefDK1[2] * t + modEscCoefDK1[3] * 
-                       sin((modEscCoefDK1[4] + t) * 2*pi/365.25) + modEscCoefDK1[5] * 
-                       sin((modEscCoefDK1[6] + t) * 4*pi/365.25) + modEscCoefDK1[7] * 
-                       DK2$sat + modEscCoefDK1[8] * DK2$sun)
+EscMod <- invisible(modEscCoef[1] + modEscCoef[2] * t + modEscCoef[3] * 
+                      sin((modEscCoef[4] + t) * 2*pi/365.25) + modEscCoef[5] * 
+                      sin((modEscCoef[6] + t) * 4*pi/365.25) + modEscCoef[7] * 
+                      DK1$sat + modEscCoef[8] * DK1$sun)
 
-DK1[[length(DK1)+1]] <- c(EscModDK1)
+DK1[[length(DK1)+1]] <- c(EscMod)
 names(DK1)[[length(DK1)]] <- "EscMod"
 
-DK1[[length(DK1)+1]] <- c(DK1$YAll - EscModDK1)
+DK1[[length(DK1)+1]] <- c(DK1$YAll - EscMod)
 names(DK1)[[length(DK1)]] <- "Decomposed"
 
 
 # Plots
-pEscModSDK1 <- ggplot(data.frame(X1 = datesY, 
-                                 X2 = DK1$EscMod), 
-                      aes(x = X1 , y = X2)) +
+pEscModS <- ggplot(data.frame(X1 = datesY, 
+                              X2 = DK1$EscMod), 
+                   aes(x = X1 , y = X2)) +
   geom_point(colour = colors[1], size = 0.7) +
   labs(x = "Tid", y = "DKK", title = "Escribano model DK1", color = "") +
   scale_x_date(breaks = pretty(datesY, n = 12))
-pEscModSDK1
+pEscModS
 
 
 
-pObsVEscDK1 <-  ggplot(data.frame(X1 = datesY, 
-                                  X2 = DK1$EscMod), 
-                       aes(x = X1 , y = X2)) +
+pObsVEsc <-  ggplot(data.frame(X1 = datesY, 
+                               X2 = DK1$EscMod), 
+                    aes(x = X1 , y = X2)) +
   geom_point(aes(col = "Escribano model")) +
   geom_line(data = data.frame(X1 = datesY, 
                               X2 = DK1$YAll), 
@@ -197,18 +202,19 @@ pObsVEscDK1 <-  ggplot(data.frame(X1 = datesY,
   scale_color_manual(values = colors[1:2]) +
   ylim(-150,600)
 
-pObsVEscDK1
+pObsVEsc
 
 
-pObsVDecDK1 <-  ggplot(data.frame(X1 = datesY, 
-                                  X2 = DK1$Decomposed), 
-                       aes(x = X1 , y = X2)) +
+pObsVDec <-  ggplot(data.frame(X1 = datesY, 
+                               X2 = DK1$Decomposed), 
+                    aes(x = X1 , y = X2)) +
   geom_line(aes(col = "Decomposed")) +
   geom_line(data = data.frame(X1 = datesY, 
                               X2 = DK1$YAll), 
             aes(col = "Raw"))+
-  labs(x = "Tid", y = "DKK", title = "DK1: Rå vs. Decomposed", color = "") +
+  labs(x = "Tid", y = "DKK", title = "DK1: Raw vs. Decomposed", color = "") +
   scale_color_manual(values = colors[1:2]) +
   ylim(-200,600)
 
-pObsVDecDK1
+pObsVDec
+

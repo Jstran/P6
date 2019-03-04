@@ -3,6 +3,7 @@ library(lubridate)
 library(ggplot2)
 library(pracma)
 library(forecast)
+library(tseries)
 
 # Indlaeser csv filerne som "dat20xx".
 path <- file.path("./Data")
@@ -61,3 +62,6 @@ plot(ts(dat2018[,10]),col="red")
 plot(decompose(timeseries))
 acf(timeseries, lag = 50)
 pacf(timeseries, lag = 50)
+
+tsclean(timeseries)
+

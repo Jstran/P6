@@ -113,8 +113,7 @@ DK1 <- list(Y13  = ts(DK1f[,1],  frequency = fq),
             Y17  = ts(DK1f[,5],  frequency = fq), 
             Y18  = ts(DK1f[,6],  frequency = fq),
             YAll = ts(dfDK1[,1], frequency = fq),
-            Demean = ts(dfDK1[,1] - mean(dfDK1[,1]), frequency = fq),
-            Clean = tsclean(ts(dfDK1[,1] - mean(dfDK1[,1]), frequency = fq)),
+            Clean = tsclean(ts(dfDK1[,1], frequency = fq)),
             sat  = sat,
             sun  = sun)
 
@@ -148,23 +147,20 @@ pDK1YAll <-  ggplot(data.frame(X1 = datesY,
                                X2 = DK1$YAll), 
                     aes(x = X1 , y = X2)) +
   geom_line(aes(col = "DK1")) +
-  geom_line(data = data.frame(X1 = datesY,
-                              X2 = DK1$Demean),
-            aes(col = "Demean")) +
   labs(x = "Tid", y = "Spotpris i DKK", title = "DK1 2013-2018: Spotpriser", 
        color = "") +
-  scale_color_manual(values = colors[1:2])
+  scale_color_manual(values = colors[1])
 
-pDK1YAll + ylim(-150,500)
+pDK1YAll
 
 pDK1CleanVRaw <-  ggplot(data.frame(X1 = datesY, 
                                X2 = DK1$Clean), 
                     aes(x = X1 , y = X2)) +
   geom_line(aes(col = "Clean")) +
   geom_line(data = data.frame(X1 = datesY,
-                              X2 = DK1$Demean),
-            aes(col = "Demean"), alpha = 0.5) +
-  labs(x = "Tid", y = "Spotpris i DKK", title = "DK1 2013-2018: Clean vs. Raw", 
+                              X2 = DK1$YAll),
+            aes(col = "Raw"), alpha = 0.3) +
+  labs(x = "Tid", y = "Spotpris i DKK", title = "DK1 2013-2018:Raw", 
        color = "") +
   scale_color_manual(values = colors[1:2])
 

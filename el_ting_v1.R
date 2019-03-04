@@ -1,7 +1,6 @@
 library(stats)
 library(lubridate)
 library(ggplot2)
-library(forecast)
 # DK1 : Jylland og Fyn, DK2: Sjælland , DK : Det hele 
 
 ### Farver til brug i plots -------------------------------------------------------------
@@ -117,14 +116,10 @@ DK1 <- list(Y13   = ts(DK1f[,1],  frequency = fq),
             sat   = sat,
             sun   = sun)
 
-# Fjerner 07-06-13 ved linear interpolation between two known points
+# Fjerner 07-06-13 og erstatter med gennesnit af dagen før og efter.
 
-DK1$Clean[which.max(DK1$Clean)] <- approx(c((which.max(DK1$Clean)-1), 
-                                            (which.max(DK1$Clean)+1)), 
-                                          c((DK1$Clean[which.max(DK1$Clean)-1]), 
-                                            (DK1$Clean[which.max(DK1$Clean)+1])),
-                                          xout = which.max(DK1$Clean),
-                                          method = 'linear')$y
+DK1$Clean[which.max(DK1$Clean)] <- mean(c((DK1$Clean[which.max(DK1$Clean)-1]), 
+                                          (DK1$Clean[which.max(DK1$Clean)+1])))
 
 ### Mean, sd, acf, pacf, decompose, plot med lag ----------------------------------------
 
@@ -175,14 +170,14 @@ pDK1CleanVRaw <-  ggplot(data.frame(X1 = datesY,
 pDK1CleanVRaw
 
 ### Regression --------------------------------------------------------------------------
+
+# DK1 regression på Escribano model  
 t <- time(DK1$YAll)
 df <- data.frame(Obs = DK1$YAll,
                  t   = time(DK1$YAll),
                  sat = DK1$sat,
                  sun = DK1$sun)
 
-
-# DK1 regression på Escribano model  
 modEsc <- nls(Obs ~ B0 + BT * t + C1 * sin((C2 + t) * 2*pi/365.25) + C3 * 
                    sin((C4 + t) * 4*pi/365.25) + D1 * sat + D2 * sun,
                  start = c(B0 = 1, BT = 1, C1 = 1, C2 = 1, C3 = 1, C4 = 1, D1 = 1, D2 = 1), data = df)
@@ -199,6 +194,30 @@ names(DK1)[[length(DK1)]] <- "EscMod"
 
 DK1[[length(DK1)+1]] <- c(DK1$YAll - EscMod)
 names(DK1)[[length(DK1)]] <- "Decomposed"
+
+# DK1$Clean regression på Escribano model 
+dfClean <- data.frame(Obs = DK1$Clean,
+                 t   = time(DK1$Clean),
+                 sat = DK1$sat,
+                 sun = DK1$sun)
+
+
+modEscClean <- nls(Obs ~ B0 + BT * t + C1 * sin((C2 + t) * 2*pi/365.25) + C3 * 
+                sin((C4 + t) * 4*pi/365.25) + D1 * sat + D2 * sun,
+              start = c(B0 = 1, BT = 1, C1 = 1, C2 = 1, C3 = 1, C4 = 1, D1 = 1, D2 = 1), data = dfClean)
+
+modEscCoefClean <- coefficients(modEscClean)
+
+EscModClean <- invisible(modEscCoefClean[1] + modEscCoefClean[2] * t + modEscCoefClean[3] * 
+                      sin((modEscCoefClean[4] + t) * 2*pi/365.25) + modEscCoefClean[5] * 
+                      sin((modEscCoefClean[6] + t) * 4*pi/365.25) + modEscCoefClean[7] * 
+                      DK1$sat + modEscCoefClean[8] * DK1$sun)
+
+DK1[[length(DK1)+1]] <- c(EscModClean)
+names(DK1)[[length(DK1)]] <- "EscModClean"
+
+DK1[[length(DK1)+1]] <- c(DK1$YAll - EscModClean)
+names(DK1)[[length(DK1)]] <- "Decomposed Clean"
 
 
 # Plots
@@ -238,3 +257,28 @@ pObsVDec <-  ggplot(data.frame(X1 = datesY,
   ylim(-200,600)
 
 pObsVDec
+
+pRawVClean <-  ggplot(data.frame(X1 = datesY, 
+                                 X2 = DK1$EscMod), 
+                    aes(x = X1 , y = X2)) +
+  geom_point(aes(col = "Raw")) +
+  geom_point(data = data.frame(X1 = datesY, 
+                              X2 = DK1$EscModClean), 
+            aes(col = "Clean"))+
+  labs(x = "Tid", y = "DKK", title = "DK1: Raw vs. clean", color = "") +
+  scale_color_manual(values = colors[1:2])
+
+pRawVClean
+
+pObsVEscClean <-  ggplot(data.frame(X1 = datesY, 
+                               X2 = DK1$EscModClean), 
+                    aes(x = X1 , y = X2)) +
+  geom_point(aes(col = "Escribano model")) +
+  geom_line(data = data.frame(X1 = datesY, 
+                              X2 = DK1$Clean), 
+            aes(col = "Raw"))+
+  labs(x = "Tid", y = "DKK", title = "DK1: Observationer vs. Escribano (clean)", color = "") +
+  scale_color_manual(values = colors[1:2])
+
+pObsVEscClean
+

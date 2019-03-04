@@ -106,17 +106,24 @@ dfDK1[,3] <- sun
 
 # Samler hvert aar samt alle år sammen for DK1 i en liste
 fq <- 1
-DK1 <- list(Y13  = ts(DK1f[,1],  frequency = fq),
-            Y14  = ts(DK1f[,2],  frequency = fq), 
-            Y15  = ts(DK1f[,3],  frequency = fq), 
-            Y16  = ts(DK1f[,4],  frequency = fq), 
-            Y17  = ts(DK1f[,5],  frequency = fq), 
-            Y18  = ts(DK1f[,6],  frequency = fq),
-            YAll = ts(dfDK1[,1], frequency = fq),
-            Clean = tsclean(ts(dfDK1[,1], frequency = fq)),
-            sat  = sat,
-            sun  = sun)
+DK1 <- list(Y13   = ts(DK1f[,1],  frequency = fq),
+            Y14   = ts(DK1f[,2],  frequency = fq), 
+            Y15   = ts(DK1f[,3],  frequency = fq), 
+            Y16   = ts(DK1f[,4],  frequency = fq), 
+            Y17   = ts(DK1f[,5],  frequency = fq), 
+            Y18   = ts(DK1f[,6],  frequency = fq),
+            YAll  = ts(dfDK1[,1], frequency = fq),
+            Clean = ts(dfDK1[,1], frequency = fq),
+            sat   = sat,
+            sun   = sun)
 
+# Fjerner 07-06-13 ved linear interpolation between two known points
+
+DK1$Clean[which.max(DK1$Clean)] <- approx(c((which.max(DK1$Clean)-1), 
+                                            (which.max(DK1$Clean)+1)), 
+                                          c((DK1$Clean[which.max(DK1$Clean)-1]), 
+                                            (DK1$Clean[which.max(DK1$Clean)+1])),
+                                          xout = which.max(DK1$Clean))$y
 
 ### Mean, sd, acf, pacf, decompose, plot med lag ----------------------------------------
 
@@ -159,12 +166,12 @@ pDK1CleanVRaw <-  ggplot(data.frame(X1 = datesY,
   geom_line(aes(col = "Clean")) +
   geom_line(data = data.frame(X1 = datesY,
                               X2 = DK1$YAll),
-            aes(col = "Raw"), alpha = 0.3) +
+            aes(col = "Raw"), alpha = 0.5) +
   labs(x = "Tid", y = "Spotpris i DKK", title = "DK1 2013-2018:Raw", 
        color = "") +
   scale_color_manual(values = colors[1:2])
 
-pDK1CleanVRaw + ylim(-150, 500)
+pDK1CleanVRaw
 
 ### Regression --------------------------------------------------------------------------
 t <- time(DK2$YAll)

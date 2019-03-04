@@ -125,14 +125,12 @@ mean(DK1$YAll)
 var(DK1$YAll)
 
 # Nogle plots.
-par(mfrow = c(2,2))
-acf(DK1$YAll)
+par(mfrow = c(2,1))
 acf(DK1$YAll)
 
 pacf(DK1$YAll)
-pacf(DK1$YAll)
 
-plot(decompose(DK1$YAll))
+#plot(decompose(DK1$YAll))
 
 
 # Scatter plot med lag.
@@ -143,19 +141,16 @@ par(mfrow = c(1,1))
 
 
 ### ggplot af rå data -------------------------------------------------------------------
-pDK1vDK2Yall <-  ggplot(data.frame(X1 = datesY, 
-                                   X2 = DK2$YAll), 
+pDK1YAll <-  ggplot(data.frame(X1 = datesY, 
+                                   X2 = DK1$YAll), 
                         aes(x = X1 , y = X2)) +
-  geom_line(aes(col = "DK2")) +
-  geom_line(data = data.frame(X1 = datesY, 
-                              X2 = DK1$YAll), 
-            aes(col = "DK1"))+
-  labs(x = "Tid", y = "Spotpris i DKK", title = "DK1 vs. DK2 2013-2018: Spotpriser", 
+  geom_line(aes(col = "DK1")) +
+  labs(x = "Tid", y = "Spotpris i DKK", title = "DK1 2013-2018: Spotpriser", 
        color = "") +
-  scale_color_manual(values = colors[1:2]) + 
-  ylim(-100,600)
+  scale_color_manual(values = colors[1]) +
+  ylim(-100, 500)
 
-pDK1vDK2Yall
+pDK1YAll
 
 
 ### Regression --------------------------------------------------------------------------

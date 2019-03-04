@@ -119,42 +119,7 @@ DK1 <- list(Y13  = ts(DK1f[,1],  frequency = fq),
             sun  = sun)
 
 
-### Mean, sd, acf, pacf, decompose, plot med lag ----------------------------------------
-
-# Mean
-mean(DK1$YAll)
-
-# var
-var(DK1$YAll)
-
-# Nogle plots.
-par(mfrow = c(2,1))
-acf(DK1$YAll)
-
-pacf(DK1$YAll)
-
-#plot(decompose(DK1$YAll))
-
-
-# Scatter plot med lag.
-par(mfrow = c(2,1))
-plot(DK1$Y14, lag(DK1$Y14,2),main = "2014", xlab = "x_t", ylab = "x_{t-1}")
-plot(DK1$Y15, lag(DK1$Y15,2),main = "2015", xlab = "x_t", ylab = "x_{t-1}")
-par(mfrow = c(1,1))
-
-
-### ggplot af rå data -------------------------------------------------------------------
-pDK1YAll <-  ggplot(data.frame(X1 = datesY, 
-                               X2 = DK1$YAll), 
-                    aes(x = X1 , y = X2)) +
-  geom_line(aes(col = "DK1")) +
-  labs(x = "Tid", y = "Spotpris i DKK", title = "DK1 2013-2018: Spotpriser", 
-       color = "") +
-  scale_color_manual(values = colors[1]) +
-  ylim(-100, 500)
-
-pDK1YAll
-
-### outlier
-
-
+# Outlier
+ts = ts(DK1$YAll, frequency = 365)
+plot(ts)
+plot(tsclean(ts))

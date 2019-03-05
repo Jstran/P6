@@ -313,11 +313,8 @@ pf <- data.frame(dates = datesY ,
 pt <- ggplot() +
   geom_line( aes(x = pf$dates, y = pf$price ,      col = "Price"))       +
   geom_line( aes(x = pf$dates, y = pf$priceShift , col = "Price Shift")) +
-  geom_point(aes(x = pf$dates, y = pf$pred,        col = "Pred"))       +
+  geom_point(aes(x = pf$dates, y = pf$pred,        col = "Pred"))        +
   geom_point(aes(x = pf$dates, y = pf$predShift ,  col = "Pred Shift"))  +
   scale_color_manual(values = colors[1:4]) +
   labs(x = "Tid" , y = "DKK" , title = "Observation" , color = "")
 pt
-
-
-

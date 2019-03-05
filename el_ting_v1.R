@@ -1,3 +1,5 @@
+rm(list=ls())
+
 library(stats)
 library(lubridate)
 library(ggplot2)
@@ -29,49 +31,6 @@ dat2016 <- dat2016[-60,]
 # Laver datoer.
 datesY <- seq(ymd("2013-01-01"), ymd("2018-12-31"), by="days")
 dates<-format(datesY, format="%d-%m")[1:365]
-
-# Samler hvert aar for DK2 i en data frame.
-DK2f <- data.frame(numeric(365))
-row.names(DK2f) <- dates
-l <- 1
-for (i in 2013:2018) {
-  DK2f[,l] <- get(paste("dat", i, sep=""))[,9]
-  names(DK2f)[l] <- i
-  l <- l + 1
-}
-
-# Samler alle aar for DK2 i samme data frama.
-dfDK2 <- data.frame(DK2 = numeric(2191), sat = numeric(2191), sun = numeric(2191))
-row.names(dfDK2) <- datesY
-dfDK2[,1] <- c(DK2f[,1], 
-               DK2f[,2],
-               DK2f[,3],
-               dat2016LY[,9],
-               DK2f[,5],
-               DK2f[,6])
-
-# Lørdag dummy, 01-01-13 er en tirsdag
-sat <- numeric(nrow(dfDK2))
-sat[seq(5, 2191, by = 7)] <- 1
-dfDK2[,2] <- sat
-
-# Søndag dummy, 01-01-13 er en tirsdag
-sun <- numeric(nrow(dfDK2))
-sun[seq(6, 2191, by = 7)] <- 1
-dfDK2[,3] <- sun
-
-# Samler hvert aar samt alle år sammen for DK1 i en liste
-fq <- 1 
-DK2 <- list(Y13  = ts(DK2f[,1],  frequency = fq),
-            Y14  = ts(DK2f[,2],  frequency = fq), 
-            Y15  = ts(DK2f[,3],  frequency = fq), 
-            Y16  = ts(DK2f[,4],  frequency = fq), 
-            Y17  = ts(DK2f[,5],  frequency = fq), 
-            Y18  = ts(DK2f[,6],  frequency = fq),
-            YAll = ts(dfDK2[,1], frequency = fq),
-            sat  = sat,
-            sun  = sun)
-
 
 # Samler hvert aar for DK1 i en data frame.
 DK1f <- data.frame(DK1 = numeric(365))
@@ -105,30 +64,35 @@ dfDK1[,3] <- sun
 
 # Samler hvert aar samt alle år sammen for DK1 i en liste
 fq <- 1
-DK1 <- list(Y13  = ts(DK1f[,1],  frequency = fq),
-            Y14  = ts(DK1f[,2],  frequency = fq), 
-            Y15  = ts(DK1f[,3],  frequency = fq), 
-            Y16  = ts(DK1f[,4],  frequency = fq), 
-            Y17  = ts(DK1f[,5],  frequency = fq), 
-            Y18  = ts(DK1f[,6],  frequency = fq),
-            YAll = ts(dfDK1[,1], frequency = fq),
-            sat  = sat,
-            sun  = sun)
+DK1 <- list(Y13 = ts(DK1f[,1],  frequency = fq),
+            Y14 = ts(DK1f[,2],  frequency = fq), 
+            Y15 = ts(DK1f[,3],  frequency = fq), 
+            Y16 = ts(DK1f[,4],  frequency = fq), 
+            Y17 = ts(DK1f[,5],  frequency = fq), 
+            Y18 = ts(DK1f[,6],  frequency = fq),
+            Y   = ts(dfDK1[,1], frequency = fq),
+            Raw = ts(dfDK1[,1], frequency = fq),
+            sat = sat,
+            sun = sun)
 
+# Fjerner 07-06-13 og erstatter med gennesnit af dagen før og efter.
+
+DK1$Y[which.max(DK1$Y)] <- mean(c((DK1$Y[which.max(DK1$Y)-1]), 
+                                  (DK1$Y[which.max(DK1$Y)+1])))
 
 ### Mean, sd, acf, pacf, decompose, plot med lag ----------------------------------------
 
 # Mean
-mean(DK1$YAll)
+mean(DK1$Y)
 
 # var
-var(DK1$YAll)
+var(DK1$Y)
 
 # Nogle plots.
 par(mfrow = c(2,1))
-acf(DK1$YAll)
+acf(DK1$Y)
 
-pacf(DK1$YAll)
+pacf(DK1$Y)
 
 #plot(decompose(DK1$YAll))
 
@@ -141,80 +105,78 @@ par(mfrow = c(1,1))
 
 
 ### ggplot af rå data -------------------------------------------------------------------
-pDK1YAll <-  ggplot(data.frame(X1 = datesY, 
-                                   X2 = DK1$YAll), 
-                        aes(x = X1 , y = X2)) +
-  geom_line(aes(col = "DK1")) +
-  labs(x = "Tid", y = "Spotpris i DKK", title = "DK1 2013-2018: Spotpriser", 
+pRaw <-  ggplot(data.frame(X1 = datesY, 
+                           X2 = DK1$Raw), 
+                aes(x = X1 , y = X2)) +
+  geom_line(aes(col = "Spotpris"), show.legend = FALSE) +
+  labs(x = "", y = "DKK", 
        color = "") +
   scale_color_manual(values = colors[1]) +
-  ylim(-100, 500)
+  scale_x_date(breaks = pretty(datesY, n = 6))
 
-pDK1YAll
+pRaw
 
+
+
+#pHist <- ggplot(data.frame(X1 = datesY, 
+#                           X2 = DK1$Y),
+#                aes(x = X2)) +
+#         geom_histogram(binwidth = 25, color = "white", fill = colors[1]) + 
+#  geom_density(alpha=.2, fill="#FF6666")
+#pHist
+
+x <- seq(-300, 300, length = 3000)
+hist(DK1$Y - mean(DK1$Y), probability = TRUE, breaks = 50)
+lines(x, dnorm(x, mean = -10, sd = 68), lty = 2, lwd = 1)
 
 ### Regression --------------------------------------------------------------------------
-t <- time(DK1$YAll)
-df <- data.frame(Obs = DK1$YAll,
-                 t   = time(DK1$YAll),
-                 sat = DK1$sat,
-                 sun = DK1$sun)
-
 
 # DK1 regression på Escribano model  
-modEsc <- nls(Obs ~ B0 + BT * t + C1 * sin((C2 + t) * 2*pi/365.25) + C3 * 
-                sin((C4 + t) * 4*pi/365.25) + D1 * sat + D2 * sun,
-              start = c(B0 = 1, BT = 1, C1 = 1, C2 = 1, C3 = 1, C4 = 1, D1 = 1, D2 = 1), data = df)
+t <- time(DK1$Y)
 
-modEscCoef <- coefficients(modEsc)
+# DK1 regression på Escribano model 
+lmEsc <- lm(DK1$Y ~ t + 
+              sin((2*pi/365.25)*t) + cos((2*pi/365.25)*t) + 
+              sin((4*pi/365.25)*t) + cos((4*pi/365.25)*t) + 
+              DK1$sat + DK1$sun) ; summary(lmEsc)
 
-EscMod <- invisible(modEscCoef[1] + modEscCoef[2] * t + modEscCoef[3] * 
-                      sin((modEscCoef[4] + t) * 2*pi/365.25) + modEscCoef[5] * 
-                      sin((modEscCoef[6] + t) * 4*pi/365.25) + modEscCoef[7] * 
-                      DK1$sat + modEscCoef[8] * DK1$sun)
+lmEscCoef <- coefficients(lmEsc)
+
+EscMod <- predict(lmEsc)
 
 DK1[[length(DK1)+1]] <- c(EscMod)
 names(DK1)[[length(DK1)]] <- "EscMod"
 
-DK1[[length(DK1)+1]] <- c(DK1$YAll - EscMod)
+DK1[[length(DK1)+1]] <- c(DK1$Y - EscMod)
 names(DK1)[[length(DK1)]] <- "Decomposed"
 
+# Regression på Escribano model med kvadratisk led (t^3)
+lmEsc2 <- lm(DK1$Y ~ t + I(t^2) + 
+               sin((2*pi/365.25)*t) + cos((2*pi/365.25)*t) + 
+               sin((4*pi/365.25)*t) + cos((4*pi/365.25)*t) + 
+               DK1$sat + DK1$sun) ; summary(lmEsc)
 
-# Plots
-pEscModS <- ggplot(data.frame(X1 = datesY, 
-                              X2 = DK1$EscMod), 
-                   aes(x = X1 , y = X2)) +
-  geom_point(colour = colors[1], size = 0.7) +
-  labs(x = "Tid", y = "DKK", title = "Escribano model DK1", color = "") +
-  scale_x_date(breaks = pretty(datesY, n = 12))
-pEscModS
+lmEscCoef2 <- coefficients(lmEsc2)
 
+EscMod2 <- predict(lmEsc2)
 
+DK1[[length(DK1)+1]] <- c(EscMod2)
+names(DK1)[[length(DK1)]] <- "EscMod2"
 
-pObsVEsc <-  ggplot(data.frame(X1 = datesY, 
-                               X2 = DK1$EscMod), 
-                    aes(x = X1 , y = X2)) +
-  geom_point(aes(col = "Escribano model")) +
-  geom_line(data = data.frame(X1 = datesY, 
-                              X2 = DK1$YAll), 
-            aes(col = "Raw"))+
-  labs(x = "Tid", y = "DKK", title = "DK1: Observationer vs. Escribane", color = "") +
-  scale_color_manual(values = colors[1:2]) +
-  ylim(-150,600)
-
-pObsVEsc
+DK1[[length(DK1)+1]] <- c(DK1$Y - EscMod2)
+names(DK1)[[length(DK1)]] <- "Decomposed2"
 
 
-pObsVDec <-  ggplot(data.frame(X1 = datesY, 
-                               X2 = DK1$Decomposed), 
-                    aes(x = X1 , y = X2)) +
-  geom_line(aes(col = "Decomposed")) +
-  geom_line(data = data.frame(X1 = datesY, 
-                              X2 = DK1$YAll), 
-            aes(col = "Raw"))+
-  labs(x = "Tid", y = "DKK", title = "DK1: Raw vs. Decomposed", color = "") +
-  scale_color_manual(values = colors[1:2]) +
-  ylim(-200,600)
-
-pObsVDec
-
+### Regressions plot --------------------------------------------------------------------
+pEsc <- ggplot(data.frame(X1 = datesY,
+                          X2 = DK1$Y),
+               aes(x = X1,
+                   y = X2)) +
+  geom_line(aes(col = "Obs")) +
+  geom_line(data = data.frame(X1 = datesY,
+                              X2 = DK1$Decomposed2),
+            aes(col = "Decomposed med Esc(+t^2)"),
+            alpha = 0.8) +
+  scale_colour_manual(values = colors[1:2]) +
+  labs(col = "", x = "", y = "DKK")
+pEsc

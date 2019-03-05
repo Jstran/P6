@@ -198,7 +198,7 @@ pObsVEscDK1 <-  ggplot(data.frame(X1 = datesY,
   geom_line(data = data.frame(X1 = datesY, 
                               X2 = DK1$YAll), 
             aes(col = "Raw"))+
-  labs(x = "Tid", y = "DKK", title = "DK1: Observationer vs. Escribane", color = "") +
+  labs(x = "Tid", y = "DKK", title = "DK1: Observationer vs. Escribano", color = "") +
   scale_color_manual(values = colors[1:2]) +
   ylim(-150,600)
 

@@ -146,7 +146,7 @@ par(mfrow = c(1,1))
 
 
 ### ggplot af rå data -------------------------------------------------------------------
-pDK1YAll <-  ggplot(data.frame(X1 = datesY, 
+pYAll <-  ggplot(data.frame(X1 = datesY, 
                                X2 = DK1$YAll), 
                     aes(x = X1 , y = X2)) +
   geom_line(aes(col = "DK1")) +
@@ -154,9 +154,9 @@ pDK1YAll <-  ggplot(data.frame(X1 = datesY,
        color = "") +
   scale_color_manual(values = colors[1])
 
-pDK1YAll
+pYAll
 
-pDK1CleanVRaw <-  ggplot(data.frame(X1 = datesY, 
+pCleanVRaw <-  ggplot(data.frame(X1 = datesY, 
                                X2 = DK1$Clean), 
                     aes(x = X1 , y = X2)) +
   geom_line(aes(col = "Clean")) +
@@ -167,8 +167,18 @@ pDK1CleanVRaw <-  ggplot(data.frame(X1 = datesY,
        color = "") +
   scale_color_manual(values = colors[1:2])
 
-pDK1CleanVRaw
+pCleanVRaw
 
+pHist <- ggplot(data.frame(X1 = datesY, 
+                           X2 = DK1$Clean),
+                aes(x = X2)) +
+         geom_histogram(binwidth = 25, color = "white", fill = colors[1]) + 
+  geom_density(alpha=.2, fill="#FF6666")
+pHist
+
+x <- seq(-300, 300, length = 30)
+hist(DK1$Clean - mean(DK1$Clean), probability = TRUE, breaks = 30)
+lines(x, dnorm(x, mean = 0, sd = 1), lty = 2, lwd = 1)
 ### Regression --------------------------------------------------------------------------
 
 # DK1 regression på Escribano model  

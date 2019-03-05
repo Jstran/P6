@@ -176,9 +176,10 @@ pHist <- ggplot(data.frame(X1 = datesY,
   geom_density(alpha=.2, fill="#FF6666")
 pHist
 
-x <- seq(-300, 300, length = 30)
+x <- seq(-300, 300, length = 3000)
 hist(DK1$Clean - mean(DK1$Clean), probability = TRUE, breaks = 30)
-lines(x, dnorm(x, mean = 0, sd = 1), lty = 2, lwd = 1)
+lines(x, dnorm(x, mean = -10, sd = 68), lty = 2, lwd = 1)
+
 ### Regression --------------------------------------------------------------------------
 
 # DK1 regression på Escribano model  

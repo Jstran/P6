@@ -118,15 +118,15 @@ pRaw
 
 
 
-pHist <- ggplot(data.frame(X1 = datesY, 
-                           X2 = DK1$Clean),
-                aes(x = X2)) +
-         geom_histogram(binwidth = 25, color = "white", fill = colors[1]) + 
-  geom_density(alpha=.2, fill="#FF6666")
-pHist
+#pHist <- ggplot(data.frame(X1 = datesY, 
+#                           X2 = DK1$Y),
+#                aes(x = X2)) +
+#         geom_histogram(binwidth = 25, color = "white", fill = colors[1]) + 
+#  geom_density(alpha=.2, fill="#FF6666")
+#pHist
 
 x <- seq(-300, 300, length = 3000)
-hist(DK1$Clean - mean(DK1$Clean), probability = TRUE, breaks = 50)
+hist(DK1$Y - mean(DK1$Y), probability = TRUE, breaks = 50)
 lines(x, dnorm(x, mean = -10, sd = 68), lty = 2, lwd = 1)
 
 ### Regression --------------------------------------------------------------------------
@@ -150,7 +150,7 @@ names(DK1)[[length(DK1)]] <- "EscMod"
 DK1[[length(DK1)+1]] <- c(DK1$Y - EscMod)
 names(DK1)[[length(DK1)]] <- "Decomposed"
 
-# Regression på Escribano model med kvadratisk led
+# Regression på Escribano model med kvadratisk led (t^3)
 lmEsc2 <- lm(DK1$Y ~ t + I(t^2) + 
               sin((2*pi/365.25)*t) + cos((2*pi/365.25)*t) + 
               sin((4*pi/365.25)*t) + cos((4*pi/365.25)*t) + 
@@ -165,3 +165,18 @@ names(DK1)[[length(DK1)]] <- "EscMod2"
 
 DK1[[length(DK1)+1]] <- c(DK1$Y - EscMod2)
 names(DK1)[[length(DK1)]] <- "Decomposed2"
+
+
+### Regressions plot --------------------------------------------------------------------
+pEsc <- ggplot(data.frame(X1 = datesY,
+                          X2 = DK1$Y),
+               aes(x = X1,
+                   y = X2)) +
+        geom_line(aes(col = "Obs")) +
+        geom_line(data = data.frame(X1 = datesY,
+                                    X2 = DK1$Decomposed2),
+                  aes(col = "Decomposed med Esc(+t^2)"),
+                  alpha = 0.8) +
+        scale_colour_manual(values = colors[1:2]) +
+        labs(col = "", x = "", y = "DKK")
+pEsc

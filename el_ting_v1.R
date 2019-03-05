@@ -3,14 +3,29 @@ rm(list=ls())
 library(stats)
 library(lubridate)
 library(ggplot2)
+library(gridExtra)
+library(dplyr)
 # DK1 : Jylland og Fyn, DK2: Sjælland , DK : Det hele 
 
 ### Farver til brug i plots -------------------------------------------------------------
+# Farver til grafer
 colors <- c("royalblue4" ,
             "firebrick4" ,
             "darkorchid4",
             "chartreuse4",
             "black")
+
+# Grå farve der matcher projektet
+myGray <- rgb(245/255, 245/255, 245/255)
+
+# Tema til plots
+p6 <- theme(panel.background = element_rect(fill = myGray, colour = myGray,
+                                  size = 2, linetype = "solid"),
+            panel.grid.major = element_line(size = 0.5, linetype = 'solid',
+                                  colour = "white"), 
+            panel.grid.minor = element_line(size = 0.25, linetype = 'solid',
+                                  colour = "white")
+            )
 
 ### Indlæsning af data ------------------------------------------------------------------
 # Indlaeser csv filerne som "dat20xx".
@@ -112,7 +127,8 @@ pRaw <-  ggplot(data.frame(X1 = datesY,
   labs(x = "", y = "DKK", 
        color = "") +
   scale_color_manual(values = colors[1]) +
-  scale_x_date(breaks = pretty(datesY, n = 6))
+  scale_x_date(breaks = pretty(datesY, n = 6))  +
+  p6
 
 pRaw
 
@@ -202,5 +218,6 @@ pEsc <- ggplot(data.frame(X1 = datesY,
             aes(col = "Decomposed med Esc(+t^2)"),
             alpha = 0.8) +
   scale_colour_manual(values = colors[1:2]) +
-  labs(col = "", x = "", y = "DKK")
+  labs(col = "", x = "", y = "DKK") + 
+  p6
 pEsc

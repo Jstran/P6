@@ -1,16 +1,32 @@
 rm(list=ls())
 
+### Pakker ------------------------------------------------------------------------------
 library(stats)
 library(lubridate)
 library(ggplot2)
-# DK1 : Jylland og Fyn, DK2: Sjælland , DK : Det hele 
+library(gridExtra)
+library(dplyr)
+library(dygraphs)
 
-### Farver til brug i plots -------------------------------------------------------------
+### Farver + thema til brug i plots -------------------------------------------------------------
+# Farver til grafer
 colors <- c("royalblue4" ,
             "firebrick4" ,
             "darkorchid4",
             "chartreuse4",
             "black")
+
+# Grå farve der matcher projektet
+myGray <- rgb(245/255, 245/255, 245/255)
+
+# Tema til plots
+p6 <- theme(panel.background = element_rect(fill = myGray, colour = myGray,
+                                            size = 2, linetype = "solid"),
+            panel.grid.major = element_line(size = 0.5, linetype = 'solid',
+                                            colour = "white"), 
+            panel.grid.minor = element_line(size = 0.25, linetype = 'solid',
+                                            colour = "white")
+            )
 
 ### Indlæsning af data ------------------------------------------------------------------
 # Indlaeser csv filerne som "dat20xx".
@@ -78,7 +94,7 @@ DK1 <- list(Y13 = ts(DK1f[,1],  frequency = fq),
 # Fjerner 07-06-13 og erstatter med gennesnit af dagen før og efter.
 
 DK1$Y[which.max(DK1$Y)] <- mean(c((DK1$Y[which.max(DK1$Y)-1]), 
-                                          (DK1$Y[which.max(DK1$Y)+1])))
+                                  (DK1$Y[which.max(DK1$Y)+1])))
 
 ### Mean, sd, acf, pacf, decompose, plot med lag ----------------------------------------
 
@@ -97,22 +113,16 @@ pacf(DK1$Y)
 #plot(decompose(DK1$YAll))
 
 
-# Scatter plot med lag.
-par(mfrow = c(2,1))
-plot(DK1$Y14, lag(DK1$Y14,2),main = "2014", xlab = "x_t", ylab = "x_{t-1}")
-plot(DK1$Y15, lag(DK1$Y15,2),main = "2015", xlab = "x_t", ylab = "x_{t-1}")
-par(mfrow = c(1,1))
-
-
 ### ggplot af rå data -------------------------------------------------------------------
 pRaw <-  ggplot(data.frame(X1 = datesY, 
-                               X2 = DK1$Raw), 
-                    aes(x = X1 , y = X2)) +
+                           X2 = DK1$Raw), 
+                aes(x = X1 , y = X2)) +
   geom_line(aes(col = "Spotpris"), show.legend = FALSE) +
   labs(x = "", y = "DKK", 
        color = "") +
   scale_color_manual(values = colors[1]) +
-  scale_x_date(breaks = pretty(datesY, n = 6))
+  scale_x_date(breaks = pretty(datesY, n = 6))  +
+  p6
 
 pRaw
 
@@ -140,8 +150,6 @@ lmEsc <- lm(DK1$Y ~ t +
               sin((4*pi/365.25)*t) + cos((4*pi/365.25)*t) + 
               DK1$sat + DK1$sun) ; summary(lmEsc)
 
-lmEscCoef <- coefficients(lmEsc)
-
 EscMod <- predict(lmEsc)
 
 DK1[[length(DK1)+1]] <- c(EscMod)
@@ -150,20 +158,19 @@ names(DK1)[[length(DK1)]] <- "EscMod"
 DK1[[length(DK1)+1]] <- c(DK1$Y - EscMod)
 names(DK1)[[length(DK1)]] <- "Decomposed"
 
-# Regression på Escribano model med kvadratisk led (t^3)
+# Regression på Escribano model med kvadratisk led (t^2)
 lmEsc2 <- lm(DK1$Y ~ t + I(t^2) + 
-              sin((2*pi/365.25)*t) + cos((2*pi/365.25)*t) + 
-              sin((4*pi/365.25)*t) + cos((4*pi/365.25)*t) + 
-              DK1$sat + DK1$sun) ; summary(lmEsc)
+               sin((2*pi/365.25)*t) + cos((2*pi/365.25)*t) + 
+               sin((4*pi/365.25)*t) + cos((4*pi/365.25)*t) + 
+               DK1$sat + DK1$sun) ; summary(lmEsc)
 
-lmEscCoef2 <- coefficients(lmEsc2)
 
 EscMod2 <- predict(lmEsc2)
 
-DK1[[length(DK1)+1]] <- c(EscMod2)
+DK1[[length(DK1)+1]] <- ts(EscMod2)
 names(DK1)[[length(DK1)]] <- "EscMod2"
 
-DK1[[length(DK1)+1]] <- c(DK1$Y - EscMod2)
+DK1[[length(DK1)+1]] <- ts(c(DK1$Y - EscMod2))
 names(DK1)[[length(DK1)]] <- "Decomposed2"
 
 
@@ -172,11 +179,67 @@ pEsc <- ggplot(data.frame(X1 = datesY,
                           X2 = DK1$Y),
                aes(x = X1,
                    y = X2)) +
-        geom_line(aes(col = "Obs")) +
-        geom_line(data = data.frame(X1 = datesY,
-                                    X2 = DK1$Decomposed2),
-                  aes(col = "Decomposed med Esc(+t^2)"),
-                  alpha = 0.8) +
-        scale_colour_manual(values = colors[1:2]) +
-        labs(col = "", x = "", y = "DKK")
+  geom_line(aes(col = "Obs")) +
+  geom_line(data = data.frame(X1 = datesY,
+                              X2 = DK1$Decomposed2),
+            aes(col = "Decomposed med Esc(+t^2)"),
+            alpha = 0.8) +
+  scale_colour_manual(values = colors[1:2]) +
+  labs(col = "", x = "", y = "DKK") + 
+  p6
 pEsc
+
+
+pObsVEsc2 <-  ggplot(data.frame(X1 = datesY, 
+                                X2 = DK1$EscMod2), 
+                     aes(x = X1 , y = X2)) +
+  geom_point(aes(col = "Esc model(t^2)")) +
+  geom_line(data = data.frame(X1 = datesY, 
+                              X2 = DK1$Y), 
+            aes(col = "Obs"))+
+  labs(x = "Tid", y = "DKK", title = "Observationer vs. Escribano", color = "") +
+  scale_color_manual(values = colors[1:2]) +
+  p6
+
+pObsVEsc2
+
+pDiff <- ggplot(data.frame(X1 = datesY, 
+                           X2 = DK1$Decomposed2), 
+                aes(x = X1 , y = X2)) +
+  geom_line(aes(col = "Diff")) +
+  labs(x = "Tid", y = "DKK", title = "Difference", color = "") +
+  scale_color_manual(values = colors[1]) +
+  p6
+pDiff
+
+
+pDiffVEsc2 <-  ggplot(data.frame(X1 = datesY, 
+                                X2 = DK1$Decomposed2), 
+                     aes(x = X1 , y = X2)) +
+  geom_line(aes(col = "Esc model(t^2)")) +
+  geom_line(data = data.frame(X1 = datesY[-length(datesY)], 
+                              X2 = diff(DK1$Decomposed2)), 
+            aes(col = "Diff(Esc model(t^2))"), alpha = 0.8)+
+  labs(x = "Tid", y = "DKK", title = "Escribano vs. diff", color = "") +
+  scale_color_manual(values = colors[1:2]) +
+  p6
+
+pDiffVEsc2
+
+
+par(mfcol = c(2,1))
+acf(DK1$Decomposed2)
+
+acf(diff(DK1$Decomposed2))
+par(mfcol = c(1,1))
+
+### Dygraphs ----------------------------------------------------------------------------
+test <- ts(DK1$Decomposed2, frequency = 365, start = c(2013, as.numeric(format(inds[1], "%j"))))
+p1 <- dygraph(test, main = "DK1: 2013-2018") %>% 
+  dyAxis("y", label = "Spotpris i DKK") %>%
+  dyRangeSelector() %>%
+  dySeries("V1", label = "Decomposed") %>%
+  dyLegend(show = "always", hideOnMouseOut = FALSE)
+
+p1
+

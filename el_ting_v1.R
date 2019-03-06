@@ -7,7 +7,7 @@ library(gridExtra)
 library(dplyr)
 # DK1 : Jylland og Fyn, DK2: Sjælland , DK : Det hele 
 
-### Farver til brug i plots -------------------------------------------------------------
+### Farver + thema til brug i plots -------------------------------------------------------------
 # Farver til grafer
 colors <- c("royalblue4" ,
             "firebrick4" ,
@@ -156,8 +156,6 @@ lmEsc <- lm(DK1$Y ~ t +
               sin((4*pi/365.25)*t) + cos((4*pi/365.25)*t) + 
               DK1$sat + DK1$sun) ; summary(lmEsc)
 
-lmEscCoef <- coefficients(lmEsc)
-
 EscMod <- predict(lmEsc)
 
 DK1[[length(DK1)+1]] <- c(EscMod)
@@ -166,37 +164,12 @@ names(DK1)[[length(DK1)]] <- "EscMod"
 DK1[[length(DK1)+1]] <- c(DK1$Y - EscMod)
 names(DK1)[[length(DK1)]] <- "Decomposed"
 
-# Regression på Escribano model med kvadratisk led (t^3)
+# Regression på Escribano model med kvadratisk led (t^2)
 lmEsc2 <- lm(DK1$Y ~ t + I(t^2) + 
                sin((2*pi/365.25)*t) + cos((2*pi/365.25)*t) + 
                sin((4*pi/365.25)*t) + cos((4*pi/365.25)*t) + 
                DK1$sat + DK1$sun) ; summary(lmEsc)
 
-<<<<<<< HEAD
-lmEscCoef2 <- coefficients(lmEsc2)
-=======
-# Plots
-pEscModS <- ggplot(data.frame(X1 = datesY, 
-                              X2 = DK1$EscMod), 
-                   aes(x = X1 , y = X2)) +
-  geom_point(colour = colors[1], size = 0.7) +
-  labs(x = "Tid", y = "DKK", title = "Escribano model DK1", color = "") +
-  scale_x_date(breaks = pretty(datesY, n = 12))
-pEscModS
-
-
-
-pObsVEsc <-  ggplot(data.frame(X1 = datesY, 
-                               X2 = DK1$EscMod), 
-                    aes(x = X1 , y = X2)) +
-  geom_point(aes(col = "Escribano model")) +
-  geom_line(data = data.frame(X1 = datesY, 
-                              X2 = DK1$YAll), 
-            aes(col = "Raw"))+
-  labs(x = "Tid", y = "DKK", title = "DK1: Observationer vs. Escribano", color = "") +
-  scale_color_manual(values = colors[1:2]) +
-  ylim(-150,600)
->>>>>>> 2662b924ccbe1ded86a35e36864906e3548f8616
 
 EscMod2 <- predict(lmEsc2)
 
@@ -221,3 +194,17 @@ pEsc <- ggplot(data.frame(X1 = datesY,
   labs(col = "", x = "", y = "DKK") + 
   p6
 pEsc
+
+
+pObsVEsc2 <-  ggplot(data.frame(X1 = datesY, 
+                               X2 = DK1$EscMod2), 
+                    aes(x = X1 , y = X2)) +
+  geom_point(aes(col = "Esc model(t^2)")) +
+  geom_line(data = data.frame(X1 = datesY, 
+                              X2 = DK1$Y), 
+            aes(col = "Obs"))+
+  labs(x = "Tid", y = "DKK", title = "Observationer vs. Escribano", color = "") +
+  scale_color_manual(values = colors[1:2]) +
+  p6
+  
+pObsVEsc2

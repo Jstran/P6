@@ -5,7 +5,7 @@ library(lubridate)
 library(ggplot2)
 library(gridExtra)
 library(dplyr)
-# DK1 : Jylland og Fyn, DK2: Sjælland , DK : Det hele 
+# DK1 : Jylland og Fyn, DK2: Sjælland , DK : Det hele hgfkgfh
 
 ### Farver + thema til brug i plots -------------------------------------------------------------
 # Farver til grafer

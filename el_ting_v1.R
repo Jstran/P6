@@ -9,7 +9,7 @@ library(gridExtra)
 library(dplyr)
 # DK1 : Jylland og Fyn, DK2: Sjælland , DK : Det hele 
 
-### Farver + thema til brug i plots -----------------------------------------------------
+### ¤¤ Farver + thema til brug i plots ¤¤ ### -------------------------------------------
 # Farver til grafer
 colors <- c("royalblue4" ,
             "firebrick4" ,
@@ -29,7 +29,7 @@ p6 <- theme(panel.background = element_rect(fill = myGray, colour = myGray,
                                   colour = "white")
             )
 
-### Indlæsning af data ------------------------------------------------------------------
+### ¤¤ Indlæsning af data ¤¤ ### --------------------------------------------------------
 # Indlaeser csv filerne som "dat20xx".
 path <- file.path("./Data")
 years <- list.files(path,pattern =".csv",full.names = 1)
@@ -44,7 +44,7 @@ dat2016LY <- dat2016
 dat2016 <- dat2016[-60,] 
 
 
-### Data frame og lister med data -------------------------------------------------------
+### ¤¤ Data frame og lister med data ¤¤ ### ---------------------------------------------
 # Laver datoer.
 datesY <- seq(ymd("2013-01-01"), ymd("2018-12-31"), by="days")
 dates<-format(datesY, format="%d-%m")[1:365]
@@ -97,7 +97,7 @@ DK1 <- list(Y13 = ts(DK1f[,1],  frequency = fq),
 DK1$Y[which.max(DK1$Y)] <- mean(c((DK1$Y[which.max(DK1$Y)-1]), 
                                   (DK1$Y[which.max(DK1$Y)+1])))
 
-### Mean, sd, acf, pacf, decompose, plot med lag ----------------------------------------
+### ¤¤ Mean, sd, acf, pacf, decompose, plot med lag ¤¤ ### ------------------------------
 
 # Mean
 mean(DK1$Y)
@@ -121,7 +121,7 @@ plot(DK1$Y15, lag(DK1$Y15,2),main = "2015", xlab = "x_t", ylab = "x_{t-1}")
 par(mfrow = c(1,1))
 
 
-### ggplot af rå data -------------------------------------------------------------------
+### ¤¤ ggplot af rå data ¤¤ ### ---------------------------------------------------------
 pRaw <-  ggplot(data.frame(X1 = datesY, 
                            X2 = DK1$Raw), 
                 aes(x = X1 , y = X2)) +
@@ -147,7 +147,7 @@ x <- seq(-300, 300, length = 3000)
 hist(DK1$Y - mean(DK1$Y), probability = TRUE, breaks = 50)
 lines(x, dnorm(x, mean = -10, sd = 68), lty = 2, lwd = 1)
 
-### Regression --------------------------------------------------------------------------
+### ¤¤ Regression ¤¤ ### ----------------------------------------------------------------
 
 # DK1 regression på Escribano model  
 t <- time(DK1$Y)
@@ -182,7 +182,7 @@ DK1[[length(DK1)+1]] <- c(DK1$Y - EscMod2)
 names(DK1)[[length(DK1)]] <- "Decomposed2"
 
 
-### Regressions plot --------------------------------------------------------------------
+### ¤¤ Regressions plot ¤¤ ### ----------------------------------------------------------
 pEsc <- ggplot(data.frame(X1 = datesY,
                           X2 = DK1$Y),
                aes(x = X1,

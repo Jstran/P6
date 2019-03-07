@@ -1,5 +1,7 @@
 rm(list=ls())
 
+### ¤¤ Pakker ¤¤ ### --------------------------------------------------------------------
+
 library(stats)
 library(lubridate)
 library(ggplot2)
@@ -7,7 +9,7 @@ library(gridExtra)
 library(dplyr)
 # DK1 : Jylland og Fyn, DK2: Sjælland , DK : Det hele 
 
-### Farver + thema til brug i plots -------------------------------------------------------------
+### Farver + thema til brug i plots -----------------------------------------------------
 # Farver til grafer
 colors <- c("royalblue4" ,
             "firebrick4" ,

@@ -5,8 +5,6 @@ library(stats)
 library(lubridate)
 library(ggplot2)
 library(gridExtra)
-library(dplyr)
-library(dygraphs)
 
 ### Farver + thema til brug i plots -------------------------------------------------------------
 # Farver til grafer
@@ -27,6 +25,7 @@ p6 <- theme(panel.background = element_rect(fill = myGray, colour = myGray,
             panel.grid.minor = element_line(size = 0.25, linetype = 'solid',
                                             colour = "white")
             )
+# Størrelse til downloads: 700 x 250
 
 ### Indlæsning af data ------------------------------------------------------------------
 # Indlaeser csv filerne som "dat20xx".
@@ -109,7 +108,7 @@ par(mfrow = c(2,1))
 acf(DK1$Y)
 
 pacf(DK1$Y)
-
+par(mfrow = c(1,1))
 #plot(decompose(DK1$YAll))
 
 
@@ -117,14 +116,22 @@ pacf(DK1$Y)
 pRaw <-  ggplot(data.frame(X1 = datesY, 
                            X2 = DK1$Raw), 
                 aes(x = X1 , y = X2)) +
-  geom_line(aes(col = "Spotpris"), show.legend = FALSE) +
-  labs(x = "", y = "DKK", 
+  geom_line(aes(), color = colors[1]) +
+  labs(x = "", y = " Spotpris i DKK", 
        color = "") +
-  scale_color_manual(values = colors[1]) +
   scale_x_date(breaks = pretty(datesY, n = 6))  +
   p6
-
 pRaw
+
+pClean <-  ggplot(data.frame(X1 = datesY, 
+                             X2 = DK1$Y), 
+                  aes(x = X1 , y = X2)) +
+  geom_line(aes(), color = colors[1]) +
+  labs(x = "", y = " Spotpris i DKK", 
+       color = "") +
+  scale_x_date(breaks = pretty(datesY, n = 6))  +
+  p6
+pClean
 
 
 
@@ -162,7 +169,7 @@ names(DK1)[[length(DK1)]] <- "Decomposed"
 lmEsc2 <- lm(DK1$Y ~ t + I(t^2) + 
                sin((2*pi/365.25)*t) + cos((2*pi/365.25)*t) + 
                sin((4*pi/365.25)*t) + cos((4*pi/365.25)*t) + 
-               DK1$sat + DK1$sun) ; summary(lmEsc)
+               DK1$sat + DK1$sun) ; summary(lmEsc2)
 
 
 EscMod2 <- predict(lmEsc2)
@@ -172,7 +179,6 @@ names(DK1)[[length(DK1)]] <- "EscMod2"
 
 DK1[[length(DK1)+1]] <- ts(c(DK1$Y - EscMod2))
 names(DK1)[[length(DK1)]] <- "Decomposed2"
-
 
 ### Regressions plot --------------------------------------------------------------------
 pEsc <- ggplot(data.frame(X1 = datesY,
@@ -185,7 +191,7 @@ pEsc <- ggplot(data.frame(X1 = datesY,
             aes(col = "Decomposed med Esc(+t^2)"),
             alpha = 0.8) +
   scale_colour_manual(values = colors[1:2]) +
-  labs(col = "", x = "", y = "DKK") + 
+  labs(col = "", x = "", y = "Spotpris i DKK") + 
   p6
 pEsc
 
@@ -232,14 +238,4 @@ acf(DK1$Decomposed2)
 
 acf(diff(DK1$Decomposed2))
 par(mfcol = c(1,1))
-
-### Dygraphs ----------------------------------------------------------------------------
-test <- ts(DK1$Decomposed2, frequency = 365, start = c(2013, as.numeric(format(inds[1], "%j"))))
-p1 <- dygraph(test, main = "DK1: 2013-2018") %>% 
-  dyAxis("y", label = "Spotpris i DKK") %>%
-  dyRangeSelector() %>%
-  dySeries("V1", label = "Decomposed") %>%
-  dyLegend(show = "always", hideOnMouseOut = FALSE)
-
-p1
 

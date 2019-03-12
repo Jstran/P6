@@ -6,7 +6,27 @@ library(stats)
 library(lubridate)
 library(ggplot2)
 
-### ¤¤ Farver + thema til brug i plots ¤¤ ### -------------------------------------------
+### ¤¤ Funktioner ¤¤ ### --------------------------------------------
+
+# Escribano koefficient -> dataframe funktion
+esccoef <- function(mod){
+  coef <- as.numeric(mod$coefficients)
+  
+  # Koefficienter til årlig periode
+  c1 <- sqrt(coef[4]^2 + coef[5]^2)
+  c2 <- atan(coef[5]/coef[4]) * 365.25/(2*pi)
+  
+  # Koefficienter til halvårlig periode
+  c3 <- sqrt(coef[6]^2 + coef[7]^2)
+  c4 <- atan(coef[7]/coef[6]) * 365.25/(4*pi)
+  
+  # Dataframe med alt info
+  df <- data.frame(b0 = coef[1] , b1 = coef[2] , b2 = coef[3] , c1 = c1 , c2 = c2 ,
+                   c3 = c3 , c4 = c4 , d1 = coef[8] , d2 = coef[9]) 
+  return(df)
+}
+
+### ¤¤ Farver + tema til brug i plots ¤¤ ### -------------------------------------------
 
 # Farver til grafer
 colors <- c("royalblue4" ,
@@ -26,25 +46,6 @@ p6 <- theme(panel.background = element_rect(fill = myGray, colour = myGray,
             panel.grid.minor = element_line(size = 0.25, linetype = 'solid',
                                   colour = "white")
             )
-
-### ¤¤ Escribano koefficient funktion ¤¤ ### --------------------------------------------
-
-esccoef <- function(coef){
-  coef <- as.numeric(coef$coefficients)
-  
-  # Koefficienter til årlig periode
-  c1 <- sqrt(coef[4]^2 + coef[5]^2)
-  c2 <- atan(coef[5]/coef[4]) * 365.25/(2*pi)
-  
-  # Koefficienter til halvårlig periode
-  c3 <- sqrt(coef[6]^2 + coef[7]^2)
-  c4 <- atan(coef[7]/coef[6]) * 365.25/(4*pi)
-  
-  # Dataframe med alt info
-  df <- data.frame(b0 = coef[1] , b1 = coef[2] , b2 = coef[3] , c1 = c1 , c2 = c2 ,
-                   c3 = c3 , c4 = c4 , d1 = coef[8] , d2 = coef[9]) 
-  return(df)
-}
 
 ### ¤¤ Indlæsning af data ¤¤ ### --------------------------------------------------------
 

@@ -5,9 +5,9 @@ rm(list=ls())
 library(stats)
 library(lubridate)
 library(ggplot2)
-# DK1 : Jylland og Fyn, DK2: Sjælland , DK : Det hele 
 
 ### ¤¤ Farver + thema til brug i plots ¤¤ ### -------------------------------------------
+
 # Farver til grafer
 colors <- c("royalblue4" ,
             "firebrick4" ,
@@ -28,6 +28,7 @@ p6 <- theme(panel.background = element_rect(fill = myGray, colour = myGray,
             )
 
 ### ¤¤ Indlæsning af data ¤¤ ### --------------------------------------------------------
+
 # Indlaeser csv filerne som "dat20xx".
 path <- file.path("./Data")
 years <- list.files(path,pattern =".csv",full.names = 1)
@@ -43,6 +44,7 @@ dat2016 <- dat2016[-60,]
 
 
 ### ¤¤ Data frame og lister med data ¤¤ ### ---------------------------------------------
+
 # Laver datoer.
 datesY <- seq(ymd("2013-01-01"), ymd("2018-12-31"), by="days")
 dates<-format(datesY, format="%d-%m")[1:365]
@@ -90,7 +92,7 @@ DK1 <- list(Y13 = ts(DK1f[,1],  frequency = fq),
             sat = sat,
             sun = sun)
 
-# Fjerner 07-06-13 og erstatter med gennesnit af dagen før og efter.
+# Fjerner 07-06-13 og erstatter med gennesnit af dagen før og efter. (Spike-dagen)
 
 DK1$A[which.max(DK1$A)] <- mean(c((DK1$A[which.max(DK1$A)-1]), 
                                   (DK1$A[which.max(DK1$A)+1])))
@@ -101,29 +103,23 @@ rm("dat2013","dat2014","dat2015","dat2016","dat2016LY","dat2017","dat2018","dat2
 
 ### ¤¤ Mean, sd, acf, pacf, decompose, plot med lag ¤¤ ### ------------------------------
 
-# Mean
-mean(DK1$A)
-
-# var
-var(DK1$A)
-
 # Nogle plots.
 par(mfrow = c(2,1))
-acf(DK1$A)
 
+acf(DK1$A)
 pacf(DK1$A)
 
-#plot(decompose(DK1$YAll))
+#plot(decompose(DK1$A))
 
 
 # Scatter plot med lag.
-par(mfrow = c(2,1))
 plot(DK1$Y14, lag(DK1$Y14,2),main = "2014", xlab = "x_t", ylab = "x_{t-1}")
 plot(DK1$Y15, lag(DK1$Y15,2),main = "2015", xlab = "x_t", ylab = "x_{t-1}")
 par(mfrow = c(1,1))
 
 
 ### ¤¤ ggplot af rå data ¤¤ ### ---------------------------------------------------------
+
 pRaw <-  ggplot(data.frame(X1 = datesY, 
                            X2 = DK1$Raw), 
                 aes(x = X1 , y = X2)) +
@@ -159,10 +155,8 @@ lines(x, dnorm(x, mean = -10, sd = 68), lty = 2, lwd = 1)
 
 ### ¤¤ Regression ¤¤ ### ----------------------------------------------------------------
 
-# DK1 regression på Escribano model  
-t <- time(DK1$A)
-
 # DK1 regression på Escribano model 
+t     <- time(DK1$A)
 lmEsc <- lm(DK1$A ~ t + 
               sin((2*pi/365.25)*t) + cos((2*pi/365.25)*t) + 
               sin((4*pi/365.25)*t) + cos((4*pi/365.25)*t) + 
@@ -191,10 +185,9 @@ names(DK1)[[length(DK1)]] <- "EscMod2"
 DK1[[length(DK1)+1]] <- c(DK1$A - EscMod2)
 names(DK1)[[length(DK1)]] <- "Decomposed2"
 
-
 ### ¤¤ Regressions plot ¤¤ ### ----------------------------------------------------------
 
-# Plotter 
+# Plotter spotpriser med priser hvor det deterministiske er fjernet
 pEsc <- ggplot(data.frame(X1 = datesY,
                           X2 = DK1$A),
                aes(x = X1,
@@ -209,7 +202,7 @@ pEsc <- ggplot(data.frame(X1 = datesY,
   p6
 pEsc
 
-
+# Plotter spotpriser med den determinstiske model lagt ovenpå
 pObsVEsc2 <-  ggplot(data.frame(X1 = datesY, 
                                X2 = DK1$EscMod2), 
                     aes(x = X1 , y = X2)) +

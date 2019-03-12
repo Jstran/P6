@@ -27,6 +27,29 @@ p6 <- theme(panel.background = element_rect(fill = myGray, colour = myGray,
                                   colour = "white")
             )
 
+### ¤¤ Escribano koefficient funktion ¤¤ ### --------------------------------------------
+
+esccoef <- function(coef){
+  coef <- as.numeric(coef$coefficients)
+  
+  # Koefficienter til årlig periode
+  c1 <- sqrt(coef[4]^2 + coef[5]^2)
+  c2 <- atan(coef[5]/coef[4]) * 365.25/(2*pi)
+  
+  # Koefficienter til halvårlig periode
+  c3 <- sqrt(coef[6]^2 + coef[7]^2)
+  c4 <- atan(coef[7]/coef[6]) * 365.25/(4*pi)
+  
+  # Dataframe med alt info
+  df <- data.frame(b0 = coef[1] , b1 = coef[2] , b2 = coef[3] , c1 = c1 , c2 = c2 ,
+                   c3 = c3 , c4 = c4 , d1 = coef[8] , d2 = coef[9])
+  
+  # Liste hvori man kan trække ønsket information ud
+  ls <- list(df = df , b0 = coef[1] , b1 = coef[2] , b2 = coef[3] , c1 = c1 , c2 = c2 ,
+             c3 = c3 , c4 = c4 , d1 = coef[8] , d2 = coef[9]) 
+  return(ls)
+}
+
 ### ¤¤ Indlæsning af data ¤¤ ### --------------------------------------------------------
 
 # Indlaeser csv filerne som "dat20xx".
@@ -81,13 +104,13 @@ dfDK1[,3] <- sun
 
 # Samler hvert aar samt alle år sammen for DK1 i en liste
 fq <- 1
-DK1 <- list(Y13 = ts(DK1f[,1],  frequency = fq),
+DK1 <- list(A   = ts(dfDK1[,1], frequency = fq),
+            Y13 = ts(DK1f[,1],  frequency = fq),
             Y14 = ts(DK1f[,2],  frequency = fq), 
             Y15 = ts(DK1f[,3],  frequency = fq), 
             Y16 = ts(DK1f[,4],  frequency = fq), 
             Y17 = ts(DK1f[,5],  frequency = fq), 
             Y18 = ts(DK1f[,6],  frequency = fq),
-            A   = ts(dfDK1[,1], frequency = fq),
             Raw = ts(dfDK1[,1], frequency = fq),
             sat = sat,
             sun = sun)
@@ -109,12 +132,6 @@ par(mfrow = c(2,1))
 acf(DK1$A)
 pacf(DK1$A)
 
-#plot(decompose(DK1$A))
-
-
-# Scatter plot med lag.
-plot(DK1$Y14, lag(DK1$Y14,2),main = "2014", xlab = "x_t", ylab = "x_{t-1}")
-plot(DK1$Y15, lag(DK1$Y15,2),main = "2015", xlab = "x_t", ylab = "x_{t-1}")
 par(mfrow = c(1,1))
 
 
@@ -172,12 +189,13 @@ names(DK1)[[length(DK1)]] <- "Decomposed"
 
 # Regression på Escribano model med kvadratisk led (t^2)
 lmEsc2 <- lm(DK1$A ~ t + I(t^2) + 
-               sin((2*pi/365.25)*t) + cos((2*pi/365.25)*t) + 
-               sin((4*pi/365.25)*t) + cos((4*pi/365.25)*t) + 
-               DK1$sat + DK1$sun) ; summary(lmEsc)
+                     sin((2*pi/365.25)*t) + cos((2*pi/365.25)*t) + 
+                     sin((4*pi/365.25)*t) + cos((4*pi/365.25)*t) + 
+                     DK1$sat + DK1$sun) ; summary(lmEsc)
 
 
 EscMod2 <- predict(lmEsc2)
+EscCoef <- esccoef(lmEsc2)
 
 DK1[[length(DK1)+1]] <- c(EscMod2)
 names(DK1)[[length(DK1)]] <- "EscMod2"
@@ -204,12 +222,12 @@ pEsc
 
 # Plotter spotpriser med den determinstiske model lagt ovenpå
 pObsVEsc2 <-  ggplot(data.frame(X1 = datesY, 
-                               X2 = DK1$EscMod2), 
-                    aes(x = X1 , y = X2)) +
-  geom_point(aes(col = "Esc model(t^2)")) +
-  geom_line(data = data.frame(X1 = datesY, 
-                              X2 = DK1$A), 
-            aes(col = "Obs"))+
+                                X2 = DK1$A), 
+                     aes(x = X1 , y = X2)) +
+  geom_line(aes(col = "Obs")) +
+  geom_point(data = data.frame(X1 = datesY, 
+                              X2 = DK1$EscMod2), 
+            aes(col = "Esc model(t^2)"))+
   labs(x = "Tid", y = "DKK", title = "Observationer vs. Escribano", color = "") +
   scale_color_manual(values = colors[1:2]) +
   p6

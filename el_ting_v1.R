@@ -168,36 +168,22 @@ lines(x, dnorm(x, mean = -10, sd = 68), lty = 2, lwd = 1)
 
 ### ¤¤ Regression ¤¤ ### ----------------------------------------------------------------
 
-# DK1 regression på Escribano model 
+# Regression på Escribano model med kvadratisk led (t^2)
 t     <- time(DK1$A)
-lmEsc <- lm(DK1$A ~ t + 
-              sin((2*pi/365.25)*t) + cos((2*pi/365.25)*t) + 
-              sin((4*pi/365.25)*t) + cos((4*pi/365.25)*t) + 
-              DK1$sat + DK1$sun) ; summary(lmEsc)
+lmEsc <- lm(DK1$A ~ t + I(t^2) + 
+                     sin((2*pi/365.25)*t) + cos((2*pi/365.25)*t) + 
+                     sin((4*pi/365.25)*t) + cos((4*pi/365.25)*t) + 
+                     DK1$sat + DK1$sun) ; summary(lmEsc)
 
-EscMod <- predict(lmEsc)
+
+EscMod  <- predict(lmEsc)
+EscCoef <- esccoef(lmEsc)
 
 DK1[[length(DK1)+1]] <- c(EscMod)
 names(DK1)[[length(DK1)]] <- "EscMod"
 
 DK1[[length(DK1)+1]] <- c(DK1$A - EscMod)
 names(DK1)[[length(DK1)]] <- "Decomposed"
-
-# Regression på Escribano model med kvadratisk led (t^2)
-lmEsc2 <- lm(DK1$A ~ t + I(t^2) + 
-                     sin((2*pi/365.25)*t) + cos((2*pi/365.25)*t) + 
-                     sin((4*pi/365.25)*t) + cos((4*pi/365.25)*t) + 
-                     DK1$sat + DK1$sun) ; summary(lmEsc)
-
-
-EscMod2 <- predict(lmEsc2)
-EscCoef <- esccoef(lmEsc2)
-
-DK1[[length(DK1)+1]] <- c(EscMod2)
-names(DK1)[[length(DK1)]] <- "EscMod2"
-
-DK1[[length(DK1)+1]] <- c(DK1$A - EscMod2)
-names(DK1)[[length(DK1)]] <- "Decomposed2"
 
 ### ¤¤ Regressions plot ¤¤ ### ----------------------------------------------------------
 
@@ -208,7 +194,7 @@ pEsc <- ggplot(data.frame(X1 = datesY,
                    y = X2)) +
   geom_line(aes(col = "Obs")) +
   geom_line(data = data.frame(X1 = datesY,
-                              X2 = DK1$Decomposed2),
+                              X2 = DK1$Decomposed),
             aes(col = "Decomposed med Esc(+t^2)"),
             alpha = 0.8) +
   scale_colour_manual(values = colors[1:2]) +
@@ -217,14 +203,14 @@ pEsc <- ggplot(data.frame(X1 = datesY,
 pEsc
 
 # Plotter spotpriser med den determinstiske model lagt ovenpå
-pObsVEsc2 <-  ggplot(data.frame(X1 = datesY, 
+pObsVEsc <-  ggplot(data.frame(X1 = datesY, 
                                 X2 = DK1$A), 
                      aes(x = X1 , y = X2)) +
   geom_line(aes(col = "Obs")) +
   geom_point(data = data.frame(X1 = datesY, 
-                              X2 = DK1$EscMod2), 
+                              X2 = DK1$EscMod), 
             aes(col = "Esc model(t^2)"))+
   labs(x = "Tid", y = "DKK", title = "Observationer vs. Escribano", color = "") +
   scale_color_manual(values = colors[1:2]) +
   p6
-pObsVEsc2
+pObsVEsc

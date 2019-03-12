@@ -85,7 +85,7 @@ DK1 <- list(Y13 = ts(DK1f[,1],  frequency = fq),
             Y16 = ts(DK1f[,4],  frequency = fq), 
             Y17 = ts(DK1f[,5],  frequency = fq), 
             Y18 = ts(DK1f[,6],  frequency = fq),
-            Y   = ts(dfDK1[,1], frequency = fq),
+            A   = ts(dfDK1[,1], frequency = fq),
             Raw = ts(dfDK1[,1], frequency = fq),
             sat = sat,
             sun = sun)
@@ -124,7 +124,7 @@ pRaw <-  ggplot(data.frame(X1 = datesY,
 pRaw
 
 pClean <-  ggplot(data.frame(X1 = datesY, 
-                             X2 = DK1$Y), 
+                             X2 = DK1$A), 
                   aes(x = X1 , y = X2)) +
   geom_line(aes(), color = colors[1]) +
   labs(x = "", y = " Spotpris i DKK", 
@@ -143,16 +143,16 @@ pClean
 #pHist
 
 x <- seq(-300, 300, length = 3000)
-hist(DK1$Y - mean(DK1$Y), probability = TRUE, breaks = 50)
+hist(DK1$Y - mean(DK1$A), probability = TRUE, breaks = 50)
 lines(x, dnorm(x, mean = -10, sd = 68), lty = 2, lwd = 1)
 
 ### Regression --------------------------------------------------------------------------
 
 # DK1 regression på Escribano model  
-t <- time(DK1$Y)
+t <- time(DK1$A)
 
 # DK1 regression på Escribano model 
-lmEsc <- lm(DK1$Y ~ t + 
+lmEsc <- lm(DK1$A ~ t + 
               sin((2*pi/365.25)*t) + cos((2*pi/365.25)*t) + 
               sin((4*pi/365.25)*t) + cos((4*pi/365.25)*t) + 
               DK1$sat + DK1$sun) ; summary(lmEsc)
@@ -162,11 +162,11 @@ EscMod <- predict(lmEsc)
 DK1[[length(DK1)+1]] <- c(EscMod)
 names(DK1)[[length(DK1)]] <- "EscMod"
 
-DK1[[length(DK1)+1]] <- c(DK1$Y - EscMod)
+DK1[[length(DK1)+1]] <- c(DK1$A - EscMod)
 names(DK1)[[length(DK1)]] <- "Decomposed"
 
 # Regression på Escribano model med kvadratisk led (t^2)
-lmEsc2 <- lm(DK1$Y ~ t + I(t^2) + 
+lmEsc2 <- lm(DK1$A ~ t + I(t^2) + 
                sin((2*pi/365.25)*t) + cos((2*pi/365.25)*t) + 
                sin((4*pi/365.25)*t) + cos((4*pi/365.25)*t) + 
                DK1$sat + DK1$sun) ; summary(lmEsc2)
@@ -177,12 +177,12 @@ EscMod2 <- predict(lmEsc2)
 DK1[[length(DK1)+1]] <- ts(EscMod2)
 names(DK1)[[length(DK1)]] <- "EscMod2"
 
-DK1[[length(DK1)+1]] <- ts(c(DK1$Y - EscMod2))
+DK1[[length(DK1)+1]] <- ts(c(DK1$A - EscMod2))
 names(DK1)[[length(DK1)]] <- "Decomposed2"
 
 ### Regressions plot --------------------------------------------------------------------
 pEsc <- ggplot(data.frame(X1 = datesY,
-                          X2 = DK1$Y),
+                          X2 = DK1$A),
                aes(x = X1,
                    y = X2)) +
   geom_line(aes(col = "Obs")) +
@@ -201,7 +201,7 @@ pObsVEsc2 <-  ggplot(data.frame(X1 = datesY,
                      aes(x = X1 , y = X2)) +
   geom_point(aes(col = "Esc model(t^2)")) +
   geom_line(data = data.frame(X1 = datesY, 
-                              X2 = DK1$Y), 
+                              X2 = DK1$A), 
             aes(col = "Obs"))+
   labs(x = "Tid", y = "DKK", title = "Observationer vs. Escribano", color = "") +
   scale_color_manual(values = colors[1:2]) +

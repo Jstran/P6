@@ -42,12 +42,8 @@ esccoef <- function(coef){
   
   # Dataframe med alt info
   df <- data.frame(b0 = coef[1] , b1 = coef[2] , b2 = coef[3] , c1 = c1 , c2 = c2 ,
-                   c3 = c3 , c4 = c4 , d1 = coef[8] , d2 = coef[9])
-  
-  # Liste hvori man kan trække ønsket information ud
-  ls <- list(df = df , b0 = coef[1] , b1 = coef[2] , b2 = coef[3] , c1 = c1 , c2 = c2 ,
-             c3 = c3 , c4 = c4 , d1 = coef[8] , d2 = coef[9]) 
-  return(ls)
+                   c3 = c3 , c4 = c4 , d1 = coef[8] , d2 = coef[9]) 
+  return(df)
 }
 
 ### ¤¤ Indlæsning af data ¤¤ ### --------------------------------------------------------

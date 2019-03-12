@@ -95,7 +95,7 @@ DK1 <- list(Y13 = ts(DK1f[,1],  frequency = fq),
 DK1$A[which.max(DK1$A)] <- mean(c((DK1$A[which.max(DK1$A)-1]), 
                                   (DK1$A[which.max(DK1$A)+1])))
 
-# Fjerner unøvendige variable
+# Fjerner midlertidige variable
 rm("dat2013","dat2014","dat2015","dat2016","dat2016LY","dat2017","dat2018","dat2019",
    "dfDK1","DK1f","fq","i","l","myGray","path","sat","sun","years","years_names")
 
@@ -185,6 +185,8 @@ names(DK1)[[length(DK1)]] <- "Decomposed2"
 
 
 ### ¤¤ Regressions plot ¤¤ ### ----------------------------------------------------------
+
+# Plotter 
 pEsc <- ggplot(data.frame(X1 = datesY,
                           X2 = DK1$A),
                aes(x = X1,
@@ -210,3 +212,4 @@ pObsVEsc2 <-  ggplot(data.frame(X1 = datesY,
   labs(x = "Tid", y = "DKK", title = "Observationer vs. Escribano", color = "") +
   scale_color_manual(values = colors[1:2]) +
   p6
+pObsVEsc2

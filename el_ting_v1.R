@@ -127,14 +127,22 @@ par(mfrow = c(1,1))
 pRaw <-  ggplot(data.frame(X1 = datesY, 
                            X2 = DK1$Raw), 
                 aes(x = X1 , y = X2)) +
-  geom_line(aes(col = "Spotpris"), show.legend = FALSE) +
-  labs(x = "", y = "DKK", 
+  geom_line(aes(), color = colors[1]) +
+  labs(x = "", y = " Spotpris i DKK", 
        color = "") +
-  scale_color_manual(values = colors[1]) +
   scale_x_date(breaks = pretty(datesY, n = 6))  +
   p6
-
 pRaw
+
+pClean <-  ggplot(data.frame(X1 = datesY, 
+                             X2 = DK1$A), 
+                  aes(x = X1 , y = X2)) +
+  geom_line(aes(), color = colors[1]) +
+  labs(x = "", y = " Spotpris i DKK", 
+       color = "") +
+  scale_x_date(breaks = pretty(datesY, n = 6))  +
+  p6
+pClean
 
 
 

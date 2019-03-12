@@ -5,8 +5,6 @@ rm(list=ls())
 library(stats)
 library(lubridate)
 library(ggplot2)
-library(gridExtra)
-library(dplyr)
 # DK1 : Jylland og Fyn, DK2: Sjælland , DK : Det hele 
 
 ### ¤¤ Farver + thema til brug i plots ¤¤ ### -------------------------------------------
@@ -96,6 +94,10 @@ DK1 <- list(Y13 = ts(DK1f[,1],  frequency = fq),
 
 DK1$A[which.max(DK1$A)] <- mean(c((DK1$A[which.max(DK1$A)-1]), 
                                   (DK1$A[which.max(DK1$A)+1])))
+
+# Fjerner unøvendige variable
+rm("dat2013","dat2014","dat2015","dat2016","dat2016LY","dat2017","dat2018","dat2019",
+   "dfDK1","DK1f","fq","i","l","myGray","path","sat","sun","years","years_names")
 
 ### ¤¤ Mean, sd, acf, pacf, decompose, plot med lag ¤¤ ### ------------------------------
 

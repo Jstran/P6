@@ -26,6 +26,10 @@ esccoef <- function(mod){
   return(df)
 }
 
+ci <- function(n = numeric(2191)){
+  qnorm((1 + 0.95)/2)/sqrt(length(n))
+}
+
 ### ¤¤ Farver + tema til brug i plots ¤¤ ### -------------------------------------------
 
 # Farver til grafer
@@ -171,8 +175,18 @@ pHist <- ggplot(data.frame(X1 = datesY,
          p6
 pHist
 
-
-
+# Plot af acf
+dfAcf <- with(acf(DK1$A, plot = FALSE), data.frame(lag, acf)) 
+pAcfA <- ggplot(data = dfAcf, aes(x = lag, y = acf)) +
+  geom_hline(aes(yintercept =  0)) +
+  geom_segment(aes(xend = lag, yend = 0)) +
+  geom_hline(aes(yintercept = -ci()), 
+             color=colors[1], linetype="dotted") +
+  geom_hline(aes(yintercept = ci()), 
+             color=colors[1], linetype="dotted") +
+  labs(x = "Lag", y = "acf") +
+  p6
+pAcfA
 
 
 ### ¤¤ Regression ¤¤ ### ----------------------------------------------------------------
@@ -219,4 +233,17 @@ pObsVEsc <-  ggplot(data.frame(X1 = datesY,
   scale_color_manual(values = colors[1:2]) +
   p6
 pObsVEsc
+
+# Plot af acf for decomposed
+dfAcfDecomposed <- with(acf(DK1$Decomposed, plot = FALSE), data.frame(lag, acf)) 
+pAcfDecomposed <- ggplot(data = dfAcfDecomposed, aes(x = lag, y = acf)) +
+  geom_hline(aes(yintercept =  0)) +
+  geom_segment(aes(xend = lag, yend = 0)) +
+  geom_hline(aes(yintercept = -ci()), 
+             color = colors[1], linetype = "dotted") +
+  geom_hline(aes(yintercept =  ci()), 
+             color = colors[1], linetype = "dotted") +
+  labs(x = "Lag", y = "ACF") +
+  p6
+pAcfDecomposed
 

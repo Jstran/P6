@@ -121,7 +121,7 @@ DK1$A[which.max(DK1$A)] <- mean(c((DK1$A[which.max(DK1$A)-1]),
 rm("dat2013","dat2014","dat2015","dat2016","dat2016LY","dat2017","dat2018","dat2019",
    "dfDK1","DK1f","fq","i","l","myGray","path","sat","sun","years","years_names")
 
-### ¤¤ Mean, sd, acf, pacf, decompose, plot med lag ¤¤ ### ------------------------------
+### ¤¤ Mean, sd, acf, pacf ¤¤ ### ------------------------------
 
 # Nogle plots.
 par(mfrow = c(2,1))
@@ -155,17 +155,19 @@ pClean <-  ggplot(data.frame(X1 = datesY,
 pClean
 
 
-
-#pHist <- ggplot(data.frame(X1 = datesY, 
-#                           X2 = DK1$A),
-#                aes(x = X2)) +
-#         geom_histogram(binwidth = 25, color = "white", fill = colors[1]) + 
-#  geom_density(alpha=.2, fill="#FF6666")
-#pHist
-
-x <- seq(-300, 300, length = 3000)
-hist(DK1$A - mean(DK1$A), probability = TRUE, breaks = 50)
-lines(x, dnorm(x, mean = -10, sd = 68), lty = 2, lwd = 1)
+pHist <- ggplot(data.frame(X1 = datesY, 
+                           X2 = DK1$A),
+                aes(x = X2)) +
+         geom_histogram(binwidth = 25, color = "white", fill = colors[1]) + 
+         stat_function(fun = 
+                       function(x){dnorm(x = x, 
+                                         mean = mean(DK1$A), 
+                                         sd = sd(DK1$A))*length(DK1$A)*31
+                                   }, 
+                       color = colors[2]) +
+         labs(x = "Spotpris i DKK", y = "") +
+         p6
+pHist
 
 ### ¤¤ Regression ¤¤ ### ----------------------------------------------------------------
 

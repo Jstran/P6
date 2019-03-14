@@ -134,6 +134,7 @@ par(mfrow = c(1,1))
 
 ### ¤¤ ggplot af rå data ¤¤ ### ---------------------------------------------------------
 
+# Plot af ukorrigerede data
 pRaw <-  ggplot(data.frame(X1 = datesY, 
                            X2 = DK1$Raw), 
                 aes(x = X1 , y = X2)) +
@@ -144,6 +145,7 @@ pRaw <-  ggplot(data.frame(X1 = datesY,
   p6
 pRaw
 
+# Plot af korrigerede data
 pClean <-  ggplot(data.frame(X1 = datesY, 
                              X2 = DK1$A), 
                   aes(x = X1 , y = X2)) +
@@ -154,20 +156,24 @@ pClean <-  ggplot(data.frame(X1 = datesY,
   p6
 pClean
 
-
+# Histogram for priserne
 pHist <- ggplot(data.frame(X1 = datesY, 
                            X2 = DK1$A),
                 aes(x = X2)) +
-         geom_histogram(binwidth = 25, color = "white", fill = colors[1]) + 
+         geom_histogram(binwidth = 20, color = "white", fill = colors[1]) + 
          stat_function(fun = 
                        function(x){dnorm(x = x, 
                                          mean = mean(DK1$A), 
-                                         sd = sd(DK1$A))*length(DK1$A)*31
+                                         sd = sd(DK1$A))*length(DK1$A)*24.1
                                    }, 
                        color = colors[2]) +
          labs(x = "Spotpris i DKK", y = "") +
          p6
 pHist
+
+
+
+
 
 ### ¤¤ Regression ¤¤ ### ----------------------------------------------------------------
 
@@ -190,20 +196,15 @@ names(DK1)[[length(DK1)]] <- "Decomposed"
 
 ### ¤¤ Regressions plot ¤¤ ### ----------------------------------------------------------
 
-# Plotter spotpriser med priser hvor det deterministiske er fjernet
-pEsc <- ggplot(data.frame(X1 = datesY,
-                          X2 = DK1$A),
-               aes(x = X1,
-                   y = X2)) +
-  geom_line(aes(col = "Obs")) +
-  geom_line(data = data.frame(X1 = datesY,
-                              X2 = DK1$Decomposed),
-            aes(col = "Decomposed med Esc(+t^2)"),
-            alpha = 0.8) +
-  scale_colour_manual(values = colors[1:2]) +
-  labs(col = "", x = "", y = "DKK") + 
-  p6
-pEsc
+# Plotter priser hvor det deterministiske er fjernet
+pDecomposed <- ggplot(data = data.frame(X1 = datesY,
+                                        X2 = DK1$Decomposed),
+                      aes(x = X1, y = X2)) +
+               geom_line(color = colors[1]) +
+               scale_x_date(breaks = pretty(datesY, n = 6)) +
+               labs(x = "", y = "Spotpris i DKK") + 
+               p6
+pDecomposed
 
 # Plotter spotpriser med den determinstiske model lagt ovenpå
 pObsVEsc <-  ggplot(data.frame(X1 = datesY, 
@@ -212,8 +213,10 @@ pObsVEsc <-  ggplot(data.frame(X1 = datesY,
   geom_line(aes(col = "Obs")) +
   geom_point(data = data.frame(X1 = datesY, 
                               X2 = DK1$EscMod), 
-            aes(col = "Esc model(t^2)"))+
-  labs(x = "Tid", y = "DKK", title = "Observationer vs. Escribano", color = "") +
+            aes(col = "Esc model"))+
+  scale_x_date(breaks = pretty(datesY, n = 6))  +
+  labs(x = "", y = "Spotpris i DKK", title = "Observationer vs. Escribano", color = "") +
   scale_color_manual(values = colors[1:2]) +
   p6
 pObsVEsc
+

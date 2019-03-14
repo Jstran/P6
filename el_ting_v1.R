@@ -176,15 +176,16 @@ pHist <- ggplot(data.frame(X1 = datesY,
 pHist
 
 # Plot af acf
-dfAcf <- with(acf(DK1$A, plot = FALSE), data.frame(lag, acf)) 
-pAcfA <- ggplot(data = dfAcf, aes(x = lag, y = acf)) +
+pAcfA <- ggplot(data = data.frame(X1 = acf(DK1$A, plot = FALSE)$lag,
+                                  X2 = acf(DK1$A, plot = FALSE)$acf), 
+                aes(x = X1, y = X2)) +
   geom_hline(aes(yintercept =  0)) +
-  geom_segment(aes(xend = lag, yend = 0)) +
+  geom_segment(aes(xend = X1, yend = 0)) +
   geom_hline(aes(yintercept = -ci()), 
-             color=colors[1], linetype="dotted") +
-  geom_hline(aes(yintercept = ci()), 
-             color=colors[1], linetype="dotted") +
-  labs(x = "Lag", y = "acf") +
+             color = colors[1], linetype = "dotted") +
+  geom_hline(aes(yintercept =  ci()), 
+             color = colors[1], linetype = "dotted") +
+  labs(x = "Lag", y = "ACF") +
   p6
 pAcfA
 
@@ -222,7 +223,7 @@ pDecomposed
 
 # Plotter spotpriser med den determinstiske model lagt ovenpå
 pObsVEsc <-  ggplot(data.frame(X1 = datesY, 
-                                X2 = DK1$A), 
+                               X2 = DK1$A), 
                      aes(x = X1 , y = X2)) +
   geom_line(aes(col = "Obs")) +
   geom_point(data = data.frame(X1 = datesY, 
@@ -235,10 +236,11 @@ pObsVEsc <-  ggplot(data.frame(X1 = datesY,
 pObsVEsc
 
 # Plot af acf for decomposed
-dfAcfDecomposed <- with(acf(DK1$Decomposed, plot = FALSE), data.frame(lag, acf)) 
-pAcfDecomposed <- ggplot(data = dfAcfDecomposed, aes(x = lag, y = acf)) +
+pAcfDecomposed <- ggplot(data = data.frame(X1 = acf(DK1$Decomposed, plot = FALSE)$lag,
+                                           X2 = acf(DK1$Decomposed, plot = FALSE)$acf), 
+                         aes(x = X1, y = X2)) +
   geom_hline(aes(yintercept =  0)) +
-  geom_segment(aes(xend = lag, yend = 0)) +
+  geom_segment(aes(xend = X1, yend = 0)) +
   geom_hline(aes(yintercept = -ci()), 
              color = colors[1], linetype = "dotted") +
   geom_hline(aes(yintercept =  ci()), 

@@ -1,3 +1,5 @@
+### ¤¤ Intro ¤¤ ### ---------------------------------------------------------------------
+
 rm(list=ls())
 
 ### ¤¤ Pakker ¤¤ ### --------------------------------------------------------------------
@@ -8,7 +10,7 @@ library(ggplot2)
 
 ### ¤¤ Funktioner ¤¤ ### --------------------------------------------
 
-# Escribano koefficient -> dataframe funktion
+# Escribano koefficient -> dataframe
 esccoef <- function(mod){
   coef <- as.numeric(mod$coefficients)
   
@@ -26,6 +28,7 @@ esccoef <- function(mod){
   return(df)
 }
 
+# Konfidensinterval
 ci <- function(n = numeric(2191)){
   qnorm((1 + 0.95)/2)/sqrt(length(n))
 }

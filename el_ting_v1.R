@@ -2,11 +2,14 @@
 
 rm(list=ls())
 
+# Størrelse til downloads af grafer: 700 x 250
 ### ¤¤ Pakker ¤¤ ### --------------------------------------------------------------------
 
 library(stats)
 library(lubridate)
 library(ggplot2)
+library(forecast)
+library(astsa)
 
 ### ¤¤ Funktioner ¤¤ ### --------------------------------------------
 
@@ -252,3 +255,7 @@ pAcfDecomposed <- ggplot(data = data.frame(X1 = acf(DK1$Decomposed, plot = FALSE
   p6
 pAcfDecomposed
 
+
+
+auto.arima(DK1$Decomposed)
+sarima(DK1$Decomposed, 2,0,2)

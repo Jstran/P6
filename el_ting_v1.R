@@ -159,7 +159,7 @@ pClean <-  ggplot(data.frame(X1 = datesY,
   geom_line(aes(), color = colors[1]) +
   labs(x = "", y = " Spotpris i DKK", 
        color = "") +
-  scale_x_date(breaks = pretty(datesY, n = 6))  +
+  scale_x_date(date_labels = "%Y",breaks = pretty(datesY, n = 6))  +
   p6
 pClean
 

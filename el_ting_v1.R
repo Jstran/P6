@@ -109,6 +109,32 @@ sun <- numeric(nrow(dfDK1))
 sun[seq(6, 2191, by = 7)] <- 1
 dfDK1[,3] <- sun
 
+# Danske helligdage
+hol <- numeric(nrow(dfDK1))
+hol[c(1,    83,   87,   88,   90,   91,   116,  129,  139,  140,  359,  360,  # 2013
+      366,  468,  472,  473,  475,  476,  501,  514,  524,  525,  724,  725,  # 2014
+      731,  818,  822,  823,  825,  826,  851,  864,  874,  875,  1089, 1090, # 2015
+      1096, 1175, 1179, 1180, 1182, 1183, 1208, 1221, 1231, 1232, 1455, 1456, # 2016
+      1462, 1560, 1564, 1565, 1567, 1568, 1593, 1606, 1661, 1662, 1820, 1821, # 2017
+      1827, 1910, 1914, 1915, 1917, 1918, 1943, 1956, 1966, 1967, 2185, 2186  # 2018
+      )] <- 1
+dfDK1[,4] <- hol
+
+# Fjerner alle lørdage der også er helligdage
+for (i in 1:2191) {
+  if (sat[i] == 1 && sat[i] == hol[i]){
+    sat[i] <- 0
+  } 
+}
+
+# Fjerner alle søndage der også er helligdage
+for (i in 1:2191) {
+  if (sun[i] == 1 && sun[i] == hol[i]){
+    sun[i] <- 0
+  } 
+}
+
+
 # Samler hvert aar samt alle år sammen for DK1 i en liste
 fq <- 1
 DK1 <- list(A   = ts(dfDK1[,1], frequency = fq),
@@ -120,7 +146,8 @@ DK1 <- list(A   = ts(dfDK1[,1], frequency = fq),
             Y18 = ts(DK1f[,6],  frequency = fq),
             Raw = ts(dfDK1[,1], frequency = fq),
             sat = sat,
-            sun = sun)
+            sun = sun,
+            hol = hol)
 
 # Fjerner 07-06-13 og erstatter med gennesnit af dagen før og efter. (Spike-dagen)
 
@@ -203,7 +230,18 @@ t     <- time(DK1$A)
 lmEsc <- lm(DK1$A ~ t + I(t^2) + 
                      sin((2*pi/365.25)*t) + cos((2*pi/365.25)*t) + 
                      sin((4*pi/365.25)*t) + cos((4*pi/365.25)*t) + 
-                     DK1$sat + DK1$sun) ; summary(lmEsc)
+                     DK1$sat + DK1$sun + DK1$hol) ; summary(lmEsc)
+lmEscHol <- lm(DK1$A ~ t + I(t^2) + 
+                sin((2*pi/365.25)*t) + cos((2*pi/365.25)*t) + 
+                sin((4*pi/365.25)*t) + cos((4*pi/365.25)*t) + 
+                DK1$sat + DK1$sun)
+
+# Test af hvilken model der er bedst
+AIC(lmEsc)
+AIC(lmEscHol)
+
+library(lmtest)
+lrtest(lmEscHol,lmEscHol)
 
 
 EscMod  <- predict(lmEsc)

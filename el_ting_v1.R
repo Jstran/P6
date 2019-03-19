@@ -293,6 +293,36 @@ pAcfDecomposed <- ggplot(data = data.frame(X1 = acf(DK1$Decomposed, plot = FALSE
   p6
 pAcfDecomposed
 
+### ¤¤ Det vilde vesten ¤¤ ### ----------------------------------------------------------
+
+data(Tbrate,package="Ecdat")
+#  r = the 91-day Treasury bill rate
+#  y = the log of real GDP
+#  pi = the inflation rate
+#  fit the nonseasonal ARIMA model found by auto.arima
+pii <- Tbrate[,3]
+auto.arima(infl,max.P=0,max.Q=0,ic="bic")
+fit = arima(infl,order=c(1,0,0))
+forecasts = predict(fit,36)
+plot(infl,xlim=c(1980,2006),ylim=c(-7,12))
+lines(seq(from=1997,by=.25,length=36),forecasts$pred,col="red")
+lines(seq(from=1997,by=.25,length=36),forecasts$pred + 1.96*forecasts$se,col="blue")
+lines(seq(from=1997,by=.25,length=36),forecasts$pred - 1.96*forecasts$se,col="blue")
+
+n <- 10000
+x <- rep(0,n)
+eps <- rnorm(n-1)
+for(i in 2:n){
+  x[i] <- x[i-1] + eps[i]
+}
+plot(x , type = "l")
+
+
+adf.test(DK1$A)$p.value < 0.05
+adf.test(DK1$Decomposed)$p.value < 0.05
+
+pp.test(DK1$A)$p.value < 0.05
+pp.test(DK1$Decomposed)$p.value < 0.05
 
 
 auto.arima(DK1$Decomposed)

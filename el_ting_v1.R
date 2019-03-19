@@ -297,3 +297,4 @@ pAcfDecomposed
 
 auto.arima(DK1$Decomposed)
 sarima(DK1$Decomposed, 2,0,2)
+

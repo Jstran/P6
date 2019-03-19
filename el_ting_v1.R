@@ -25,9 +25,14 @@ esccoef <- function(mod){
   c3 <- sqrt(coef[6]^2 + coef[7]^2)
   c4 <- atan(coef[7]/coef[6]) * 365.25/(4*pi)
   
+  # Koefficienter til kvartal periode
+  c5 <- sqrt(coef[8]^2 + coef[9]^2)
+  c6 <- atan(coef[9]/coef[8]) * 365.25/(8*pi) 
+  
   # Dataframe med alt info
   df <- data.frame(b0 = coef[1] , b1 = coef[2] , b2 = coef[3] , c1 = c1 , c2 = c2 ,
-                   c3 = c3 , c4 = c4 , d1 = coef[8] , d2 = coef[9] , d3 = coef[10]) 
+                   c3 = c3 , c4 = c4 , c5 = c5, c6 = c6, 
+                   d1 = coef[10] , d2 = coef[11] , d3 = coef[12]) 
   return(df)
 }
 
@@ -174,7 +179,7 @@ par(mfrow = c(1,1))
 # Plot af ukorrigerede data
 pRaw <-  ggplot(data.frame(X1 = datesY, 
                            X2 = DK1$Raw), 
-                aes(x = X1 , y = X2)) +
+                aes(x = X1 , y = X2, size = I(0.2))) +
   geom_line(aes(), color = colors[1]) +
   labs(x = "", y = " Spotpris i DKK", 
        color = "") +
@@ -185,7 +190,7 @@ pRaw
 # Plot af korrigerede data
 pClean <-  ggplot(data.frame(X1 = datesY, 
                              X2 = DK1$A), 
-                  aes(x = X1 , y = X2)) +
+                  aes(x = X1 , y = X2 , size = I(0.2))) +
   geom_line(aes(), color = colors[1]) +
   labs(x = "", y = " Spotpris i DKK", 
        color = "") +
@@ -228,12 +233,13 @@ pAcfA
 # Regression på Escribano model med kvadratisk led (t^2)
 t     <- time(DK1$A)
 lmEsc <- lm(DK1$A ~ t + I(t^2) + 
-                     sin((2*pi/365.25)*t) + cos((2*pi/365.25)*t) + 
-                     sin((4*pi/365.25)*t) + cos((4*pi/365.25)*t) + 
-                     DK1$sat + DK1$sun + DK1$hol) ; summary(lmEsc)
+              sin((2*pi/365.25)*t) + cos((2*pi/365.25)*t) + 
+              sin((4*pi/365.25)*t) + cos((4*pi/365.25)*t) +
+              sin((8*pi/365.25)*t) + cos((8*pi/365.25)*t) +
+              DK1$sat + DK1$sun + DK1$hol) ; summary(lmEsc)
 
 EscMod  <- predict(lmEsc)
-EscCoef <- esccoef(lmEsc)
+EscCoef <- esccoef(lmEsc); EscCoef
 
 DK1[[length(DK1)+1]] <- c(EscMod)
 names(DK1)[[length(DK1)]] <- "EscMod"
@@ -256,11 +262,11 @@ pDecomposed
 # Plotter spotpriser med den determinstiske model lagt ovenpå
 pObsVEsc <-  ggplot(data.frame(X1 = datesY, 
                                X2 = DK1$A), 
-                     aes(x = X1 , y = X2)) +
+                     aes(x = X1 , y = X2 , size = I(0.2))) +
   geom_line(aes(col = "Obs")) +
   geom_point(data = data.frame(X1 = datesY, 
                               X2 = DK1$EscMod), 
-            aes(col = "Esc model"))+
+            aes(col = "Esc model", size = I(0.1)))+
   scale_x_date(breaks = pretty(datesY, n = 6))  +
   labs(x = "", y = "Spotpris i DKK", title = "Observationer vs. Escribano", color = "") +
   scale_color_manual(values = colors[1:2]) +
@@ -282,6 +288,17 @@ pAcfDecomposed <- ggplot(data = data.frame(X1 = acf(DK1$Decomposed, plot = FALSE
 pAcfDecomposed
 
 ### ¤¤ Det vilde vesten ¤¤ ### ----------------------------------------------------------
+df <- data.frame(X2013 = c(0,0) , X2014 = c(0,0) , X2015 = c(0,0) ,
+                 X2016 = c(0,0) , X2017 = c(0,0) , X2018 = c(0,0))
+rownames(df) <- c("Hele året" , "Helligdage")
+
+df[,1] <- c(mean(DK1$Y13) , mean(DK1$A[as.logical(DK1$hol[1:360])]))
+df[,2] <- c(mean(DK1$Y14) , mean(DK1$A[as.logical(DK1$hol[361:725])]))
+df[,3] <- c(mean(DK1$Y15) , mean(DK1$A[as.logical(DK1$hol[726:1090])]))
+df[,4] <- c(mean(DK1$Y16) , mean(DK1$A[as.logical(DK1$hol[1091:1456])]))
+df[,5] <- c(mean(DK1$Y17) , mean(DK1$A[as.logical(DK1$hol[1457:1821])]))
+df[,6] <- c(mean(DK1$Y18) , mean(DK1$A[as.logical(DK1$hol[1822:2186])]))
+df
 
 
 

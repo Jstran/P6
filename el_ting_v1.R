@@ -73,6 +73,15 @@ for (l in 1:length(years_names)) {
   assign(paste("dat", years_names[l], sep = ""), read.csv2(years[l], skip = 2))
 }
 
+# Indlaeser csv filerne som "wind20xx".
+pathWin <- file.path("./Data/Vind")
+yearsWin <- list.files(pathWin ,pattern =".csv",full.names = 1)
+years_namesWin <- seq(2013, length.out = length(yearsWin))
+
+for (l in 1:length(years_namesWin)) {
+  assign(paste("wind", years_namesWin[l], sep = ""), read.csv2(yearsWin[l], skip = 2))
+}
+
 # Fjerner skudaar i 2016.
 dat2016LY <- dat2016
 dat2016 <- dat2016[-60,] 
@@ -140,6 +149,15 @@ for (i in 1:2191) {
 }
 
 
+# Samler vind i én data frame til indsættelse i DK1
+win <- c(wind2013[,2],
+         wind2014[,2],
+         wind2015[,2],
+         wind2016[,2],
+         wind2017[,2],
+         wind2018[,2])
+
+
 # Samler hvert år samt alle år sammen for DK1 i en liste
 fq <- 1
 DK1 <- list(A   = ts(dfDK1[,1], frequency = fq),
@@ -152,7 +170,8 @@ DK1 <- list(A   = ts(dfDK1[,1], frequency = fq),
             Raw = ts(dfDK1[,1], frequency = fq),
             sat = sat,
             sun = sun,
-            hol = hol)
+            hol = hol,
+            win = ts(win))
 
 # Fjerner 07-06-13 og erstatter med gennesnit af dagen før og efter. (Spike-dagen)
 
@@ -161,7 +180,9 @@ DK1$A[which.max(DK1$A)] <- mean(c((DK1$A[which.max(DK1$A)-1]),
 
 # Fjerner midlertidige variable
 rm("dat2013","dat2014","dat2015","dat2016","dat2016LY","dat2017","dat2018","dat2019",
-   "dfDK1","DK1f","fq","i","l","myGray","path","sat","sun","years","years_names")
+   "dfDK1","DK1f","fq","i","l","myGray","path","sat","sun","years","years_names", 
+   "wind2013", "wind2014", "wind2015", "wind2016", "wind2017", "wind2018", "win",
+   "years_namesWin", "yearsWin", "pathWin")
 
 ### ¤¤ Mean, sd, acf, pacf ¤¤ ### ------------------------------
 

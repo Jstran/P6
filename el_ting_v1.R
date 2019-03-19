@@ -267,10 +267,12 @@ pObsVEsc <-  ggplot(data.frame(X1 = datesY,
   geom_point(data = data.frame(X1 = datesY, 
                               X2 = DK1$EscMod), 
             aes(col = "Esc model", size = I(0.1)))+
-  scale_x_date(breaks = pretty(datesY, n = 6))  +
-  labs(x = "", y = "Spotpris i DKK", title = "Observationer vs. Escribano", color = "") +
+  scale_x_date(date_labels = "%Y", breaks = pretty(datesY, n = 6))  +
+  labs(x = "", y = "Spotpris i DKK", title = "", color = "") +
   scale_color_manual(values = colors[1:2]) +
-  p6
+  p6 +
+  theme(legend.position = c(0.17,0.95), legend.direction = "horizontal",
+        legend.box.background = element_blank())
 pObsVEsc
 
 # Plot af acf for decomposed

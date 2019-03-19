@@ -179,7 +179,7 @@ par(mfrow = c(1,1))
 # Plot af ukorrigerede data
 pRaw <-  ggplot(data.frame(X1 = datesY, 
                            X2 = DK1$Raw), 
-                aes(x = X1 , y = X2)) +
+                aes(x = X1 , y = X2, size = I(0.2))) +
   geom_line(aes(), color = colors[1]) +
   labs(x = "", y = " Spotpris i DKK", 
        color = "") +
@@ -190,7 +190,7 @@ pRaw
 # Plot af korrigerede data
 pClean <-  ggplot(data.frame(X1 = datesY, 
                              X2 = DK1$A), 
-                  aes(x = X1 , y = X2)) +
+                  aes(x = X1 , y = X2 , size = I(0.2))) +
   geom_line(aes(), color = colors[1]) +
   labs(x = "", y = " Spotpris i DKK", 
        color = "") +
@@ -233,17 +233,13 @@ pAcfA
 # Regression på Escribano model med kvadratisk led (t^2)
 t     <- time(DK1$A)
 lmEsc <- lm(DK1$A ~ t + I(t^2) + 
-                     sin((2*pi/365.25)*t) + cos((2*pi/365.25)*t) + 
-                     sin((4*pi/365.25)*t) + cos((4*pi/365.25)*t) + 
-                     DK1$sat + DK1$sun + DK1$hol) ; summary(lmEsc)
-lmEscM <- lm(DK1$A ~ t + I(t^2) + 
               sin((2*pi/365.25)*t) + cos((2*pi/365.25)*t) + 
               sin((4*pi/365.25)*t) + cos((4*pi/365.25)*t) +
               sin((8*pi/365.25)*t) + cos((8*pi/365.25)*t) +
-              DK1$sat + DK1$sun + DK1$hol) ; summary(lmEscM)
+              DK1$sat + DK1$sun + DK1$hol) ; summary(lmEsc)
 
 EscMod  <- predict(lmEsc)
-EscCoef <- esccoef(lmEscM); EscCoef
+EscCoef <- esccoef(lmEsc); EscCoef
 
 DK1[[length(DK1)+1]] <- c(EscMod)
 names(DK1)[[length(DK1)]] <- "EscMod"
@@ -266,11 +262,11 @@ pDecomposed
 # Plotter spotpriser med den determinstiske model lagt ovenpå
 pObsVEsc <-  ggplot(data.frame(X1 = datesY, 
                                X2 = DK1$A), 
-                     aes(x = X1 , y = X2)) +
+                     aes(x = X1 , y = X2 , size = I(0.2))) +
   geom_line(aes(col = "Obs")) +
   geom_point(data = data.frame(X1 = datesY, 
                               X2 = DK1$EscMod), 
-            aes(col = "Esc model"))+
+            aes(col = "Esc model", size = I(0.1)))+
   scale_x_date(breaks = pretty(datesY, n = 6))  +
   labs(x = "", y = "Spotpris i DKK", title = "Observationer vs. Escribano", color = "") +
   scale_color_manual(values = colors[1:2]) +

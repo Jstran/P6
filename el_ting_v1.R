@@ -31,7 +31,8 @@ esccoef <- function(mod){
   
   # Dataframe med alt info
   df <- data.frame(b0 = coef[1] , b1 = coef[2] , b2 = coef[3] , c1 = c1 , c2 = c2 ,
-                   c3 = c3 , c4 = c4 , c5 = c5, c6 = c6, d1 = coef[10] , d2 = coef[11] , d3 = coef[12]) 
+                   c3 = c3 , c4 = c4 , c5 = c5, c6 = c6, 
+                   d1 = coef[10] , d2 = coef[11] , d3 = coef[12]) 
   return(df)
 }
 

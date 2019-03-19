@@ -27,7 +27,7 @@ esccoef <- function(mod){
   
   # Dataframe med alt info
   df <- data.frame(b0 = coef[1] , b1 = coef[2] , b2 = coef[3] , c1 = c1 , c2 = c2 ,
-                   c3 = c3 , c4 = c4 , d1 = coef[8] , d2 = coef[9]) 
+                   c3 = c3 , c4 = c4 , d1 = coef[8] , d2 = coef[9] , d3 = coef[10]) 
   return(df)
 }
 
@@ -231,18 +231,6 @@ lmEsc <- lm(DK1$A ~ t + I(t^2) +
                      sin((2*pi/365.25)*t) + cos((2*pi/365.25)*t) + 
                      sin((4*pi/365.25)*t) + cos((4*pi/365.25)*t) + 
                      DK1$sat + DK1$sun + DK1$hol) ; summary(lmEsc)
-lmEscHol <- lm(DK1$A ~ t + I(t^2) + 
-                sin((2*pi/365.25)*t) + cos((2*pi/365.25)*t) + 
-                sin((4*pi/365.25)*t) + cos((4*pi/365.25)*t) + 
-                DK1$sat + DK1$sun)
-
-# Test af hvilken model der er bedst
-AIC(lmEsc)
-AIC(lmEscHol)
-
-library(lmtest)
-lrtest(lmEscHol,lmEscHol)
-
 
 EscMod  <- predict(lmEsc)
 EscCoef <- esccoef(lmEsc)
@@ -295,36 +283,5 @@ pAcfDecomposed
 
 ### ¤¤ Det vilde vesten ¤¤ ### ----------------------------------------------------------
 
-data(Tbrate,package="Ecdat")
-#  r = the 91-day Treasury bill rate
-#  y = the log of real GDP
-#  pi = the inflation rate
-#  fit the nonseasonal ARIMA model found by auto.arima
-pii <- Tbrate[,3]
-auto.arima(infl,max.P=0,max.Q=0,ic="bic")
-fit = arima(infl,order=c(1,0,0))
-forecasts = predict(fit,36)
-plot(infl,xlim=c(1980,2006),ylim=c(-7,12))
-lines(seq(from=1997,by=.25,length=36),forecasts$pred,col="red")
-lines(seq(from=1997,by=.25,length=36),forecasts$pred + 1.96*forecasts$se,col="blue")
-lines(seq(from=1997,by=.25,length=36),forecasts$pred - 1.96*forecasts$se,col="blue")
 
-n <- 10000
-x <- rep(0,n)
-eps <- rnorm(n-1)
-for(i in 2:n){
-  x[i] <- x[i-1] + eps[i]
-}
-plot(x , type = "l")
-
-
-adf.test(DK1$A)$p.value < 0.05
-adf.test(DK1$Decomposed)$p.value < 0.05
-
-pp.test(DK1$A)$p.value < 0.05
-pp.test(DK1$Decomposed)$p.value < 0.05
-
-
-auto.arima(DK1$Decomposed)
-sarima(DK1$Decomposed, 2,0,2)
 

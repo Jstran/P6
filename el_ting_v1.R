@@ -135,7 +135,7 @@ for (i in 1:2191) {
 }
 
 
-# Samler hvert aar samt alle år sammen for DK1 i en liste
+# Samler hvert år samt alle år sammen for DK1 i en liste
 fq <- 1
 DK1 <- list(A   = ts(dfDK1[,1], frequency = fq),
             Y13 = ts(DK1f[,1],  frequency = fq),

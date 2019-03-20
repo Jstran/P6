@@ -64,7 +64,7 @@ p6 <- theme(panel.background = element_rect(fill = myGray, colour = myGray,
 ### ¤¤ Indlæsning af data ¤¤ ### --------------------------------------------------------
 
 # Indlaeser csv filerne som "dat20xx".
-path <- file.path("./Data")
+path <- file.path("./Data/Spotpriser")
 years <- list.files(path,pattern =".csv",full.names = 1)
 years.names <- seq(2013, length.out = length(years))
 
@@ -72,6 +72,15 @@ for (l in 1:length(years.names)) {
   assign(paste("dat", years.names[l], sep = ""), read.csv2(years[l], skip = 2))
 }
 oos <- dat2019[,8]
+
+# Indlaeser csv filerne som "wind20xx".
+pathWin <- file.path("./Data/Vind")
+yearsWin <- list.files(pathWin ,pattern =".csv",full.names = 1)
+years_namesWin <- seq(2013, length.out = length(yearsWin))
+
+for (l in 1:length(years_namesWin)) {
+  assign(paste("wind", years_namesWin[l], sep = ""), read.csv2(yearsWin[l], skip = 2))
+}
 
 ### ¤¤ Data frame og lister med data ¤¤ ### ---------------------------------------------
 
@@ -122,6 +131,12 @@ DK1 <- list(A   = ts(c(dat2013[,8],
                        dat2016[,8],
                        dat2017[,8],
                        dat2018[,8]) , frequency = fq),
+            W   = ts(c(wind2013[,2],
+                       wind2014[,2],
+                       wind2015[,2],
+                       wind2016[,2],
+                       wind2017[,2],
+                       wind2018[,2]) , frequency = fq),
             sat = sat,
             sun = sun,
             hol = hol)
@@ -132,7 +147,8 @@ DK1$A[which.max(DK1$A)] <- mean(c((DK1$A[which.max(DK1$A)-1]),
 
 # Fjerner midlertidige variable
 rm("dat2013","dat2014","dat2015","dat2016","dat2017","dat2018","dat2019","fq","i","l",
-   "myGray","path","sat","sun","hol","years","years.names")
+   "myGray","path","sat","sun","hol","years","years.names", "wind2013" , "wind2014", 
+   "wind2015", "wind2016", "wind2017", "wind2018")
 
 ### ¤¤ Regression ¤¤ ### ----------------------------------------------------------------
 

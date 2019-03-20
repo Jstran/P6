@@ -61,6 +61,9 @@ p6 <- theme(panel.background = element_rect(fill = myGray, colour = myGray,
                                   colour = "white")
             )
 
+# Størrelse af linjer og punkter i plots
+sz <- list(l = I(0.2) , p = I(0.1))
+
 ### ¤¤ Indlæsning af data ¤¤ ### --------------------------------------------------------
 
 # Indlaeser csv filerne som "dat20xx".
@@ -170,7 +173,7 @@ names(DK1)[[length(DK1)]] <- "D"
 
 ### ¤¤ Gemmer workspace ¤¤ ### ----------------------------------------------------------
 
-save(DK1, p6, colors, dates, n.obs, oos, s.pred, t, ci, scoef,
+save(DK1, p6, colors, dates, n.obs, oos, s.pred, t, ci, scoef, sz, 
      file = "./Workspaces/preliminary.Rdata")
 
 ### ¤¤ Det vilde vesten ¤¤ ### ----------------------------------------------------------

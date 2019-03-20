@@ -4,6 +4,9 @@ rm(list=ls())
 load("./Workspaces/preliminary.Rdata")
 load("./Workspaces/modelling.Rdata")
 
+i <- 1
+ps <- list(names = c() , p = c())
+
 # Størrelse til downloads af grafer: 700 x 250
 
 ### ¤¤ Pakker ¤¤ ### --------------------------------------------------------------------
@@ -25,6 +28,7 @@ p.raw <-  ggplot(data.frame(X1 = dates,
        color = "") +
   p.Y
 #p.raw
+ps$p <- p.raw ; ps$names <- "plotRaw" ; i <- i + 1
 
 # Plot af korrigerede data
 p.clean <-  ggplot(data.frame(X1 = dates, 
@@ -105,10 +109,13 @@ p.d.acf <- ggplot(data = data.frame(X1 = acf(DK1$D, plot = FALSE)$lag,
 
 ### ¤¤ Gemmer plots ¤¤ ### --------------------------------------------------------------
 
-#dev.on()
-#pAcfDecomposed
-#dev.off()
-
+# Kun lav om på navnet efter Grafer/ HUSK: .eps
+# for(i in wanted.saves){
+# postscript(file = paste("./Grafer/",ps$names[i],".eps" , sep = ""), 
+#            width = 9, height = 3 , horizontal = FALSE)
+# ps$p[i]
+# dev.off()
+# }
 ### ¤¤ Det vilde vesten ¤¤ ### ----------------------------------------------------------
 
 

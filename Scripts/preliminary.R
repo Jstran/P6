@@ -40,30 +40,6 @@ ci <- function(n = numeric(2191)){
   qnorm((1 + 0.95)/2)/sqrt(length(n))
 }
 
-### ¤¤ Farver + tema til brug i plots ¤¤ ### -------------------------------------------
-
-# Farver til grafer
-colors <- c("royalblue4" ,
-            "firebrick4" ,
-            "darkorchid4",
-            "chartreuse4",
-            "black")
-
-# Grå farve der matcher projektet
-myGray <- rgb(245/255, 245/255, 245/255)
-
-# Tema til plots
-p6 <- theme(panel.background = element_rect(fill = myGray, colour = myGray,
-                                  size = 2, linetype = "solid"),
-            panel.grid.major = element_line(size = 0.5, linetype = 'solid',
-                                  colour = "white"), 
-            panel.grid.minor = element_line(size = 0.25, linetype = 'solid',
-                                  colour = "white")
-            )
-
-# Størrelse af linjer og punkter i plots
-sz <- list(l = I(0.2) , p = I(0.1))
-
 ### ¤¤ Indlæsning af data ¤¤ ### --------------------------------------------------------
 
 # Indlaeser csv filerne som "dat20xx".
@@ -156,13 +132,46 @@ DK1$A[which.max(DK1$A)] <- mean(c((DK1$A[which.max(DK1$A)-1]),
 
 # Fjerner midlertidige variable
 rm("dat2013","dat2014","dat2015","dat2016","dat2017","dat2018","dat2019","fq","i","l",
-   "myGray","path","sat","sun","hol","years","years.names", "wind2013" , "wind2014", 
+   "path","sat","sun","hol","years","years.names", "wind2013" , "wind2014", 
    "wind2015", "wind2016", "wind2017", "wind2018", "years.names.win" , "years.win", 
    "path.win")
 
+### ¤¤ Farver + tema til brug i plots ¤¤ ### -------------------------------------------
+
+# Farver til grafer
+colors <- c("royalblue4" ,
+            "firebrick4" ,
+            "darkorchid4",
+            "chartreuse4",
+            "black")
+
+# Grå farve der matcher projektet
+myGray <- rgb(245/255, 245/255, 245/255)
+
+# Tema til plots
+p.Y <- list(theme(panel.background = element_rect(fill = myGray, colour = myGray,
+                                  size = 2, linetype = "solid"),
+                  panel.grid.major = element_line(size = 0.5, linetype = 'solid',
+                                  colour = "white"), 
+                  panel.grid.minor = element_line(size = 0.25, linetype = 'solid',
+                                  colour = "white") ), 
+                  scale_y_continuous(), 
+                  scale_x_date(date_labels = "%Y", breaks = pretty(dates, n = 6)))
+
+p.th <- list(theme(panel.background = element_rect(fill = myGray, colour = myGray,
+                                                  size = 2, linetype = "solid"),
+                  panel.grid.major = element_line(size = 0.5, linetype = 'solid',
+                                                  colour = "white"), 
+                  panel.grid.minor = element_line(size = 0.25, linetype = 'solid',
+                                                  colour = "white") ))
+ 
+
+# Størrelse af linjer og punkter i plots
+sz <- list(l = I(0.2) , p = I(0.1))
+
 ### ¤¤ Gemmer workspace ¤¤ ### ----------------------------------------------------------
 
-save(DK1, p6, colors, dates, n.obs, ci, scoef, sz, 
+save(DK1, p.Y, p.th, colors, dates, n.obs, ci, scoef, sz, 
      file = "./Workspaces/preliminary.Rdata")
 
 ### ¤¤ Det vilde vesten ¤¤ ### ----------------------------------------------------------

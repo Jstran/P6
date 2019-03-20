@@ -34,7 +34,7 @@ p.clean <-  ggplot(data.frame(X1 = dates,
   geom_line(aes(), color = colors[1]) +
   labs(x = "", y = " Spotpris i DKK", 
        color = "") +
-  scale_x_date(date_labels = "%Y", breaks = pretty(datesY, n = 6))  +
+  scale_x_date(date_labels = "%Y", breaks = pretty(dates, n = 6))  +
   p6
 #p.clean
 

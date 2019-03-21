@@ -10,6 +10,22 @@ library(ggplot2)
 library(forecast)
 library(astsa)
 
+### ¤¤ Infotabeller om data ¤¤ ### ------------------------------------------------------
+
+dat.wd  <- DK1$A[as.logical(DK1$sat + DK1$sun + DK1$hol)]
+dat.sat <- DK1$A[as.logical(DK1$sat)]
+dat.sun <- DK1$A[as.logical(DK1$sun)]
+dat.hol <- DK1$A[as.logical(DK1$hol)]
+ls <- list(wd = dat.wd , sat = dat.sat , sun = dat.sun , hol = dat.hol)
+
+df <- data.frame(mean = sapply(ls , mean) ,
+                 sd   = sapply(ls , sd)   ,
+                 min  = sapply(ls , min)  ,
+                 max  = sapply(ls , max) )
+rownames(df) <- c("Hverdage" , "Lørdage" , "Søndage" , "Helligdage") ; df
+
+rm("dat.wd" , "dat.sat" , "dat.sun" , "dat.hol" , "ls" , "df")
+
 ### ¤¤ Regression ¤¤ ### ----------------------------------------------------------------
 
 # Regression på s model med kvadratisk led (t^2)

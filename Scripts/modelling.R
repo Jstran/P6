@@ -35,5 +35,10 @@ save(t , s.lm, s.pred, DK1,
 
 ### ¤¤ Det vilde vesten ¤¤ ### ----------------------------------------------------------
 
+vec = rep(mean(DK1$D[1:2191]),2190)
+meanrev = lm(diff(DK1$D) ~ vec-DK1$D[1:2190])
 
 
+meanrev2 = lm(diff(DK1$D)~DK1$D[1:2190]-1);summary(meanrev2)
+
+              

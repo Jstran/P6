@@ -104,7 +104,7 @@ p.s.A <-  ggplot(data.frame(X1 = dates,
   theme(legend.position = c(0.13,0.9), legend.direction = "horizontal",
         legend.background = element_blank())
 #p.s.A
-ps$p[[i]] <- p.s.A ; ps$names[i] <- "plotSpotAll"
+ps$p[[i]] <- p.s.A ; ps$names[i] <- "plotSpotDet"
 i <- i + 1
 
 
@@ -130,14 +130,14 @@ i <- i + 1
 
 data.frame(names = ps$names)
 
-wanted.plots = c(1,3,5)
-save.plots = TRUE
+wanted.plots = 1:7
+save.plots = FALSE
 
 if(save.plots == TRUE){
-    for(i in wanted.plots){
-      postscript(file = paste("./Grafer/",ps$names[i],".eps" , sep = ""), 
+    for(j in wanted.plots){
+      postscript(file = paste("./Grafer/",ps$names[j],".eps" , sep = ""), 
                  width = 9, height = 3 , horizontal = FALSE)
-      ps$p[[i]]
+      print(ps$p[[j]])
       dev.off()
   }
 }

@@ -24,10 +24,10 @@ p.raw <-  ggplot(data.frame(X1 = dates,
                             X2 = DK1$Raw), 
                  aes(x = X1 , y = X2, size = sz$l) ) +
   geom_line(aes(), color = colors[1]) +
-  labs(x = "", y = " Spotpris i DKK", 
+  labs(x = "", y = " Spotpris i DKK/MWh", 
        color = "") +
   p.Y
-#p.raw
+p.raw
 ps$p <- p.raw ; ps$names <- "plotRaw" ; i <- i + 1
 
 # Plot af korrigerede data
@@ -35,7 +35,7 @@ p.clean <-  ggplot(data.frame(X1 = dates,
                               X2 = DK1$A), 
                    aes(x = X1 , y = X2 , size = sz$l) ) +
   geom_line(aes(), color = colors[1]) +
-  labs(x = "", y = " Spotpris i DKK", color = "") +
+  labs(x = "", y = " Spotpris i DKK/MWh", color = "") +
   p.Y
 #p.clean
 
@@ -47,7 +47,7 @@ p.hist <- ggplot(data.frame(X2 = DK1$A),
                                   mean = mean(DK1$A), 
                                   sd = sd(DK1$A))*length(DK1$A)*24.1}, 
                  color = colors[2]) +
-  labs(x = "Spotpris i DKK", y = "") +
+  labs(x = "Spotpris i DKK/MWh", y = "") +
   scale_x_continuous() +
   p.th
 #p.hist
@@ -73,7 +73,7 @@ p.d <- ggplot(data = data.frame(X1 = dates,
                                 X2 = DK1$D),
               aes(x = X1, y = X2)) +
   geom_line(color = colors[1]) +
-  labs(x = "", y = "Spotpris i DKK") + 
+  labs(x = "", y = "Spotpris i DKK/MWh") + 
   p.Y
 #p.d
 
@@ -85,7 +85,7 @@ p.s.A <-  ggplot(data.frame(X1 = dates,
   geom_point(data = data.frame(X1 = dates, 
                                X2 = DK1$s.pred), 
              aes(col = "lm model", size = sz$p) )+
-  labs(x = "", y = "Spotpris i DKK", title = "", color = "") +
+  labs(x = "", y = "Spotpris i DKK/MWh", title = "", color = "") +
   scale_color_manual(values = colors[1:2]) +
   p.Y +
   theme(legend.position = c(0.13,0.9), legend.direction = "horizontal",

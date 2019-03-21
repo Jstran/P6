@@ -5,7 +5,7 @@ load("./Workspaces/preliminary.Rdata")
 load("./Workspaces/modelling.Rdata")
 
 i <- 1
-ps <- list(names = c() , p = c())
+ps <- list(names = c() , p = c() , i = c())
 
 # Størrelse til downloads af grafer: 700 x 250
 
@@ -28,7 +28,8 @@ p.raw <-  ggplot(data.frame(X1 = dates,
        color = "") +
   p.Y
 p.raw
-ps$p <- p.raw ; ps$names <- "plotRaw" ; i <- i + 1
+ps$p[[i]] <- p.raw ; ps$names[i] <- "plotRaw"
+i <- i + 1
 
 # Plot af korrigerede data
 p.clean <-  ggplot(data.frame(X1 = dates, 
@@ -38,6 +39,9 @@ p.clean <-  ggplot(data.frame(X1 = dates,
   labs(x = "", y = " Spotpris i DKK/MWh", color = "") +
   p.Y
 #p.clean
+ps$p[[i]] <- p.clean ; ps$names[i] <- "plotClean"
+i <- i + 1
+
 
 # Histogram for priserne
 p.hist <- ggplot(data.frame(X2 = DK1$A),
@@ -51,6 +55,9 @@ p.hist <- ggplot(data.frame(X2 = DK1$A),
   scale_x_continuous() +
   p.th
 #p.hist
+ps$p[[i]] <- p.hist ; ps$names[i] <- "plotHist"
+i <- i + 1
+
 
 # Plot af acf
 p.acf.A <- ggplot(data = data.frame(X1 = acf(DK1$A, plot = FALSE)$lag,
@@ -65,6 +72,9 @@ p.acf.A <- ggplot(data = data.frame(X1 = acf(DK1$A, plot = FALSE)$lag,
   labs(x = "Lag", y = "ACF") +
   p.th
 #p.acf.A
+ps$p[[i]] <- p.acf.A ; ps$names[i] <- "plotACFAll"
+i <- i + 1
+
 
 ### ¤¤ Regressions plot ¤¤ ### ----------------------------------------------------------
 
@@ -76,6 +86,9 @@ p.d <- ggplot(data = data.frame(X1 = dates,
   labs(x = "", y = "Spotpris i DKK/MWh") + 
   p.Y
 #p.d
+ps$p[[i]] <- p.d ; ps$names[i] <- "plotRemDet" 
+i <- i + 1
+
 
 # Plotter spotpriser med den determinstiske model lagt ovenpå
 p.s.A <-  ggplot(data.frame(X1 = dates, 
@@ -91,6 +104,9 @@ p.s.A <-  ggplot(data.frame(X1 = dates,
   theme(legend.position = c(0.13,0.9), legend.direction = "horizontal",
         legend.background = element_blank())
 #p.s.A
+ps$p[[i]] <- p.s.A ; ps$names[i] <- "plotSpotAll"
+i <- i + 1
+
 
 # Plot af acf for decomposed
 p.d.acf <- ggplot(data = data.frame(X1 = acf(DK1$D, plot = FALSE)$lag,
@@ -105,17 +121,26 @@ p.d.acf <- ggplot(data = data.frame(X1 = acf(DK1$D, plot = FALSE)$lag,
   labs(x = "Lag", y = "ACF") +
   p.th
 #p.d.acf
+ps$p[[i]] <- p.d.acf ; ps$names[i] <- "plotACFDecomp"
+i <- i + 1
+
 
 
 ### ¤¤ Gemmer plots ¤¤ ### --------------------------------------------------------------
 
-# Kun lav om på navnet efter Grafer/ HUSK: .eps
-# for(i in wanted.saves){
-# postscript(file = paste("./Grafer/",ps$names[i],".eps" , sep = ""), 
-#            width = 9, height = 3 , horizontal = FALSE)
-# ps$p[i]
-# dev.off()
-# }
+data.frame(names = ps$names)
+
+wanted.plots = c(1,3,5)
+save.plots = TRUE
+
+if(save.plots == TRUE){
+    for(i in wanted.plots){
+      postscript(file = paste("./Grafer/",ps$names[i],".eps" , sep = ""), 
+                 width = 9, height = 3 , horizontal = FALSE)
+      ps$p[[i]]
+      dev.off()
+  }
+}
 ### ¤¤ Det vilde vesten ¤¤ ### ----------------------------------------------------------
 
 

@@ -9,20 +9,24 @@ library(stats)
 library(ggplot2)
 library(forecast)
 library(astsa)
+library(timeDate) # Til skewness og kurtosis
 
 ### ¤¤ Infotabeller om data ¤¤ ### ------------------------------------------------------
 
-dat.wd  <- DK1$A[as.logical(DK1$sat + DK1$sun + DK1$hol)]
+dat.wd  <- DK1$A[!as.logical(DK1$sat + DK1$sun + DK1$hol)]
 dat.sat <- DK1$A[as.logical(DK1$sat)]
 dat.sun <- DK1$A[as.logical(DK1$sun)]
 dat.hol <- DK1$A[as.logical(DK1$hol)]
-ls <- list(wd = dat.wd , sat = dat.sat , sun = dat.sun , hol = dat.hol)
+ls <- list(wd = dat.wd , sat = dat.sat , sun = dat.sun , hol = dat.hol , A = DK1$A)
 
-df <- data.frame(mean = sapply(ls , mean) ,
-                 sd   = sapply(ls , sd)   ,
-                 min  = sapply(ls , min)  ,
-                 max  = sapply(ls , max) )
-rownames(df) <- c("Hverdage" , "Lørdage" , "Søndage" , "Helligdage") ; df
+df <- data.frame(mean = sapply(ls , mean)         ,
+                 sd   = sapply(ls , sd)           ,
+                 skew = sapply(ls , skewness)     ,
+                 kurt = sapply(ls , kurtosis) + 3 ,
+                 min  = sapply(ls , min)          ,
+                 max  = sapply(ls , max)          ,
+                 len  = sapply(ls , length)       )
+rownames(df) <- c("Hverdage" , "Lørdage" , "Søndage" , "Helligdage" , "Alle Dage") ; df
 
 rm("dat.wd" , "dat.sat" , "dat.sun" , "dat.hol" , "ls" , "df")
 

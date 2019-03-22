@@ -5,7 +5,7 @@ load("./Workspaces/preliminary.Rdata")
 load("./Workspaces/modelling.Rdata")
 
 i <- 1
-ps <- list(names = c() , p = c() , i = c())
+ps <- list(names = c() , var = c(),  p = c() , i = c())
 
 # Størrelse til downloads af grafer: 700 x 250
 
@@ -28,7 +28,7 @@ p.raw <-  ggplot(data.frame(X1 = dates,
        color = "") +
   p.Y
 p.raw
-ps$p[[i]] <- p.raw ; ps$names[i] <- "plotRaw"
+ps$p[[i]] <- p.raw ; ps$names[i] <- "plotRaw" ; ps$var[i] <- "p.raw"
 i <- i + 1
 
 # Plot af korrigerede data
@@ -39,7 +39,7 @@ p.clean <-  ggplot(data.frame(X1 = dates,
   labs(x = "", y = " Spotpris i DKK/MWh", color = "") +
   p.Y
 #p.clean
-ps$p[[i]] <- p.clean ; ps$names[i] <- "plotClean"
+ps$p[[i]] <- p.clean ; ps$names[i] <- "plotClean" ; ps$var[i] <- "p.clean"
 i <- i + 1
 
 
@@ -55,7 +55,7 @@ p.hist <- ggplot(data.frame(X2 = DK1$A),
   scale_x_continuous() +
   p.th
 #p.hist
-ps$p[[i]] <- p.hist ; ps$names[i] <- "plotHist"
+ps$p[[i]] <- p.hist ; ps$names[i] <- "plotHist" ; ps$var[i] <- "p.hist"
 i <- i + 1
 
 
@@ -72,7 +72,7 @@ p.acf.A <- ggplot(data = data.frame(X1 = acf(DK1$A, plot = FALSE)$lag,
   labs(x = "Lag", y = "ACF") +
   p.th
 #p.acf.A
-ps$p[[i]] <- p.acf.A ; ps$names[i] <- "plotACFAll"
+ps$p[[i]] <- p.acf.A ; ps$names[i] <- "plotACFAll" ; ps$var[i] <- "p.acf.A"
 i <- i + 1
 
 
@@ -86,7 +86,7 @@ p.d <- ggplot(data = data.frame(X1 = dates,
   labs(x = "", y = "Spotpris i DKK/MWh") + 
   p.Y
 #p.d
-ps$p[[i]] <- p.d ; ps$names[i] <- "plotRemDet" 
+ps$p[[i]] <- p.d ; ps$names[i] <- "plotRemDet" ; ps$var[i] <- "p.d" 
 i <- i + 1
 
 
@@ -104,7 +104,7 @@ p.s.A <-  ggplot(data.frame(X1 = dates,
   theme(legend.position = c(0.13,0.9), legend.direction = "horizontal",
         legend.background = element_blank())
 #p.s.A
-ps$p[[i]] <- p.s.A ; ps$names[i] <- "plotSpotDet"
+ps$p[[i]] <- p.s.A ; ps$names[i] <- "plotSpotDet" ; ps$var[i] <- "p.s.A"
 i <- i + 1
 
 
@@ -121,14 +121,12 @@ p.d.acf <- ggplot(data = data.frame(X1 = acf(DK1$D, plot = FALSE)$lag,
   labs(x = "Lag", y = "ACF") +
   p.th
 #p.d.acf
-ps$p[[i]] <- p.d.acf ; ps$names[i] <- "plotACFDecomp"
+ps$p[[i]] <- p.d.acf ; ps$names[i] <- "plotACFDecomp" ; ps$var[i] <- "p.d.acf"
 i <- i + 1
 
 
 
 ### ¤¤ Gemmer plots ¤¤ ### --------------------------------------------------------------
-
-data.frame(names = ps$names)
 
 wanted.plots = 1:7
 save.plots = FALSE
@@ -141,9 +139,13 @@ if(save.plots == TRUE){
       dev.off()
   }
 }
+
+data.frame(names = ps$names , var = ps$var )
+
 ### ¤¤ Det vilde vesten ¤¤ ### ----------------------------------------------------------
 
+x <- seq(0,1,length.out = 2000)
 
-
-
-
+curve(sin(2*pi*x) , x , col = "purple")
+lines(x , sin(4*pi*x) , col = "blue")
+lines(x , sin(8*pi*x) , col = "green")

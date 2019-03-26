@@ -39,6 +39,7 @@ s.lm <- lm(DK1$A ~ t + I(t^2) +
              sin((2*pi/365.25)*t) + cos((2*pi/365.25)*t) + 
              sin((4*pi/365.25)*t) + cos((4*pi/365.25)*t) +
              sin((8*pi/365.25)*t) + cos((8*pi/365.25)*t) +
+             sin((96*pi/365.25)*t) + cos((96*pi/365.25)*t) +
              DK1$sat + DK1$sun + DK1$hol)
 
 s.pred  <- predict(s.lm)
@@ -51,31 +52,31 @@ names(DK1)[[length(DK1)]] <- "D"
 
 ### ¤¤ AIC af forskellige modeller ¤¤ ### -----------------------------------------------
 
-M <- 2^15
-
-MSEf <- data.frame( X2014 = numeric(M) , X2015 = numeric(M) ,
-                    X2016 = numeric(M) , X2018 = numeric(M))
-
-glob.lm <- lm(DK1$A ~ t + I(t^2) + I(t^3) + I(t^4) +
-                      sin((2*pi/365.25)*t) + cos((2*pi/365.25)*t) + 
-                      sin((4*pi/365.25)*t) + cos((4*pi/365.25)*t) +
-                      sin((8*pi/365.25)*t) + cos((8*pi/365.25)*t) +
-                      sin((24*pi/365.25)*t) + cos((24*pi/365.25)*t) +
-                      DK1$sat + DK1$sun + DK1$hol , na.action = "na.fail")
-
-lm.combinations <- dredge(glob.lm , 
-                          subset = dc(sin((2*pi/365.25)*t)  , 
-                                      cos((2*pi/365.25)*t)  ,
-                                      sin((4*pi/365.25)*t)  , 
-                                      cos((4*pi/365.25)*t)  ,
-                                      sin((8*pi/365.25)*t)  , 
-                                      cos((8*pi/365.25)*t)  ,
-                                      sin((24*pi/365.25)*t) , 
-                                      cos((24*pi/365.25)*t) )) 
-
-ind <- as.integer(na.omit(row.names(lm.combinations[1:M,] ) ) )
-
-MSEf[ind,1] <- lm.combinations$AICc
+#M <- 2^15
+#
+#MSEf <- data.frame( X2014 = numeric(M) , X2015 = numeric(M) ,
+#                    X2016 = numeric(M) , X2018 = numeric(M))
+#
+#glob.lm <- lm(DK1$A ~ t + I(t^2) + I(t^3) + I(t^4) +
+#                      sin((2*pi/365.25)*t) + cos((2*pi/365.25)*t) + 
+#                      sin((4*pi/365.25)*t) + cos((4*pi/365.25)*t) +
+#                      sin((8*pi/365.25)*t) + cos((8*pi/365.25)*t) +
+#                      sin((24*pi/365.25)*t) + cos((24*pi/365.25)*t) +
+#                      DK1$sat + DK1$sun + DK1$hol , na.action = "na.fail")
+#
+#lm.combinations <- dredge(glob.lm , 
+#                          subset = dc(sin((2*pi/365.25)*t)  , 
+#                                      cos((2*pi/365.25)*t)  ,
+#                                      sin((4*pi/365.25)*t)  , 
+#                                      cos((4*pi/365.25)*t)  ,
+#                                      sin((8*pi/365.25)*t)  , 
+#                                      cos((8*pi/365.25)*t)  ,
+#                                      sin((24*pi/365.25)*t) , 
+#                                      cos((24*pi/365.25)*t) )) 
+#
+#ind <- as.integer(na.omit(row.names(lm.combinations[1:M,] ) ) )
+#
+#MSEf[ind,1] <- lm.combinations$AICc
 
 ### ¤¤ Gemmer workspace ¤¤ ### ----------------------------------------------------------
 
@@ -83,8 +84,3 @@ save(t , s.lm, s.pred, DK1,
      file = "./Workspaces/modelling.Rdata")
 
 ### ¤¤ Det vilde vesten ¤¤ ### ----------------------------------------------------------
-
-# Test for subsets i dredge
-
-glob.lm.test <- lm(DK1$A ~ t + I(t^2) + sin((2*pi/365.25)*t) , na.action = "na.fail" )
-dredge(glob.lm.test , subset = dc(I(t^2) , sin((2*pi/365.25)*t) ) )

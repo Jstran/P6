@@ -39,8 +39,8 @@ p.clean <-  ggplot(data.frame(X1 = dates,
   labs(x = "", y = " Spotpris i DKK/MWh", color = "") +
   p.Y
 #p.clean
-ps$p[[i]] <- p.clean ; ps$names[i] <- "plotClean" ; ps$var[i] <- "p.clean"; ps$l[i] <- FALSE
-i <- i + 1
+ps$p[[i]] <- p.clean ; ps$names[i] <- "plotClean" ; ps$var[i] <- "p.clean"
+ps$l[i] <- FALSE ; i <- i + 1
 
 
 # Histogram for priserne
@@ -72,8 +72,8 @@ p.acf.A <- ggplot(data = data.frame(X1 = acf(DK1$A, lag.max = 2190 , plot = FALS
   labs(x = "Lag", y = "ACF") +
   p.th
 #p.acf.A
-ps$p[[i]] <- p.acf.A ; ps$names[i] <- "plotACFAll" ; ps$var[i] <- "p.acf.A"; ps$l[i] <- FALSE
-i <- i + 1
+ps$p[[i]] <- p.acf.A ; ps$names[i] <- "plotACFAll" ; ps$var[i] <- "p.acf.A"
+ps$l[i] <- FALSE ; i <- i + 1
 
 
 ### ¤¤ Regressions plot ¤¤ ### ----------------------------------------------------------
@@ -81,11 +81,11 @@ i <- i + 1
 # Plotter priser hvor det deterministiske er fjernet
 p.d <- ggplot(data = data.frame(X1 = dates,
                                 X2 = DK1$D),
-              aes(x = X1, y = X2)) +
+              aes(x = X1, y = X2 , size = sz$l) ) +
   geom_line(color = colors[1]) +
   labs(x = "", y = "Spotpris i DKK/MWh") + 
   p.Y
-#p.d
+p.d
 ps$p[[i]] <- p.d ; ps$names[i] <- "plotRemDet" ; ps$var[i] <- "p.d" ; ps$l[i] <- FALSE
 i <- i + 1
 
@@ -109,8 +109,8 @@ i <- i + 1
 
 
 # Plot af acf for decomposed
-p.d.acf <- ggplot(data = data.frame(X1 = acf(DK1$D, lag.max = 2190 , plot = FALSE)$lag,
-                                    X2 = acf(DK1$D, lag.max = 2190 , plot = FALSE)$acf), 
+p.d.acf <- ggplot(data = data.frame(X1 = acf(DK1$D, lag.max = 30 , plot = FALSE)$lag,
+                                    X2 = acf(DK1$D, lag.max = 30 , plot = FALSE)$acf), 
                   aes(x = X1, y = X2)) +
   geom_hline(aes(yintercept =  0)) +
   geom_segment(aes(xend = X1, yend = 0)) +
@@ -121,8 +121,8 @@ p.d.acf <- ggplot(data = data.frame(X1 = acf(DK1$D, lag.max = 2190 , plot = FALS
   labs(x = "Lag", y = "ACF") +
   p.th
 #p.d.acf
-ps$p[[i]] <- p.d.acf ; ps$names[i] <- "plotACFDecomp" ; ps$var[i] <- "p.d.acf"; ps$l[i] <- FALSE
-i <- i + 1
+ps$p[[i]] <- p.d.acf ; ps$names[i] <- "plotACFDecomp" ; ps$var[i] <- "p.d.acf"
+ps$l[i] <- FALSE ; i <- i + 1
 
 
 

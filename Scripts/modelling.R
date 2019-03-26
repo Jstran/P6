@@ -10,6 +10,7 @@ library(ggplot2)
 library(forecast)
 library(astsa)
 library(timeDate) # Til skewness og kurtosis
+library(MuMIn) # Til test af modeller
 
 ### ¤¤ Infotabeller om data ¤¤ ### ------------------------------------------------------
 
@@ -48,6 +49,34 @@ names(DK1)[[length(DK1)]] <- "s.pred"
 DK1[[length(DK1)+1]] <- c(DK1$A - s.pred)
 names(DK1)[[length(DK1)]] <- "D"
 
+### ¤¤ AIC af forskellige modeller ¤¤ ### -----------------------------------------------
+
+M <- 2^15
+
+MSEf <- data.frame( X2014 = numeric(M) , X2015 = numeric(M) ,
+                    X2016 = numeric(M) , X2018 = numeric(M))
+
+glob.lm <- lm(DK1$A ~ t + I(t^2) + I(t^3) + I(t^4) +
+                      sin((2*pi/365.25)*t) + cos((2*pi/365.25)*t) + 
+                      sin((4*pi/365.25)*t) + cos((4*pi/365.25)*t) +
+                      sin((8*pi/365.25)*t) + cos((8*pi/365.25)*t) +
+                      sin((24*pi/365.25)*t) + cos((24*pi/365.25)*t) +
+                      DK1$sat + DK1$sun + DK1$hol , na.action = "na.fail")
+
+lm.combinations <- dredge(glob.lm , 
+                          subset = dc(sin((2*pi/365.25)*t)  , 
+                                      cos((2*pi/365.25)*t)  ,
+                                      sin((4*pi/365.25)*t)  , 
+                                      cos((4*pi/365.25)*t)  ,
+                                      sin((8*pi/365.25)*t)  , 
+                                      cos((8*pi/365.25)*t)  ,
+                                      sin((24*pi/365.25)*t) , 
+                                      cos((24*pi/365.25)*t) )) 
+
+ind <- as.integer(na.omit(row.names(lm.combinations[1:M,] ) ) )
+
+MSEf[ind,1] <- lm.combinations$AICc
+
 ### ¤¤ Gemmer workspace ¤¤ ### ----------------------------------------------------------
 
 save(t , s.lm, s.pred, DK1, 
@@ -55,10 +84,7 @@ save(t , s.lm, s.pred, DK1,
 
 ### ¤¤ Det vilde vesten ¤¤ ### ----------------------------------------------------------
 
-vec = rep(mean(DK1$D[1:2191]),2190)
-meanrev = lm(diff(DK1$D) ~ vec-DK1$D[1:2190])
+# Test for subsets i dredge
 
-
-meanrev2 = lm(diff(DK1$D)~DK1$D[1:2190]-1);summary(meanrev2)
-
-              
+glob.lm.test <- lm(DK1$A ~ t + I(t^2) + sin((2*pi/365.25)*t) , na.action = "na.fail" )
+dredge(glob.lm.test , subset = dc(I(t^2) , sin((2*pi/365.25)*t) ) )

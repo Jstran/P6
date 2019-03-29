@@ -84,4 +84,37 @@ save(t , s.lm, s.pred, DK1,
 ### ¤¤ Det vilde vesten ¤¤ ### ----------------------------------------------------------
 
 # Ronald alpha_0 mean reverision (på al data)
+<<<<<<< HEAD
 meanrev2 = lm(diff(DK1$D)~DK1$D[1:2190]-1);summary(meanrev2)
+=======
+meanrev2 = lm(diff(DK1$D)~DK1$D[1:2190]-1);summary(meanrev2)
+
+mse <- numeric(1152)
+for (i in 0:24) {
+  glob.lm <- lm(DK1$A[1:(1461 + 24*i)] ~ t[1:(1461 + 24*i)] + I(t[1:(1461 + 24*i)]^2) + I(t[1:(1461 + 24*i)]^3) + I(t[1:(1461 + 24*i)]^4) +
+                      sin((2*pi/365.25)*t[1:(1461 + 24*i)]) + cos((2*pi/365.25)*t[1:(1461 + 24*i)]) + 
+                      sin((4*pi/365.25)*t[1:(1461 + 24*i)]) + cos((4*pi/365.25)*t[1:(1461 + 24*i)]) +
+                      sin((8*pi/365.25)*t[1:(1461 + 24*i)]) + cos((8*pi/365.25)*t[1:(1461 + 24*i)]) +
+                      sin((24*pi/365.25)*t[1:(1461 + 24*i)]) + cos((24*pi/365.25)*t[1:(1461 + 24*i)]) +
+                      DK1$sat[1:(1461 + 24*i)] + DK1$sun[1:(1461 + 24*i)] + DK1$hol[1:(1461 + 24*i)] , na.action = "na.fail")
+
+  lm.combinations <- lapply(dredge(glob.lm , 
+                          evaluate = FALSE,
+                          subset = dc(sin((2*pi/365.25)*t[1:1461 + 24*i])  , 
+                                      cos((2*pi/365.25)*t[1:1461 + 24*i])  ,
+                                      sin((4*pi/365.25)*t[1:1461 + 24*i])  , 
+                                      cos((4*pi/365.25)*t[1:1461 + 24*i])  ,
+                                      sin((8*pi/365.25)*t[1:1461 + 24*i])  , 
+                                      cos((8*pi/365.25)*t[1:1461 + 24*i])  ,
+                                      sin((24*pi/365.25)*t[1:1461 + 24*i]) , 
+                                      cos((24*pi/365.25)*t[1:1461 + 24*i]) )), eval)
+  print(i)
+}
+  for (l in 1:5) {
+    mse[l] <- mse[l] + (DK1$A[1:(1461 + 24*i)] - predict(lm.combinations[[l]]))/length(1:(1461 + 24*i))
+  }
+  
+
+  
+
+>>>>>>> 17a3668e61546f251e54bf5f212ae36bc902b25e

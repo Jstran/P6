@@ -84,10 +84,8 @@ save(t , s.lm, s.pred, DK1,
 ### ¤¤ Det vilde vesten ¤¤ ### ----------------------------------------------------------
 
 # Ronald alpha_0 mean reverision (på al data)
-<<<<<<< HEAD
 meanrev2 = lm(diff(DK1$D)~DK1$D[1:2190]-1);summary(meanrev2)
-=======
-meanrev2 = lm(diff(DK1$D)~DK1$D[1:2190]-1);summary(meanrev2)
+
 
 mse <- numeric(1152)
 for (i in 0:23) {
@@ -117,15 +115,3 @@ for (i in 0:23) {
   }
   print(i)
 }
-<<<<<<< HEAD
-lm.combinations[[which.min(mse)]]
-=======
-  for (l in 1:5) {
-    mse[l] <- mse[l] + (DK1$A[1:(1461 + 24*i)] - predict(lm.combinations[[l]]))/length(1:(1461 + 24*i))
-  }
-  
-
-  
-
->>>>>>> 17a3668e61546f251e54bf5f212ae36bc902b25e
->>>>>>> ca04a9c48dfaae25cd2ec73a82c7cddd9a297455

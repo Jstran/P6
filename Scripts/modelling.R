@@ -89,30 +89,31 @@ save(t , s.lm, s.pred, DK1,
 meanrev2 = lm(diff(DK1$D)~DK1$D[1:2190]-1);summary(meanrev2)
 
 mse <- numeric(1152)
-for (i in 0:24) {
-  glob.lm <- lm(DK1$A[1:(1461 + 24*i)] ~ t[1:(1461 + 24*i)] + I(t[1:(1461 + 24*i)]^2) + I(t[1:(1461 + 24*i)]^3) + I(t[1:(1461 + 24*i)]^4) +
-                      sin((2*pi/365.25)*t[1:(1461 + 24*i)]) + cos((2*pi/365.25)*t[1:(1461 + 24*i)]) + 
-                      sin((4*pi/365.25)*t[1:(1461 + 24*i)]) + cos((4*pi/365.25)*t[1:(1461 + 24*i)]) +
-                      sin((8*pi/365.25)*t[1:(1461 + 24*i)]) + cos((8*pi/365.25)*t[1:(1461 + 24*i)]) +
-                      sin((24*pi/365.25)*t[1:(1461 + 24*i)]) + cos((24*pi/365.25)*t[1:(1461 + 24*i)]) +
-                      DK1$sat[1:(1461 + 24*i)] + DK1$sun[1:(1461 + 24*i)] + DK1$hol[1:(1461 + 24*i)] , na.action = "na.fail")
-
+for (i in 0:23) {
+  len <- c(1:(1461 + 30*i))
+  glob.lm <- lm(DK1$A[len] ~ t[len] + I(t[len]^2) + I(t[len]^3) + I(t[len]^4) +
+                  sin((2*pi/365.25)*t[len]) + cos((2*pi/365.25)*t[len]) + 
+                  sin((4*pi/365.25)*t[len]) + cos((4*pi/365.25)*t[len]) +
+                  sin((8*pi/365.25)*t[len]) + cos((8*pi/365.25)*t[len]) +
+                  sin((24*pi/365.25)*t[len]) + cos((24*pi/365.25)*t[len]) +
+                  DK1$sat[len] + DK1$sun[len] + DK1$hol[len] , na.action = "na.fail")
+  
   lm.combinations <- lapply(dredge(glob.lm , 
-                          evaluate = FALSE,
-                          subset = dc(sin((2*pi/365.25)*t[1:1461 + 24*i])  , 
-                                      cos((2*pi/365.25)*t[1:1461 + 24*i])  ,
-                                      sin((4*pi/365.25)*t[1:1461 + 24*i])  , 
-                                      cos((4*pi/365.25)*t[1:1461 + 24*i])  ,
-                                      sin((8*pi/365.25)*t[1:1461 + 24*i])  , 
-                                      cos((8*pi/365.25)*t[1:1461 + 24*i])  ,
-                                      sin((24*pi/365.25)*t[1:1461 + 24*i]) , 
-                                      cos((24*pi/365.25)*t[1:1461 + 24*i]) )), eval)
+                                   evaluate = FALSE,
+                                   subset = dc(sin((2*pi/365.25)*t[len])  , 
+                                               cos((2*pi/365.25)*t[len])  ,
+                                               sin((4*pi/365.25)*t[len])  , 
+                                               cos((4*pi/365.25)*t[len])  ,
+                                               sin((8*pi/365.25)*t[len])  , 
+                                               cos((8*pi/365.25)*t[len])  ,
+                                               sin((24*pi/365.25)*t[len]) , 
+                                               cos((24*pi/365.25)*t[len]) )), eval)
+
+  for (l in 1:1152) {
+    pred.inter <- data.frame(t = (1461 + 30*(i+1)+1):(1461 + 30*(i+2)+1))
+    inter <- (1461 + 30*(i+1)+1):(1461 + 30*(i+2)+1)
+    mse[l] <- mse[l] + (DK1$A[inter] - predict(lm.combinations[[l]], newdata=pred.inter))/length(pred.inter)
+  }
   print(i)
 }
-  for (l in 1:5) {
-    mse[l] <- mse[l] + (DK1$A[1:(1461 + 24*i)] - predict(lm.combinations[[l]]))/length(1:(1461 + 24*i))
-  }
-  
-
-  
-
+lm.combinations[[which.min(mse)]]

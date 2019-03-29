@@ -98,7 +98,7 @@ for (i in 0:23) {
                              sin((8*pi/365.25)*t[len])   + cos((8*pi/365.25)*t[len]) +
                              sin((24*pi/365.25)*t[len])  + cos((24*pi/365.25)*t[len]) +
                              DK1$sat[len] + DK1$sun[len] + DK1$hol[len] , na.action = "na.fail")
-
+  
   lm.combinations <- lapply(dredge(glob.lm , 
                                    evaluate = FALSE,
                                    subset = c( dc(sin((2*pi/365.25) *  t[len])   ,  
@@ -128,9 +128,3 @@ aic <- aic/24
 lm.combinations[[which.min(aic)]]
 
 
-y <- 1:10 ; x <- rnorm(10)
-
-gl.lm <- lm(y ~ x + I(x^2) + I(x^3) + I(x^4) + I(x^5) , na.action = "na.fail")
-dredge(gl.lm , subset = c( dc(x , I(x^2) , I(x^3)) , 
-                           dc(I(x^4) , I(x^5))
-                           ))

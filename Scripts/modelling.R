@@ -52,31 +52,29 @@ names(DK1)[[length(DK1)]] <- "D"
 
 ### ¤¤ AIC af forskellige modeller ¤¤ ### -----------------------------------------------
 
-#M <- 2^15
-#
-#MSEf <- data.frame( X2014 = numeric(M) , X2015 = numeric(M) ,
-#                    X2016 = numeric(M) , X2018 = numeric(M))
-#
-#glob.lm <- lm(DK1$A ~ t + I(t^2) + I(t^3) + I(t^4) +
-#                      sin((2*pi/365.25)*t) + cos((2*pi/365.25)*t) + 
-#                      sin((4*pi/365.25)*t) + cos((4*pi/365.25)*t) +
-#                      sin((8*pi/365.25)*t) + cos((8*pi/365.25)*t) +
-#                      sin((24*pi/365.25)*t) + cos((24*pi/365.25)*t) +
-#                      DK1$sat + DK1$sun + DK1$hol , na.action = "na.fail")
-#
-#lm.combinations <- dredge(glob.lm , 
-#                          subset = dc(sin((2*pi/365.25)*t)  , 
-#                                      cos((2*pi/365.25)*t)  ,
-#                                      sin((4*pi/365.25)*t)  , 
-#                                      cos((4*pi/365.25)*t)  ,
-#                                      sin((8*pi/365.25)*t)  , 
-#                                      cos((8*pi/365.25)*t)  ,
-#                                      sin((24*pi/365.25)*t) , 
-#                                      cos((24*pi/365.25)*t) )) 
-#
-#ind <- as.integer(na.omit(row.names(lm.combinations[1:M,] ) ) )
-#
-#MSEf[ind,1] <- lm.combinations$AICc
+dfdates <- seq(as.Date("2017/1/1"), by = "month", length.out = 24)
+MSEf <- data.frame( X = numeric(24))
+MSEf <- t(MSEf)
+colnames(MSEf) <- as.character(dfdates)
+
+glob.lm <- lm(DK1$A ~ t + I(t^2) + I(t^3) + I(t^4) +
+                      sin((2*pi/365.25)*t) + cos((2*pi/365.25)*t) + 
+                      sin((4*pi/365.25)*t) + cos((4*pi/365.25)*t) +
+                      sin((8*pi/365.25)*t) + cos((8*pi/365.25)*t) +
+                      sin((24*pi/365.25)*t) + cos((24*pi/365.25)*t) +
+                      DK1$sat + DK1$sun + DK1$hol , na.action = "na.fail")
+
+lm.combinations <- lapply(dredge(glob.lm , 
+                                 evaluate = FALSE,
+                                 subset = dc(sin((2*pi/365.25)*t)  , 
+                                             cos((2*pi/365.25)*t)  ,
+                                             sin((4*pi/365.25)*t)  , 
+                                             cos((4*pi/365.25)*t)  ,
+                                             sin((8*pi/365.25)*t)  , 
+                                             cos((8*pi/365.25)*t)  ,
+                                             sin((24*pi/365.25)*t) , 
+                                             cos((24*pi/365.25)*t) )), eval)
+
 
 ### ¤¤ Gemmer workspace ¤¤ ### ----------------------------------------------------------
 

@@ -11,7 +11,7 @@ library(forecast)
 library(astsa)
 library(timeDate) # Til skewness og kurtosis
 library(MuMIn) # Til test af modeller
-library(Metrics) # rmse funktion
+
 
 ### ¤¤ Infotabeller om data ¤¤ ### ------------------------------------------------------
 
@@ -77,16 +77,12 @@ for (i in 0:730) {
                                                cos((24*pc)*t[len]) ) ),
                             eval)
   aic <- aic + sapply(lm.combinations, AIC)
-  pred.inter <- data.frame(t = 1461 + i + 1)
-  pred <- apply(lm.combinations, function(lm.combinations){predict(lm.combinations, newdata = pred.inter)})
-  rmse <- rmse + sapply(pred, function(x){}, actual = DK1$A[i+1])
   
-  print(i)  
-
   for (l in 1:576) {
     pred.inter <- data.frame(t = 1461 + i + 1)
     rmse[l]    <- rmse[l] + sqrt((DK1$A[pred.inter$t] - predict(lm.combinations[[l]], newdata=pred.inter))^2)/length(pred.inter)
   }
+  print(i)  
 }
 
 # Gennemsnitter
@@ -95,7 +91,6 @@ aic <- aic/730
 
 lm.combinations[[which.min(aic)]]
 lm.combinations[[which.min(rmse)]]
-
 
 
 ### ¤¤ Gemmer workspace ¤¤ ### ----------------------------------------------------------

@@ -56,7 +56,7 @@ names(DK1)[[length(DK1)]] <- "D"
 
 rmse <- numeric(576)
 aic  <- numeric(576)
-for (i in 0:730) {
+for (i in 0:729) {
   len <- c(1:(1461 + i))
   glob.lm <- lm(DK1$A[len] ~ t[len] + I(t[len]^2) + I(t[len]^3) +
                   sin((2*pc)*t[len]) + cos((2*pc)*t[len]) + 
@@ -80,19 +80,27 @@ for (i in 0:730) {
   
   for (l in 1:576) {
     pred.inter <- data.frame(t = 1461 + i + 1)
-    rmse[l]    <- rmse[l] + sqrt((DK1$A[pred.inter$t] - predict(lm.combinations[[l]], newdata=pred.inter))^2)/length(pred.inter)
+    rmse[l]    <- rmse[l] + sqrt((DK1$A[pred.inter$t] - predict(lm.combinations[[l]], newdata=pred.inter))^2)
   }
   print(i)  
 }
 
 # Gennemsnitter
-mse <- rmse/730
-aic <- aic/730
+rmse1 <- rmse/730
+aic1 <- aic/730
 
-lm.combinations[[which.min(aic)]]
-lm.combinations[[which.min(rmse)]]
+lm.combinations[[which.min(aic1)]]
+lm.combinations[[which.min(rmse1)]]
 
+rmse.mod <- lm(DK1$A ~ DK1$sun + DK1$sat + cos((2 * pc) * t) + 
+     sin((2 * pc) * t) + t + I(t^2))
+pred.rmse.mod <- predict(rmse.mod)
 
+aic.mod <- lm(DK1$A ~ DK1$hol + DK1$sat + DK1$sun + 
+     cos((2 * pc) * t) + cos((4 * pc) * t) + cos((8 * 
+    pc) * t) + sin((2 * pc) * t) + sin((4 * pc) * t) + 
+     sin((8 * pc) * t) + t + I(t^2) + I(t^3))
+pred.aic.mod <- predict(aic.mod)
 ### ¤¤ Gemmer workspace ¤¤ ### ----------------------------------------------------------
 
 save(t , s.lm, s.pred, DK1, 

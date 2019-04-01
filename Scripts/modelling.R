@@ -35,11 +35,12 @@ rm("dat.wd" , "dat.sat" , "dat.sun" , "dat.hol" , "ls" , "df")
 
 # Regression på s model med kvadratisk led (t^2)
 t     <- time(DK1$A)
+pc    <- pi/365.25 
 s.lm <- lm(DK1$A ~ t + I(t^2) + 
-             sin((2*pi/365.25)*t) + cos((2*pi/365.25)*t) + 
-             sin((4*pi/365.25)*t) + cos((4*pi/365.25)*t) +
-             sin((8*pi/365.25)*t) + cos((8*pi/365.25)*t) +
-             sin((96*pi/365.25)*t) + cos((96*pi/365.25)*t) +
+             sin((2*pc)*t) + cos((2*pc)*t) + 
+             sin((4*pc)*t) + cos((4*pc)*t) +
+             sin((8*pc)*t) + cos((8*pc)*t) +
+             sin((96*pc)*t) + cos((96*pc)*t) +
              DK1$sat + DK1$sun + DK1$hol)
 
 s.pred  <- predict(s.lm)
@@ -52,6 +53,7 @@ names(DK1)[[length(DK1)]] <- "D"
 
 ### ¤¤ AIC af forskellige modeller ¤¤ ### -----------------------------------------------
 
+<<<<<<< HEAD
 pc <- pi/365.25
 dfdates <- seq(as.Date("2017/1/1"), by = "month", length.out = 24)
 MSEf <- data.frame( X = numeric(24))
@@ -75,6 +77,47 @@ lm.combinations <- lapply(dredge(glob.lm ,
                                              cos((8*pc)*t)  ,
                                              sin((24*pc)*t) , 
                                              cos((24*pc)*t) )), eval)
+=======
+aic <- numeric(3240)
+mse <- numeric(3240)
+for (i in 0:23) {
+  len <- 1:(1461 + 30*i)
+  
+  glob.lm <- lm(DK1$A[len] ~ t[len] + I(t[len]^2) + I(t[len]^3) + I(t[len]^4) +
+                  sin((2*pc)*t[len])   + cos((2*pc)*t[len]) + 
+                  sin((4*pc)*t[len])   + cos((4*pc)*t[len]) +
+                  sin((8*pc)*t[len])   + cos((8*pc)*t[len]) +
+                  sin((24*pc)*t[len])  + cos((24*pc)*t[len]) +
+                  DK1$sat[len] + DK1$sun[len] + DK1$hol[len] , na.action = "na.fail")
+  
+  lm.combinations <- lapply(dredge(glob.lm , 
+                                   evaluate = FALSE,
+                                   subset = c( dc(sin((2*pc)  * t[len])   ,  
+                                                  cos((2*pc)  * t[len]) ) , 
+                                               dc(sin((4*pc)  * t[len])   , 
+                                                  cos((4*pc)  * t[len]) ) ,
+                                               dc(sin((8*pc)  * t[len])   , 
+                                                  cos((8*pc)  * t[len]) ) ,
+                                               dc(sin((24*pc) * t[len])   , 
+                                                  cos((24*pc) * t[len]) ) ,
+                                               dc(t[len] , 
+                                                  I(t[len]^2) ,
+                                                  I(t[len]^3) ,
+                                                  I(t[len]^4) ) ) ) , 
+                                   eval)
+  print(i)
+  
+  for (l in 1:3240) {
+    aic[l] <- aic[l] + AIC(lm.combinations[[l]])
+  }
+}
+
+# Gennemsnitter
+mse <- mse/24
+aic <- aic/24
+
+lm.combinations[[which.min(aic)]]
+>>>>>>> 2282034cc7eaf6ff38063cd8a000ab3841476e5b
 
 
 ### ¤¤ Gemmer workspace ¤¤ ### ----------------------------------------------------------
@@ -85,9 +128,11 @@ save(t , s.lm, s.pred, DK1,
 ### ¤¤ Det vilde vesten ¤¤ ### ----------------------------------------------------------
 
 # Ronald alpha_0 mean reverision (på al data)
+
 meanrev2 = lm(diff(DK1$D)~DK1$D[1:2190]-1);summary(meanrev2)
 
 
+<<<<<<< HEAD
 rmse <- numeric(576)
 aic  <- numeric(576)
 for (i in 0:7) {
@@ -120,3 +165,7 @@ for (i in 0:7) {
   print(i)
 }
 lm.combinations[which.min(rmse)]
+=======
+
+
+>>>>>>> 2282034cc7eaf6ff38063cd8a000ab3841476e5b

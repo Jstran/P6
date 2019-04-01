@@ -124,7 +124,19 @@ p.d.acf <- ggplot(data = data.frame(X1 = acf(DK1$D, lag.max = 30 , plot = FALSE)
 ps$p[[i]] <- p.d.acf ; ps$names[i] <- "plotACFDecomp" ; ps$var[i] <- "p.d.acf"
 ps$l[i] <- FALSE ; i <- i + 1
 
-
+# Histogram for detrended priser
+p.d.hist <- ggplot(data.frame(X2 = DK1$D),
+                   aes(x = X2)) +
+  geom_histogram(binwidth = 20, color = "white", fill = colors[1]) + 
+  stat_function(fun = function(x){dnorm(x = x, 
+                                        mean = mean(DK1$D), 
+                                        sd = sd(DK1$D))*length(DK1$D)*24.1}, 
+                color = colors[2]) +
+  labs(x = "Spotpris i DKK/MWh", y = "") +
+  scale_x_continuous() +
+  geom_vline(xintercept = mean(DK1$D), col = colors[3]) +
+  p.th
+p.d.hist
 
 ### ¤¤ Gemmer plots ¤¤ ### --------------------------------------------------------------
 

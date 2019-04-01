@@ -11,6 +11,7 @@ library(forecast)
 library(astsa)
 library(timeDate) # Til skewness og kurtosis
 library(MuMIn) # Til test af modeller
+library(Metrics) # rmse funktion
 
 ### ¤¤ Infotabeller om data ¤¤ ### ------------------------------------------------------
 
@@ -53,71 +54,48 @@ names(DK1)[[length(DK1)]] <- "D"
 
 ### ¤¤ AIC af forskellige modeller ¤¤ ### -----------------------------------------------
 
-<<<<<<< HEAD
-pc <- pi/365.25
-dfdates <- seq(as.Date("2017/1/1"), by = "month", length.out = 24)
-MSEf <- data.frame( X = numeric(24))
-MSEf <- t(MSEf)
-colnames(MSEf) <- as.character(dfdates)
-
-glob.lm <- lm(DK1$A ~ t + I(t^2) + I(t^3) + I(t^4) +
-                      sin((2*pc)*t) + cos((2*pc)*t) + 
-                      sin((4*pc)*t) + cos((4*pc)*t) +
-                      sin((8*pc)*t) + cos((8*pc)*t) +
-                      sin((24*pc)*t) + cos((24*pc)*t) +
-                      DK1$sat + DK1$sun + DK1$hol , na.action = "na.fail")
-
-lm.combinations <- lapply(dredge(glob.lm , 
-                                 evaluate = FALSE,
-                                 subset = dc(sin((2*pc)*t)  , 
-                                             cos((2*pc)*t)  ,
-                                             sin((4*pc)*t)  , 
-                                             cos((4*pc)*t)  ,
-                                             sin((8*pc)*t)  , 
-                                             cos((8*pc)*t)  ,
-                                             sin((24*pc)*t) , 
-                                             cos((24*pc)*t) )), eval)
-=======
-aic <- numeric(3240)
-mse <- numeric(3240)
-for (i in 0:23) {
-  len <- 1:(1461 + 30*i)
-  
-  glob.lm <- lm(DK1$A[len] ~ t[len] + I(t[len]^2) + I(t[len]^3) + I(t[len]^4) +
-                  sin((2*pc)*t[len])   + cos((2*pc)*t[len]) + 
-                  sin((4*pc)*t[len])   + cos((4*pc)*t[len]) +
-                  sin((8*pc)*t[len])   + cos((8*pc)*t[len]) +
-                  sin((24*pc)*t[len])  + cos((24*pc)*t[len]) +
+rmse <- numeric(576)
+aic  <- numeric(576)
+for (i in 0:730) {
+  len <- c(1:(1461 + i))
+  glob.lm <- lm(DK1$A[len] ~ t[len] + I(t[len]^2) + I(t[len]^3) +
+                  sin((2*pc)*t[len]) + cos((2*pc)*t[len]) + 
+                  sin((4*pc)*t[len]) + cos((4*pc)*t[len]) +
+                  sin((8*pc)*t[len]) + cos((8*pc)*t[len]) +
+                  sin((24*pc)*t[len]) + cos((24*pc)*t[len]) +
                   DK1$sat[len] + DK1$sun[len] + DK1$hol[len] , na.action = "na.fail")
   
   lm.combinations <- lapply(dredge(glob.lm , 
                                    evaluate = FALSE,
-                                   subset = c( dc(sin((2*pc)  * t[len])   ,  
-                                                  cos((2*pc)  * t[len]) ) , 
-                                               dc(sin((4*pc)  * t[len])   , 
-                                                  cos((4*pc)  * t[len]) ) ,
-                                               dc(sin((8*pc)  * t[len])   , 
-                                                  cos((8*pc)  * t[len]) ) ,
-                                               dc(sin((24*pc) * t[len])   , 
-                                                  cos((24*pc) * t[len]) ) ,
-                                               dc(t[len] , 
-                                                  I(t[len]^2) ,
-                                                  I(t[len]^3) ,
-                                                  I(t[len]^4) ) ) ) , 
-                                   eval)
-  print(i)
+                                   subset = dc(sin(( 2*pc)*t[len])  , 
+                                               cos(( 2*pc)*t[len])  ,
+                                               sin(( 4*pc)*t[len])  , 
+                                               cos(( 4*pc)*t[len])  ,
+                                               sin(( 8*pc)*t[len])  , 
+                                               cos(( 8*pc)*t[len])  ,
+                                               sin((24*pc)*t[len]) , 
+                                               cos((24*pc)*t[len]) ) ),
+                            eval)
+  aic <- aic + sapply(lm.combinations, AIC)
+  pred.inter <- data.frame(t = 1461 + i + 1)
+  pred <- apply(lm.combinations, function(lm.combinations){predict(lm.combinations, newdata = pred.inter)})
+  rmse <- rmse + sapply(pred, function(x){}, actual = DK1$A[i+1])
   
-  for (l in 1:3240) {
-    aic[l] <- aic[l] + AIC(lm.combinations[[l]])
+  print(i)  
+
+  for (l in 1:576) {
+    pred.inter <- data.frame(t = 1461 + i + 1)
+    rmse[l]    <- rmse[l] + sqrt((DK1$A[pred.inter$t] - predict(lm.combinations[[l]], newdata=pred.inter))^2)/length(pred.inter)
   }
 }
 
 # Gennemsnitter
-mse <- mse/24
-aic <- aic/24
+mse <- rmse/730
+aic <- aic/730
 
 lm.combinations[[which.min(aic)]]
->>>>>>> 2282034cc7eaf6ff38063cd8a000ab3841476e5b
+lm.combinations[[which.min(rmse)]]
+
 
 
 ### ¤¤ Gemmer workspace ¤¤ ### ----------------------------------------------------------
@@ -132,40 +110,7 @@ save(t , s.lm, s.pred, DK1,
 meanrev2 = lm(diff(DK1$D)~DK1$D[1:2190]-1);summary(meanrev2)
 
 
-<<<<<<< HEAD
-rmse <- numeric(576)
-aic  <- numeric(576)
-for (i in 0:7) {
-  len <- c(1:(1461 + i))
-  glob.lm <- lm(DK1$A[len] ~ t[len] + I(t[len]^2) + I(t[len]^3) +
-                  sin((2*pc)*t[len]) + cos((2*pc)*t[len]) + 
-                  sin((4*pc)*t[len]) + cos((4*pc)*t[len]) +
-                  sin((8*pc)*t[len]) + cos((8*pc)*t[len]) +
-                  sin((24*pc)*t[len]) + cos((24*pc)*t[len]) +
-                  DK1$sat[len] + DK1$sun[len] + DK1$hol[len] , na.action = "na.fail")
-  
-  lm.combinations <- lapply(dredge(glob.lm , 
-                                   evaluate = FALSE,
-                                   subset = dc(sin((2*pc)*t[len])  , 
-                                               cos((2*pc)*t[len])  ,
-                                               sin((4*pc)*t[len])  , 
-                                               cos((4*pc)*t[len])  ,
-                                               sin((8*pc)*t[len])  , 
-                                               cos((8*pc)*t[len])  ,
-                                               sin((24*pc)*t[len]) , 
-                                               cos((24*pc)*t[len]) ) ),
-                            eval)
-  
-  for (l in 1:5) {
-    pred.inter <- data.frame(t = (1461 + i + 1):(1461 + i +1))
-    inter      <- (1461 + i + 1):(1461 + i +1)
-    rmse[l]    <- rmse[l] + sqrt((DK1$A[inter] - predict(lm.combinations[[l]], newdata=pred.inter))^2)/length(pred.inter)
-    aic[l]     <- aic[l] + AIC(lm.combinations[[l]])
-  }
-  print(i)
-}
-lm.combinations[which.min(rmse)]
-=======
 
 
->>>>>>> 2282034cc7eaf6ff38063cd8a000ab3841476e5b
+
+

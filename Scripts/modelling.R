@@ -65,7 +65,7 @@ for (i in 0:729) {
                   sin((24*pc)*t[len]) + cos((24*pc)*t[len]) +
                   DK1$sat[len] + DK1$sun[len] + DK1$hol[len] , na.action = "na.fail")
   
-  lm.combinations <- lapply(dredge(glob.lm , 
+  lm.combinations <- sapply(dredge(glob.lm , 
                                    evaluate = FALSE,
                                    subset = dc(sin(( 2*pc)*t[len])  , 
                                                cos(( 2*pc)*t[len])  ,
@@ -76,12 +76,10 @@ for (i in 0:729) {
                                                sin((24*pc)*t[len]) , 
                                                cos((24*pc)*t[len]) ) ),
                             eval)
-  aic <- aic + sapply(lm.combinations, AIC)
-  
-  for (l in 1:576) {
-    pred.inter <- data.frame(t = 1461 + i + 1)
-    rmse[l]    <- rmse[l] + sqrt((DK1$A[pred.inter$t] - predict(lm.combinations[[l]], newdata=pred.inter))^2)
-  }
+  aic  <- aic + sapply(lm.combinations, AIC)
+  pred.inter <- data.frame(t = 1461 + i + 1)
+  rmse <- rmse + sqrt((DK1$A[pred.inter$t] - sapply(lm.combinations, predict.lm, newData = pred.inter)[1,])^2)
+
   print(i)  
 }
 

@@ -3,32 +3,37 @@ load("./Workspaces/preliminary.Rdata")
 load("./Workspaces/modelling.Rdata")
 library(MuMIn)
 
+pc    <- pi/365.25
+
 start.time <- Sys.time()
 
 rmse <- numeric(576)
 aic  <- numeric(576)
 for (i in 0:729) {
+  
   len <- c(1:(1461 + i))
-  glob.lm <- lm(DK1$A[len] ~ t[len] + I(t[len]^2) + I(t[len]^3) +
-                  sin((2*pc)*t[len]) + cos((2*pc)*t[len]) + 
-                  sin((4*pc)*t[len]) + cos((4*pc)*t[len]) +
-                  sin((8*pc)*t[len]) + cos((8*pc)*t[len]) +
-                  sin((24*pc)*t[len]) + cos((24*pc)*t[len]) +
-                  DK1$sat[len] + DK1$sun[len] + DK1$hol[len] , na.action = "na.fail")
+  df <- data.frame(DK1 = DK1$A[len] , t = t[len] , sat = DK1$sat[len] , sun = DK1$sun[len] , hol = DK1$hol[len])
+  glob.lm <- lm(DK1 ~ t + I(t^2) + I(t^3) +
+                      sin((2*pc)*t) + cos((2*pc)*t) + 
+                      sin((4*pc)*t) + cos((4*pc)*t) +
+                      sin((8*pc)*t) + cos((8*pc)*t) +
+                      sin((24*pc)*t) + cos((24*pc)*t) +
+                      sat + sun + hol , na.action = "na.fail" , data = df)
   
   lm.combinations <- sapply(dredge(glob.lm , 
                                    evaluate = FALSE,
-                                   subset = dc(sin(( 2*pc)*t[len])  , 
-                                               cos(( 2*pc)*t[len])  ,
-                                               sin(( 4*pc)*t[len])  , 
-                                               cos(( 4*pc)*t[len])  ,
-                                               sin(( 8*pc)*t[len])  , 
-                                               cos(( 8*pc)*t[len])  ,
-                                               sin((24*pc)*t[len]) , 
-                                               cos((24*pc)*t[len]) ) ),
+                                   subset = dc(sin(( 2*pc)*t)  , 
+                                               cos(( 2*pc)*t)  ,
+                                               sin(( 4*pc)*t)  , 
+                                               cos(( 4*pc)*t)  ,
+                                               sin(( 8*pc)*t)  , 
+                                               cos(( 8*pc)*t)  ,
+                                               sin((24*pc)*t)  , 
+                                               cos((24*pc)*t) ) ),
                             eval)
   aic  <- aic + sapply(lm.combinations, AIC)
-  pred.inter <- data.frame(t = 1461 + i + 1)
+  ind <- 1461 + i + 1
+  pred.inter <- data.frame(t = ind , sat = DK1$sat[ind] , sun = DK1$sun[ind] , hol = DK1$hol[ind])
   for (l in 1:576) {
     rmse[l] <- rmse[l] + sqrt((DK1$A[pred.inter$t] - predict(lm.combinations[[l]], newdata = pred.inter))^2)
   }

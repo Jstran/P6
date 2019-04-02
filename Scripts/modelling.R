@@ -54,9 +54,11 @@ names(DK1)[[length(DK1)]] <- "D"
 
 ### ¤¤ AIC af forskellige modeller ¤¤ ### -----------------------------------------------
 
+mse  <- numeric(576)
 rmse <- numeric(576)
+mae  <- numeric(576)
 aic  <- numeric(576)
-for (i in 0:730) {
+for (i in 0:729) {
   len <- c(1:(1461 + i))
   glob.lm <- lm(DK1$A[len] ~ t[len] + I(t[len]^2) + I(t[len]^3) +
                   sin((2*pc)*t[len]) + cos((2*pc)*t[len]) + 
@@ -80,17 +82,24 @@ for (i in 0:730) {
   
   for (l in 1:576) {
     pred.inter <- data.frame(t = 1461 + i + 1)
-    rmse[l]    <- rmse[l] + sqrt((DK1$A[pred.inter$t] - predict(lm.combinations[[l]], newdata=pred.inter))^2)/length(pred.inter)
+    mse[l]  <- mse[l]  +     ((DK1$A[pred.inter$t] - predict(lm.combinations[[l]], newData=pred.inter))^2)[1]
+    rmse[l] <- rmse[l] + sqrt((DK1$A[pred.inter$t] - predict(lm.combinations[[l]], newData=pred.inter))^2)[1]
+    mae[l]  <- mae[l]  + abs(  DK1$A[pred.inter$t] - predict(lm.combinations[[l]], newData=pred.inter))[1]
   }
   print(i)  
 }
 
 # Gennemsnitter
-mse <- rmse/730
-aic <- aic/730
+mse1  <- mse/729
+rmse1 <- rmse/729
+mae1  <- mae/729
+aic   <- aic/729
 
 lm.combinations[[which.min(aic)]]
+lm.combinations[[which.min(mse)]]
 lm.combinations[[which.min(rmse)]]
+lm.combinations[[which.min(mae)]]
+
 
 
 ### ¤¤ Gemmer workspace ¤¤ ### ----------------------------------------------------------

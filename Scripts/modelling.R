@@ -52,64 +52,6 @@ names(DK1)[[length(DK1)]] <- "s.pred"
 DK1[[length(DK1)+1]] <- c(DK1$A - s.pred)
 names(DK1)[[length(DK1)]] <- "D"
 
-### ¤¤ AIC af forskellige modeller ¤¤ ### -----------------------------------------------
-
-mse  <- numeric(576)
-rmse <- numeric(576)
-mae  <- numeric(576)
-aic  <- numeric(576)
-for (i in 0:729) {
-  len <- c(1:(1461 + i))
-  glob.lm <- lm(DK1$A[len] ~ t[len] + I(t[len]^2) + I(t[len]^3) +
-                  sin((2*pc)*t[len]) + cos((2*pc)*t[len]) + 
-                  sin((4*pc)*t[len]) + cos((4*pc)*t[len]) +
-                  sin((8*pc)*t[len]) + cos((8*pc)*t[len]) +
-                  sin((24*pc)*t[len]) + cos((24*pc)*t[len]) +
-                  DK1$sat[len] + DK1$sun[len] + DK1$hol[len] , na.action = "na.fail")
-  
-  lm.combinations <- sapply(dredge(glob.lm , 
-                                   evaluate = FALSE,
-                                   subset = dc(sin(( 2*pc)*t[len])  , 
-                                               cos(( 2*pc)*t[len])  ,
-                                               sin(( 4*pc)*t[len])  , 
-                                               cos(( 4*pc)*t[len])  ,
-                                               sin(( 8*pc)*t[len])  , 
-                                               cos(( 8*pc)*t[len])  ,
-                                               sin((24*pc)*t[len]) , 
-                                               cos((24*pc)*t[len]) ) ),
-                            eval)
-  aic <- aic + sapply(lm.combinations, AIC)
-  
-  for (l in 1:576) {
-    pred.inter <- data.frame(t = 1461 + i + 1)
-    mse[l]  <- mse[l]  +     ((DK1$A[pred.inter$t] - predict(lm.combinations[[l]], newData=pred.inter))^2)[1]
-    rmse[l] <- rmse[l] + sqrt((DK1$A[pred.inter$t] - predict(lm.combinations[[l]], newData=pred.inter))^2)[1]
-    mae[l]  <- mae[l]  + abs(  DK1$A[pred.inter$t] - predict(lm.combinations[[l]], newData=pred.inter))[1]
-  }
-  aic  <- aic + sapply(lm.combinations, AIC)
-  print(i)  
-}
-
-# Gennemsnitter
-mse1  <- mse/729
-rmse1 <- rmse/729
-mae1  <- mae/729
-aic1  <- aic/729
-
-lm.combinations[[which.min(aic)]]
-lm.combinations[[which.min(mse)]]
-lm.combinations[[which.min(rmse)]]
-lm.combinations[[which.min(mae)]]
-
-rmse.mod <- lm(DK1$A ~ DK1$sun + DK1$sat + cos((2 * pc) * t) + 
-     sin((2 * pc) * t) + t + I(t^2))
-pred.rmse.mod <- predict(rmse.mod)
-
-aic.mod <- lm(DK1$A ~ DK1$hol + DK1$sat + DK1$sun + 
-     cos((2 * pc) * t) + cos((4 * pc) * t) + cos((8 * 
-    pc) * t) + sin((2 * pc) * t) + sin((4 * pc) * t) + 
-     sin((8 * pc) * t) + t + I(t^2) + I(t^3))
-pred.aic.mod <- predict(aic.mod)
 ### ¤¤ Gemmer workspace ¤¤ ### ----------------------------------------------------------
 
 save(t , s.lm, s.pred, DK1, 

@@ -28,7 +28,7 @@ for (i in 0:729) {
   
   lm.combinations <- lapply(dredge(glob.lm , 
                                    evaluate = FALSE , 
-                                   fixed = c("Intercept" , "sat" , "sun" , "hol") ,
+                                   fixed = c("sat" , "sun" , "hol") ,
                                    subset = ( (sin2 == cos2) & (sin4  == cos4)  &
                                               (sin8 == cos8) & (sin24 == cos24) ) ) , 
                             eval)

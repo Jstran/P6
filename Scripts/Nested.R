@@ -4,7 +4,7 @@ load("./Workspaces/modelling.Rdata")
 library(MuMIn)
 
 pc    <- pi/365.25
-nmods <- 1024
+nmods <- 128
 
 start.time <- Sys.time()
 

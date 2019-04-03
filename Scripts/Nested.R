@@ -4,11 +4,12 @@ load("./Workspaces/modelling.Rdata")
 library(MuMIn)
 
 pc    <- pi/365.25
+nmods <- 1024
 
 start.time <- Sys.time()
 
-rmse <- numeric(5184)
-aic  <- numeric(5184)
+rmse <- numeric(nmods)
+aic  <- numeric(nmods)
 
 df <- data.frame(DK1 = DK1$A , t = t , sat = DK1$sat , sun = DK1$sun , hol = DK1$hol ,
                  sin2  = sin((2*pc)*t)  , cos2  = cos((2*pc)*t) ,
@@ -17,23 +18,25 @@ df <- data.frame(DK1 = DK1$A , t = t , sat = DK1$sat , sun = DK1$sun , hol = DK1
                  sin24 = sin((24*pc)*t) , cos24 = cos((24*pc)*t) )
 
 for (i in 0:729) {
-  dfsub <- subset(df, t <= 1461 + i)
+  dfins  <- subset(df, t <= 1461 + i)
+  dfpred <- subset(df, t == 1461 + i + 1)
   glob.lm <- lm(DK1 ~ t + I(t^2) + I(t^3) +
                       sin2 + cos2 + sin4  + cos4  + 
                       sin8 + cos8 + sin24 + cos24 +
                       sat  + sun  + hol , 
-                      na.action = "na.fail" , data = dfsub )
+                      na.action = "na.fail" , data = dfins )
   
-  lm.combinations <- sapply(dredge(glob.lm , 
+  lm.combinations <- lapply(dredge(glob.lm , 
                                    evaluate = FALSE , 
-                                   subset = c( dc(sin2 , cos2) , dc(sin4 , cos4) ,
-                                               dc(sin8 , cos8) , dc(sin24 , cos24) ) ) , 
+                                   subset = ( (sin2 == cos2) & (sin4  == cos4) &
+                                              (sin8 == cos8) & (sin24 == cos24) ) ) , 
                             eval)
   
+  yhat <- sapply(lm.combinations , predict , newdata = dfpred)
+  
   aic  <- aic + sapply(lm.combinations, AIC)
-  for (l in 1:5184) {
-    rmse[l] <- rmse[l] + sqrt((dfsub$DK1 - predict(lm.combinations[[l]], newdata = dfsub ) )^2)
-  }
+  rmse <- rmse + sqrt((dfpred$DK1 - yhat )^2)
+  
   print(i)  
 }
 
@@ -59,16 +62,8 @@ z  <- rnorm(10)
 y2 <- rnorm(10)
 z2 <- rnorm(10)
 df <- data.frame(x = x , y = y , y2 =  y2 , z = z , z2 = z2)
-glob.lm.test <- lm(x ~ y + cos(2 * y2) + z + z2 , na.action = "na.fail" , data = df)
-test <- getAllTerms(glob.lm.test)
+glob.lm.test <- lm(x ~ y + y2 + z + z2 , na.action = "na.fail" , data = df)
 
 
-lm.combinations.test <- dredge(glob.lm.test , evaluate = FALSE , subset = (y & (cos(2 * y2)) ) | (z & z2) )
-
-lm.combinations.test <- sapply(dredge(glob.lm.test , evaluate = FALSE , subset = (y & y2) | (z & z2) ) , eval )
-
+lm.combinations.test <- dredge(glob.lm.test , evaluate = FALSE , subset = (y == y2 ) & (z == z2) )
 lm.combinations.test
-lm.combinations.test[[4]]
-
-
-# 

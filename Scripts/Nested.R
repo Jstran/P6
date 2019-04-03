@@ -8,7 +8,7 @@ nmods <- 1024
 
 start.time <- Sys.time()
 
-rmse <- numeric(nmods)
+mse <- rmse <- mae <- numeric(nmods)
 aic  <- numeric(nmods)
 
 df <- data.frame(DK1 = DK1$A , t = t , sat = DK1$sat , sun = DK1$sun , hol = DK1$hol ,
@@ -34,9 +34,10 @@ for (i in 0:729) {
   
   yhat <- sapply(lm.combinations , predict , newdata = dfpred)
   
-  aic  <- aic + sapply(lm.combinations, AIC)
-  rmse <- rmse + sqrt((dfpred$DK1 - yhat )^2)
-  
+  aic  <- aic  + sapply(lm.combinations, AIC)
+  mse  <- mse  +       ( dfpred$DK1 - yhat )^2
+  rmse <- rmse + sqrt( ( dfpred$DK1 - yhat )^2)
+  mae  <- mae  + abs(    dfpred$DK1 - yhat)
   print(i)  
 }
 
@@ -45,11 +46,15 @@ time.taken <- end.time - start.time
 time.taken
 
 # Gennemsnitter
+mse1  <- mse/730
 rmse1 <- rmse/730
-aic1 <- aic/730
+mae1  <- mae/730
+aic1  <- aic/730
 
 lm.combinations[[which.min(aic1)]]
+lm.combinations[[which.min(mse1)]]
 lm.combinations[[which.min(rmse1)]]
+lm.combinations[[which.min(mae1)]]
 
 save(rmse1, aic1, 
      file = "./Workspaces/nested.Rdata")

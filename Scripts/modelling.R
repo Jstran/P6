@@ -57,6 +57,10 @@ names(DK1)[[length(DK1)]] <- "D"
 
 rm("df")
 
+### ¤¤ Estimater for hele perioden i vores model ¤¤ ### ---------------------------------
+
+tbl <- scoef(s.lm) ; tbl
+
 ### ¤¤ Gemmer workspace ¤¤ ### ----------------------------------------------------------
 
 save(t , s.lm, s.pred, DK1, 

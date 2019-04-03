@@ -40,14 +40,12 @@ pc    <- pi/365.25
 
 df <- data.frame(DK1 = DK1$A , t = t , sat = DK1$sat , sun = DK1$sun , hol = DK1$hol ,
                  sin2  = sin((2*pc)*t)  , cos2  = cos((2*pc)*t) ,
-                 sin4  = sin((4*pc)*t)  , cos4  = cos((4*pc)*t) ,
                  sin8  = sin((8*pc)*t)  , cos8  = cos((8*pc)*t) ,
                  sin24 = sin((24*pc)*t) , cos24 = cos((24*pc)*t) )
 
 s.lm <- lm(DK1 ~ t + I(t^2) + 
-             sin2 + cos2 + sin4  + cos4 +
-             sin8 + cos8 + sin24 + cos24 +
-             sat + sun + hol , data = df)
+                 sin2 + cos2 + sin8 + cos8 + sin24 + cos24 +
+                 sat + sun + hol , data = df)
 
 s.pred  <- predict(s.lm)
 

@@ -22,11 +22,11 @@ scoef <- function(mod){
   
   # Koefficienter til halvårlig periode
   c3 <- sqrt(coef[6]^2 + coef[7]^2)
-  c4 <- atan(coef[7]/coef[6]) * 365.25/(4*pi)
+  c4 <- atan(coef[7]/coef[6]) * 365.25/(8*pi)
   
   # Koefficienter til kvartal periode
   c5 <- sqrt(coef[8]^2 + coef[9]^2)
-  c6 <- atan(coef[9]/coef[8]) * 365.25/(8*pi) 
+  c6 <- atan(coef[9]/coef[8]) * 365.25/(24*pi) 
   
   # Dataframe med alt info
   df <- data.frame(b0 = coef[1] , b1 = coef[2] , b2 = coef[3] , c1 = c1 , c2 = c2 ,

@@ -10,7 +10,7 @@ library(ggplot2)
 library(forecast)
 library(astsa)
 library(timeDate) # Til skewness og kurtosis
-library(MuMIn) # Til test af modeller
+library(MuMIn)    # Til test af modeller
 
 
 ### ¤¤ Infotabeller om data ¤¤ ### ------------------------------------------------------
@@ -37,12 +37,17 @@ rm("dat.wd" , "dat.sat" , "dat.sun" , "dat.hol" , "ls" , "df")
 # Regression på s model med kvadratisk led (t^2)
 t     <- time(DK1$A)
 pc    <- pi/365.25 
-s.lm <- lm(DK1$A ~ t + I(t^2) + 
-             sin((2*pc)*t) + cos((2*pc)*t) + 
-             sin((4*pc)*t) + cos((4*pc)*t) +
-             sin((8*pc)*t) + cos((8*pc)*t) +
-             sin((96*pc)*t) + cos((96*pc)*t) +
-             DK1$sat + DK1$sun + DK1$hol)
+
+df <- data.frame(DK1 = DK1$A , t = t , sat = DK1$sat , sun = DK1$sun , hol = DK1$hol ,
+                 sin2  = sin((2*pc)*t)  , cos2  = cos((2*pc)*t) ,
+                 sin4  = sin((4*pc)*t)  , cos4  = cos((4*pc)*t) ,
+                 sin8  = sin((8*pc)*t)  , cos8  = cos((8*pc)*t) ,
+                 sin24 = sin((24*pc)*t) , cos24 = cos((24*pc)*t) )
+
+s.lm <- lm(DK1 ~ t + I(t^2) + 
+             sin2 + cos2 + sin4  + cos4 +
+             sin8 + cos8 + sin24 + cos24 +
+             sat + sun + hol , data = df)
 
 s.pred  <- predict(s.lm)
 
@@ -51,6 +56,8 @@ names(DK1)[[length(DK1)]] <- "s.pred"
 
 DK1[[length(DK1)+1]] <- c(DK1$A - s.pred)
 names(DK1)[[length(DK1)]] <- "D"
+
+rm("df")
 
 ### ¤¤ Gemmer workspace ¤¤ ### ----------------------------------------------------------
 

@@ -68,12 +68,30 @@ save(t , s.lm, s.pred, DK1,
 
 ### ¤¤ Det vilde vesten ¤¤ ### ----------------------------------------------------------
 
-# Ronald alpha_0 mean reverision (på al data)
 
+## Ronald ----
+# Ronald alpha_0 mean reverision (på al data)
 meanrev2 = lm(diff(DK1$D)~DK1$D[1:2190]-1);summary(meanrev2)
 
+set.seed(1)
+a_1 = as.numeric(-meanrev2$coefficients[1])
+r_1 = c(); r_1[1]=0
+r_2 = c(); r_1[1]
+
+eps = rnorm(2000, mean = 0, sd = 1)
+prob = runif(2000)
+sigma_1 = 0.34
+sigma_2 = 0.874
+sigma_3 = 0.918
+
+X_t=c()
 
 
-
+for (i in 2:2000) {
+  r_1[i] = (1-a_1)*r_1[i-1] + sigma_1*eps[i]
+  if (prob>0.926) {
+    X_t[i]=
+  }
+}
 
 

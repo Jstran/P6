@@ -76,10 +76,10 @@ meanrev2 = lm(diff(DK1$D)~DK1$D[1:2190]-1);summary(meanrev2)
 set.seed(1)
 a_1 = as.numeric(-meanrev2$coefficients[1])
 a_3 = 0.444
-r_1 = c(); r_1[1]=0
-r_2 = c(); r_2[1]=0
-r_3 = c(); r_3[1]=0
-X_t = c(); X_t[1]=0
+r_1= c();r_1[1]=0
+r_2= c();r_2[1]=0
+r_3= c();r_3[1]=0
+X_t= c();X_t[1]=0
 
 eps = rnorm(2000, mean = 0, sd = 1)
 prob = runif(2000)
@@ -119,7 +119,9 @@ for (i in 2:2000) {
 }
 print(spikes)
 plot(state)
+par(mfrow=c(1,2))
 ts.plot(X_t)
+ts.plot(DK1$D)
 
-
-
+quantile(X_t)
+quantile(DK1$D)

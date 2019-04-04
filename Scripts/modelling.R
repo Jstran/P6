@@ -75,23 +75,45 @@ meanrev2 = lm(diff(DK1$D)~DK1$D[1:2190]-1);summary(meanrev2)
 
 set.seed(1)
 a_1 = as.numeric(-meanrev2$coefficients[1])
+a_3 = 0.444
 r_1 = c(); r_1[1]=0
-r_2 = c(); r_1[1]
+r_2 = c(); r_2[1]=0
+r_3 = c(); r_3[1]=0
+X_t = c(); X_t[1]=0
 
 eps = rnorm(2000, mean = 0, sd = 1)
 prob = runif(2000)
 sigma_1 = 0.34
-sigma_2 = 0.874
+sigma_2 = 5
 sigma_3 = 0.918
+mu = 0.377
+s=0
+spikes = 0
 
-X_t=c()
 
-
-for (i in 2:2000) {
+for (i in 2:500) {
   r_1[i] = (1-a_1)*r_1[i-1] + sigma_1*eps[i]
-  if (prob>0.926) {
-    X_t[i]=
+  r_2[i] = mu + sigma_2*eps[i]
+  r_3[i] = (1-a_3)*r_3[i-1] + sigma_3*eps[i]
+  if (s == 3) {
+    X_t[i]=r_1[i]
+  }
+  if (s == 2) {
+    X_t[i] = r_3[i]
+    s = 3
+    spikes = spikes + 1
+  }
+  if (prob[i]>0.926 && s == 1) {
+    X_t[i] = r_2[i]
+    s = 2
+  }
+  else{
+    X_t[i] = r_1[i]
+    s = 1
   }
 }
+print(spikes)
+ts.plot(X_t)
+
 
 

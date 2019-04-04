@@ -90,29 +90,35 @@ sigma_3 = 0.918
 mu = 0.377
 s=1
 spikes = 0
+state = c()
 #r_1[i] = (1-a_1)*r_1[i-1] + sigma_1*eps[i]
-#r_2[i] = mu + sigma_2*eps[i]
+#r_2[i] = r_2[i-1] + mu + sigma_2*eps[i]
 #r_3[i] = (1-a_3)*r_3[i-1] + sigma_3*eps[i]
 
-for (i in 2:500) {
+for (i in 2:2000) {
   if (s == 3) {
     X_t[i]=(1-a_1)*X_t[i-1] + sigma_1*eps[i]
     s = 1
+    state = c(state,s)
   }
   if (s == 2) { 
     X_t[i] = (1-a_3)*X_t[i-1] + sigma_3*eps[i]
     s = 3
+    state = c(state,s)
   }
   if (prob[i]>=limit && s == 1) {
-    X_t[i] = mu + sigma_2*eps[i]
+    X_t[i] = X_t[i-1] + mu + sigma_2*eps[i]
     s = 2
+    state = c(state,s)
     spikes = spikes + 1
   }
   if (prob[i]<limit && s == 1) {
     X_t[i]=(1-a_1)*X_t[i-1] + sigma_1*eps[i]
+    state = c(state,s)
   }
 }
 print(spikes)
+plot(state)
 ts.plot(X_t)
 
 

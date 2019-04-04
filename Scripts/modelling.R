@@ -69,7 +69,7 @@ save(t , s.lm, s.pred, DK1,
 ### ¤¤ Det vilde vesten ¤¤ ### ----------------------------------------------------------
 
 
-## Ronald ----
+### ¤¤ Ronald ¤¤ ### --------------------------------------------------------------------
 # Ronald alpha_0 mean reverision (på al data)
 meanrev2 = lm(diff(DK1$D)~DK1$D[1:2190]-1);summary(meanrev2)
 

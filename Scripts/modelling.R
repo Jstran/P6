@@ -11,6 +11,7 @@ library(forecast)
 library(astsa)
 library(timeDate) # Til skewness og kurtosis
 library(MuMIn)    # Til test af modeller
+library(tseries)
 
 
 ### ¤¤ Infotabeller om data ¤¤ ### ------------------------------------------------------

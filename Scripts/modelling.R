@@ -12,6 +12,7 @@ library(astsa)
 library(timeDate) # Til skewness og kurtosis
 library(MuMIn)    # Til test af modeller
 library(tseries)
+library(pracma)
 
 
 ### ¤¤ Infotabeller om data ¤¤ ### ------------------------------------------------------
@@ -126,3 +127,12 @@ ts.plot(DK1$D)
 
 quantile(X_t)
 quantile(DK1$D)
+
+
+# Parameter estimering ----------------------------------------------------
+# Sandsynlighed for spike
+peaks = findpeaks(DK1$D)
+
+plot(DK1$D)
+par(new=TRUE)
+plot(x=peaks[,3],y=peaks[,1], col = "red")

@@ -141,8 +141,8 @@ p.d.hist
 
 ### ¤¤ Gemmer plots ¤¤ ### --------------------------------------------------------------
 
-wanted.plots = 1:7
-save.plots = FALSE
+wanted.plots = 6
+save.plots = TRUE
 wid <- 9
 
 if(save.plots == TRUE){

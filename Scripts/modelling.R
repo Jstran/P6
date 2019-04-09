@@ -53,7 +53,7 @@ s.pred  <- predict(s.lm)
 DK1[[length(DK1)+1]] <- c(s.pred)
 names(DK1)[[length(DK1)]] <- "s.pred"
 
-DK1[[length(DK1)+1]] <- c(DK1$A - s.pred)
+DK1[[length(DK1)+1]] <- c(s.lm$residuals)
 names(DK1)[[length(DK1)]] <- "D"
 
 rm("df")
@@ -61,6 +61,11 @@ rm("df")
 ### ¤¤ Estimater for hele perioden i vores model ¤¤ ### ---------------------------------
 
 tbl <- scoef(s.lm) ; tbl
+
+### ¤¤ ADF-test ¤¤ ### ------------------------------------------------------------------
+adf.test(DK1$D)
+
+adf.test(DK1$D, k = 0)
 
 ### ¤¤ Gemmer workspace ¤¤ ### ----------------------------------------------------------
 
@@ -123,6 +128,7 @@ plot(state)
 par(mfrow=c(1,2))
 ts.plot(X_t)
 ts.plot(DK1$D)
+par(mfrow = c(1,1))
 
 quantile(X_t)
 quantile(DK1$D)

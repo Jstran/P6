@@ -51,3 +51,5 @@ lm.combinations[[which.min(aic)]]
 lm.combinations[[which.min(mse)]]
 lm.combinations[[which.min(rmse)]]
 lm.combinations[[which.min(mae)]]
+
+

@@ -9,6 +9,7 @@ library(ggplot2)
 library(lubridate)
 library(forecast)
 library(astsa)
+library(tseries)
 
 ### ¤¤ Funktioner ¤¤ ### --------------------------------------------
 

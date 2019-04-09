@@ -16,6 +16,7 @@ library(ggplot2)
 library(lubridate)
 library(forecast)
 library(astsa)
+library(tseries)
 
 ### ¤¤ ggplot af rå data ¤¤ ### ---------------------------------------------------------
 

@@ -11,6 +11,8 @@ library(forecast)
 library(astsa)
 library(timeDate) # Til skewness og kurtosis
 library(MuMIn)    # Til test af modeller
+library(tseries)
+library(pracma)
 
 
 ### ¤¤ Infotabeller om data ¤¤ ### ------------------------------------------------------
@@ -76,18 +78,18 @@ meanrev2 = lm(diff(DK1$D)~DK1$D[1:2190]-1);summary(meanrev2)
 set.seed(1)
 a_1 = as.numeric(-meanrev2$coefficients[1])
 a_3 = 0.444
-r_1 = c(); r_1[1]=0
-r_2 = c(); r_2[1]=0
-r_3 = c(); r_3[1]=0
-X_t = c(); X_t[1]=0
+r_1= numeric(1)
+r_2= numeric(1)
+r_3= numeric(1)
+X_t= numeric(1)
 
 eps = rnorm(2000, mean = 0, sd = 1)
 prob = runif(2000)
 limit = 0.926
-sigma_1 = 0.34
-sigma_2 = 0.874
-sigma_3 = 0.918
-mu = 0.377
+sigma_1 = 0.34*80
+sigma_2 = 0.874*80
+sigma_3 = 0.918*80
+mu = -90
 s=1
 spikes = 0
 state = c()
@@ -119,7 +121,18 @@ for (i in 2:2000) {
 }
 print(spikes)
 plot(state)
+par(mfrow=c(1,2))
 ts.plot(X_t)
+ts.plot(DK1$D)
+
+quantile(X_t)
+quantile(DK1$D)
 
 
+# Parameter estimering ----------------------------------------------------
+# Sandsynlighed for spike
+peaks = findpeaks(DK1$D)
 
+plot(DK1$D)
+par(new=TRUE)
+plot(x=peaks[,3],y=peaks[,1], col = "red")

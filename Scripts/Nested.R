@@ -6,7 +6,7 @@ library(MuMIn)
 pc    <- pi/365.25
 nmods <- 1024
 
-mse <- rmse <- mae <- aic <- numeric(nmods)
+mad.n <- mse.n <- rmse.n <- mape.n <- theil.n <- aic.n <- numeric(nmods)
 
 npred <- 730
 
@@ -32,22 +32,29 @@ for (i in 0:(npred - 1)) {
                             eval)
   
   yhat <- sapply(lm.combinations , predict , newdata = dfpred)
+  ydiff <- dfpred$DK1 - yhat
   
-  aic  <- aic  + sapply(lm.combinations, AIC)
-  mse  <- mse  +       ( dfpred$DK1 - yhat )^2
-  rmse <- rmse + sqrt( ( dfpred$DK1 - yhat )^2)
-  mae  <- mae  + abs(    dfpred$DK1 - yhat)
+  aic.n   <- aic.n   + sapply(lm.combinations, AIC)
+  mad.n   <- mad.n   +  abs(   ydiff )
+  mse.n   <- mse.n   +     (   ydiff )^2
+  rmse.n  <- rmse.n  + sqrt( ( ydiff )^2)
+  mape.n  <- mape.n  +  abs( ( ydiff )/dfpred$DK1*100 )
+  theil.n <- theil.n + sqrt( ( ydiff )^2)/(sqrt(dfpred$DK1^2)*sqrt(yhat^2) )
   print(i)  
 }
 
 
 # Gennemsnitter
-mse  <- mse  /npred
-rmse <- rmse /npred
-mae  <- mae  /npred
-aic  <- aic  /npred
+aic   <- aic.n   / npred
+mad   <- mad.n   / npred
+mse   <- mse.n   / npred
+rmse  <- rmse.n  / npred
+mape  <- mape.n  / npred
+theil <- theil.n / npred
 
-lm.combinations[[which.min(aic)]]
-lm.combinations[[which.min(mse)]]
-lm.combinations[[which.min(rmse)]]
-lm.combinations[[which.min(mae)]]
+lm.combinations[[ sort(aic   , index = TRUE)$ix[1:3] ]]
+lm.combinations[[ sort(mad   , index = TRUE)$ix[1:3] ]]
+lm.combinations[[ sort(mse   , index = TRUE)$ix[1:3] ]]
+lm.combinations[[ sort(rmse  , index = TRUE)$ix[1:3] ]]
+lm.combinations[[ sort(mape  , index = TRUE)$ix[1:3] ]]
+lm.combinations[[ sort(theil , index = TRUE)$ix[1:3] ]]

@@ -136,9 +136,30 @@ quantile(DK1$D)
 
 
 # Parameter estimering ----------------------------------------------------
-# Sandsynlighed for spike
-peaks = findpeaks(DK1$D)
+# Hamilton, Regime-Switching Models, 2005, metode til MLE
 
-plot(DK1$D)
-par(new=TRUE)
-plot(x=peaks[,3],y=peaks[,1], col = "red")
+DK1$D = as.numeric(DK1$D)
+l = length(DK1$D)
+f = function(theta){
+  sigma_1 = theta[1];sigma_2=theta[2];sigma_3=theta[3];alpha_1=theta[4];alpha_3=theta[5];p = theta[6];mu_2=theta[7]
+  like=c()
+  xi= matrix(nrow=l,ncol=3); xi[1,]=0.5
+  likesum = 0
+  for (i in 1:(l-1)) {
+    like[i]= p*xi[i,1]*dnorm(DK1$D[i+1], mean = alpha_1*DK1$D[i], sd = sigma_1, log = T) +
+            (1-p)*xi[i,1]*dnorm(DK1$D[i+1], mean = (mu_2 + DK1$D[i]), sd = sigma_2, log = T) +
+            xi[i,2]*dnorm(DK1$D[i+1], mean = (alpha_3*DK1$D[i]), sd = sigma_3, log = T) +
+            xi[i,3]*dnorm(DK1$D[i+1], mean = (alpha_1*DK1$D[i]), sd = sigma_1, log = T)
+    xi[i+1,1] = (p*xi[i,1]*dnorm(DK1$D[i+1], mean = alpha_1*DK1$D[i], sd = sigma_1, log = T) +
+                xi[i,3]*dnorm(DK1$D[i+1], mean = (alpha_1*DK1$D[i]), sd = sigma_1, log = T))/
+                (like[i])
+    xi[i+1,2] = (1-p)*xi[i,1]*dnorm(DK1$D[i+1], mean = (mu_2 + DK1$D[i]), sd = sigma_2, log = T)/like[i]
+    xi[i+1,3] = xi[i,2]*dnorm(DK1$D[i+1], mean = (alpha_3*DK1$D[i]), sd = sigma_3, log = T)/like[i]
+    likesum = likesum + like[i]
+  }
+  return(-likesum)
+}
+
+par = c(1,1,1,0.5,0.5,0.5,5)
+optim(par, f, lower = c(0,0,0,0,0,0.000001,-500), 
+      upper = c(1000,1000,1000,0.99999,0.99999,0.99999,500), method = "L-BFGS-B", control=list(trace=TRUE))

@@ -13,6 +13,7 @@ library(timeDate) # Til skewness og kurtosis
 library(MuMIn)    # Til test af modeller
 library(tseries)
 library(pracma)
+library(zoo)
 
 
 ### ¤¤ Infotabeller om data ¤¤ ### ------------------------------------------------------
@@ -64,9 +65,12 @@ rm("df")
 tbl <- scoef(s.lm) ; tbl
 
 ### ¤¤ ADF-test ¤¤ ### ------------------------------------------------------------------
-adf.test(DK1$D)
 
-adf.test(DK1$D, k = 0)
+DK1.D.filtered <- rollmedian(DK1$D , k = 5)
+
+adf.test(DK1.D.filtered)
+
+adf.test(DK1.D.filtered, k = 0)
 
 ### ¤¤ Gemmer workspace ¤¤ ### ----------------------------------------------------------
 

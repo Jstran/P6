@@ -147,23 +147,24 @@ l = length(DK1$D)
 f = function(theta){
   sigma_1 = theta[1];sigma_2=theta[2];sigma_3=theta[3];alpha_1=theta[4];alpha_3=theta[5];p = theta[6];mu_2=theta[7]
   like=c()
-  xi= matrix(nrow=l,ncol=3); xi[1,]=0.5
+  xi= matrix(nrow=l,ncol=3); xi[1,]=1/3
   likesum = 0
   for (i in 1:(l-1)) {
-    like[i]= p*xi[i,1]*dnorm(DK1$D[i+1], mean = alpha_1*DK1$D[i], sd = sigma_1, log = T) +
-            (1-p)*xi[i,1]*dnorm(DK1$D[i+1], mean = (mu_2 + DK1$D[i]), sd = sigma_2, log = T) +
-            xi[i,2]*dnorm(DK1$D[i+1], mean = (alpha_3*DK1$D[i]), sd = sigma_3, log = T) +
-            xi[i,3]*dnorm(DK1$D[i+1], mean = (alpha_1*DK1$D[i]), sd = sigma_1, log = T)
-    xi[i+1,1] = (p*xi[i,1]*dnorm(DK1$D[i+1], mean = alpha_1*DK1$D[i], sd = sigma_1, log = T) +
-                xi[i,3]*dnorm(DK1$D[i+1], mean = (alpha_1*DK1$D[i]), sd = sigma_1, log = T))/
+    like[i]= p*xi[i,1]*dnorm(DK1$D[i+1], mean = alpha_1*DK1$D[i], sd = sigma_1) +
+            (1-p)*xi[i,1]*dnorm(DK1$D[i+1], mean = (-mu_2 + DK1$D[i]), sd = sigma_2) +
+            xi[i,2]*dnorm(DK1$D[i+1], mean = (alpha_3*DK1$D[i]), sd = sigma_3) +
+            xi[i,3]*dnorm(DK1$D[i+1], mean = (alpha_1*DK1$D[i]), sd = sigma_1)
+    xi[i+1,1] = (p*xi[i,1]*dnorm(DK1$D[i+1], mean = alpha_1*DK1$D[i], sd = sigma_1) +
+                xi[i,3]*dnorm(DK1$D[i+1], mean = (alpha_1*DK1$D[i]), sd = sigma_1))/
                 (like[i])
-    xi[i+1,2] = (1-p)*xi[i,1]*dnorm(DK1$D[i+1], mean = (mu_2 + DK1$D[i]), sd = sigma_2, log = T)/like[i]
-    xi[i+1,3] = xi[i,2]*dnorm(DK1$D[i+1], mean = (alpha_3*DK1$D[i]), sd = sigma_3, log = T)/like[i]
-    likesum = likesum + like[i]
+    xi[i+1,2] = ((1-p)*xi[i,1]*dnorm(DK1$D[i+1], mean = (-mu_2 + DK1$D[i]), sd = sigma_2))/like[i]
+    xi[i+1,3] = xi[i,2]*dnorm(DK1$D[i+1], mean = (alpha_3*DK1$D[i]), sd = sigma_3)/like[i]
+    likesum = likesum + log(like[i])
   }
   return(-likesum)
 }
+f(par)
+par = c(10,50,10,0.5,0.5,0.9,5)
+optim(par, f, lower = c(0,0,0,0,0,0.000001,-100), 
+      upper = c(100,100,100,0.99999,0.99999,0.99999,100), method = "L-BFGS-B", control=list(trace=TRUE, maxit= 500))
 
-par = c(1,1,1,0.5,0.5,0.5,5)
-optim(par, f, lower = c(0,0,0,0,0,0.000001,-500), 
-      upper = c(1000,1000,1000,0.99999,0.99999,0.99999,500), method = "L-BFGS-B", control=list(trace=TRUE))

@@ -81,24 +81,52 @@ save(t , s.lm, s.pred, DK1,
 
 
 ### ¤¤ Ronald ¤¤ ### --------------------------------------------------------------------
-# Ronald alpha_0 mean reverision (på al data)
-meanrev2 = lm(diff(DK1$D)~DK1$D[1:2190]-1);summary(meanrev2)
+# Parameter estimering ----------------------------------------------------
+# Hamilton, Regime-Switching Models, 2005, metode til MLE
 
+DK1$D = as.numeric(DK1$D)
+l = length(DK1$D)
+f = function(theta){
+  sigma_1 = theta[1];sigma_2=theta[2];sigma_3=theta[3];alpha_1=theta[4];alpha_3=theta[5];p = theta[6];mu_2=theta[7]
+  like=c()
+  xi= matrix(nrow=l,ncol=3); xi[1,]=1/3
+  likesum = 0
+  for (i in 1:(l-1)) {
+    like[i]= p*xi[i,1]*dnorm(DK1$D[i+1], mean = (1-alpha_1)*DK1$D[i], sd = sigma_1) +
+            (1-p)*xi[i,1]*dnorm(DK1$D[i+1], mean = (-mu_2 + DK1$D[i]), sd = sigma_2) +
+            xi[i,2]*dnorm(DK1$D[i+1], mean = ((1-alpha_3)*DK1$D[i]), sd = sigma_3) +
+            xi[i,3]*dnorm(DK1$D[i+1], mean = ((1-alpha_1)*DK1$D[i]), sd = sigma_1)
+    xi[i+1,1] = (p*xi[i,1]*dnorm(DK1$D[i+1], mean = (1-alpha_1)*DK1$D[i], sd = sigma_1) +
+                xi[i,3]*dnorm(DK1$D[i+1], mean = ((1-alpha_1)*DK1$D[i]), sd = sigma_1))/
+                (like[i])
+    xi[i+1,2] = ((1-p)*xi[i,1]*dnorm(DK1$D[i+1], mean = (-mu_2 + DK1$D[i]), sd = sigma_2))/like[i]
+    xi[i+1,3] = xi[i,2]*dnorm(DK1$D[i+1], mean = ((1-alpha_3)*DK1$D[i]), sd = sigma_3)/like[i]
+    likesum = likesum + log(like[i])
+  }
+  return(-likesum)
+}
+f(par)
+par = c(10,50,10,0.5,0.5,0.9,5)
+MRS = optim(par, f, lower = c(0,0,0,0,0,0.000001,-100), 
+      upper = c(100,100,100,0.99999,0.99999,0.99999,100), method = "L-BFGS-B", control=list(trace=TRUE, maxit= 500))
+
+
+# Simulering --------------------------------------------------------------
 set.seed(1)
-a_1 = as.numeric(-meanrev2$coefficients[1])
-a_3 = 0.444
+a_1 = MRS$par[4]
+a_3 = MRS$par[5]
 r_1= numeric(1)
 r_2= numeric(1)
 r_3= numeric(1)
 X_t= numeric(1)
 
-eps = rnorm(2000, mean = 0, sd = 1)
-prob = runif(2000)
-limit = 0.926
-sigma_1 = 0.34*80
-sigma_2 = 0.874*80
-sigma_3 = 0.918*80
-mu = -90
+eps = rnorm(2191, mean = 0, sd = 1)
+prob = runif(2191)
+limit = MRS$par[6]
+sigma_1 = MRS$par[1]
+sigma_2 = MRS$par[2]
+sigma_3 = MRS$par[3]
+mu = MRS$par[7]
 s=1
 spikes = 0
 state = c()
@@ -106,7 +134,7 @@ state = c()
 #r_2[i] = r_2[i-1] + mu + sigma_2*eps[i]
 #r_3[i] = (1-a_3)*r_3[i-1] + sigma_3*eps[i]
 
-for (i in 2:2000) {
+for (i in 2:2191) {
   if (s == 3) {
     X_t[i]=(1-a_1)*X_t[i-1] + sigma_1*eps[i]
     s = 1
@@ -128,43 +156,12 @@ for (i in 2:2000) {
     state = c(state,s)
   }
 }
-print(spikes)
 plot(state)
-par(mfrow=c(1,2))
+par(mfrow=c(2,1))
 ts.plot(X_t)
 ts.plot(DK1$D)
+
 par(mfrow = c(1,1))
 
 quantile(X_t)
 quantile(DK1$D)
-
-
-# Parameter estimering ----------------------------------------------------
-# Hamilton, Regime-Switching Models, 2005, metode til MLE
-
-DK1$D = as.numeric(DK1$D)
-l = length(DK1$D)
-f = function(theta){
-  sigma_1 = theta[1];sigma_2=theta[2];sigma_3=theta[3];alpha_1=theta[4];alpha_3=theta[5];p = theta[6];mu_2=theta[7]
-  like=c()
-  xi= matrix(nrow=l,ncol=3); xi[1,]=1/3
-  likesum = 0
-  for (i in 1:(l-1)) {
-    like[i]= p*xi[i,1]*dnorm(DK1$D[i+1], mean = alpha_1*DK1$D[i], sd = sigma_1) +
-            (1-p)*xi[i,1]*dnorm(DK1$D[i+1], mean = (-mu_2 + DK1$D[i]), sd = sigma_2) +
-            xi[i,2]*dnorm(DK1$D[i+1], mean = (alpha_3*DK1$D[i]), sd = sigma_3) +
-            xi[i,3]*dnorm(DK1$D[i+1], mean = (alpha_1*DK1$D[i]), sd = sigma_1)
-    xi[i+1,1] = (p*xi[i,1]*dnorm(DK1$D[i+1], mean = alpha_1*DK1$D[i], sd = sigma_1) +
-                xi[i,3]*dnorm(DK1$D[i+1], mean = (alpha_1*DK1$D[i]), sd = sigma_1))/
-                (like[i])
-    xi[i+1,2] = ((1-p)*xi[i,1]*dnorm(DK1$D[i+1], mean = (-mu_2 + DK1$D[i]), sd = sigma_2))/like[i]
-    xi[i+1,3] = xi[i,2]*dnorm(DK1$D[i+1], mean = (alpha_3*DK1$D[i]), sd = sigma_3)/like[i]
-    likesum = likesum + log(like[i])
-  }
-  return(-likesum)
-}
-f(par)
-par = c(10,50,10,0.5,0.5,0.9,5)
-optim(par, f, lower = c(0,0,0,0,0,0.000001,-100), 
-      upper = c(100,100,100,0.99999,0.99999,0.99999,100), method = "L-BFGS-B", control=list(trace=TRUE, maxit= 500))
-

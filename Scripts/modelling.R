@@ -165,3 +165,41 @@ par(mfrow = c(1,1))
 
 quantile(X_t)
 quantile(DK1$D)
+
+
+# Model med mulighed for flere regime 2 og 3 i streg ----------------------
+DK1$D = as.numeric(DK1$D)
+l = length(DK1$D)
+f_2 = function(theta){
+  
+  sigma_1 = theta[1];sigma_2=theta[2];sigma_3=theta[3];
+  alpha_1=theta[4];alpha_3=theta[5];p_11 = theta[6];p_22 = theta[7]; p_33 = theta[8];mu_2=theta[9]
+  like=c()
+  xi= matrix(nrow=l,ncol=3); xi[1,]=1/3
+  likesum = 0
+  for (i in 1:(l-1)) {
+    like[i]= p_11*xi[i,1]*dnorm(DK1$D[i+1], mean = (1-alpha_1)*DK1$D[i], sd = sigma_1) +
+      (1-p_11)*xi[i,1]*dnorm(DK1$D[i+1], mean = (-mu_2 + DK1$D[i]), sd = sigma_2) +
+      p_22*xi[i,2]*dnorm(DK1$D[i+1], mean = (-mu_2 + DK1$D[i]), sd = sigma_2) +
+      (1-p_22)*xi[i,2]*dnorm(DK1$D[i+1], mean = ((1-alpha_3)*DK1$D[i]), sd = sigma_3) +
+      (1-p_33)*xi[i,3]*dnorm(DK1$D[i+1], mean = ((1-alpha_1)*DK1$D[i]), sd = sigma_1) +
+      p_33*xi[i,3]*dnorm(DK1$D[i+1], mean = ((1-alpha_3)*DK1$D[i]), sd = sigma_3)
+    
+    
+    xi[i+1,1] = (p_11*xi[i,1]*dnorm(DK1$D[i+1], mean = (1-alpha_1)*DK1$D[i], sd = sigma_1) +
+                (1-p_33)*xi[i,3]*dnorm(DK1$D[i+1], mean = ((1-alpha_1)*DK1$D[i]), sd = sigma_1))/(like[i])
+    xi[i+1,2] = ((1-p_11)*xi[i,2]*dnorm(DK1$D[i+1], mean = (-mu_2 + DK1$D[i]), sd = sigma_2)+
+                p_22*xi[i,2]*dnorm(DK1$D[i+1], mean = (-mu_2 + DK1$D[i]), sd = sigma_2))/(like[i])
+    xi[i+1,3] = ((1-p_22)*xi[i,2]*dnorm(DK1$D[i+1], mean = ((1-alpha_3)*DK1$D[i]), sd = sigma_3)+
+                p_33*xi[i,3]*dnorm(DK1$D[i+1], mean = ((1-alpha_3)*DK1$D[i]), sd = sigma_3))/(like[i])
+    likesum = likesum + log(like[i])
+  }
+  return(-likesum)
+}
+upper = c(100,100,100,0.99999,0.99999,0.99999,0.99999,0.99999,100)
+lower = c(0,0,0,0,0,0.000001,0.000001,0.000001,-100)
+par2 = c(10,50,30,0.5,0.5,0.9,0.5,0.5,5)
+# par = sigma1,sigma2,sigma3,alpha_1,alpha_3,p_11,p_22,p_33,mu
+MRS2 = optim(par2, f_2, lower = lower, 
+            upper = upper, method = "L-BFGS-B", control=list(trace=TRUE, maxit= 500))
+

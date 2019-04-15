@@ -22,7 +22,7 @@ library(tseries)
 
 # Plot af ukorrigerede data
 p.raw <-  ggplot(data.frame(X1 = dates, 
-                            X2 = DK1$Raw), 
+                            X2 = DK1$Raw ), 
                  aes(x = X1 , y = X2, size = sz$l) ) +
   geom_line(aes(), color = colors[1]) +
   labs(x = "", y = " Spotpris i DKK/MWh", 
@@ -34,7 +34,7 @@ i <- i + 1
 
 # Plot af korrigerede data
 p.clean <-  ggplot(data.frame(X1 = dates, 
-                              X2 = DK1$A), 
+                              X2 = DK1$A ), 
                    aes(x = X1 , y = X2 , size = sz$l) ) +
   geom_line(aes(), color = colors[1]) +
   labs(x = "", y = " Spotpris i DKK/MWh", color = "") +
@@ -141,7 +141,7 @@ p.d.hist
 
 ### ¤¤ Gemmer plots ¤¤ ### --------------------------------------------------------------
 
-wanted.plots = 6
+wanted.plots = 1:7
 save.plots = TRUE
 wid <- 9
 

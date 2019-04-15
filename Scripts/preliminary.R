@@ -64,7 +64,8 @@ for (l in 1:length(years.names.win)) {
 ### ¤¤ Data frame og lister med data ¤¤ ### ---------------------------------------------
 
 # Laver datoer.
-dates <- seq(ymd("2013-01-01"), ymd("2018-12-31"), by="days")
+dates  <- seq(ymd("2013-01-01"), ymd("2018-12-31"), by="days")
+dates2 <- seq(ymd("2013-01-01"), ymd("2019-02-13"), by="days") 
 
 # Totale antal observationer
 n.obs <- length(dates)
@@ -172,7 +173,7 @@ sz <- list(l = I(0.2) , p = I(0.1))
 
 ### ¤¤ Gemmer workspace ¤¤ ### ----------------------------------------------------------
 
-save(DK1, p.Y, p.th, colors, dates, n.obs, ci, scoef, sz, 
+save(DK1, p.Y, p.th, colors, dates, dates2, n.obs, ci, scoef, sz, 
      file = "./Workspaces/preliminary.Rdata")
 
 ### ¤¤ Det vilde vesten ¤¤ ### ----------------------------------------------------------

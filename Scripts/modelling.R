@@ -204,10 +204,14 @@ f_2 = function(theta){
   }
   return(-likesum)
 }
-upper = c(100,100,100,0.99999,0.99999,0.99999,0.99999,0.99999,100)
-lower = c(0,0,0,0,0,0.000001,0.000001,0.000001,-100)
-par2 = c(10,50,30,0.5,0.5,0.9,0.5,0.5,5)
+upper = c(100,100,100,0.99999,0.99999,0.99999,0.99999,0.99999,20)
+lower = c(10,30,50,0.01,0.01,0.01,0.01,0.01,-20)
+par2 = c(30,80,70,0.1,0.1,0.5,0.5,0.5,5)
 # par = sigma1,sigma2,sigma3,alpha_1,alpha_3,p_11,p_22,p_33,mu
-MRS2 = optim(par2, f_2, lower = lower, 
-            upper = upper, method = "L-BFGS-B", control=list(trace=TRUE, maxit= 500))
+MRS2 = optim(par2, f_2, lower = lower, upper=upper, method = "L-BFGS-B", 
+             control=list(trace=TRUE, maxit= 500,
+                          parscale=c(0.5,0.5,0.5,0.05,0.05,0.001,0.001,0.001,0.1), factr = 1e-12))
 
+library(optimx)
+MRS2 = optimx(par2, f_2, lower = lower, upper=upper, method = "L-BFGS-B", 
+             control=list(trace=TRUE, maxit= 500,parscale=c(0.5,0.5,0.5,0.05,0.05,0.001,0.001,0.001,0.1)))

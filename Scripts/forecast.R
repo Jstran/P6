@@ -40,7 +40,7 @@ OOS$D  <- as.numeric(OOS$D) # Bare pga. R
 
 dat <- c(DK1$D, OOS$D)
 
-x.pred.oos <- c() # Tom vektor til at indsætte de forecasted værdier ofr OOS
+x.pred <- c() # Tom vektor til at indsætte de forecasted værdier ofr OOS
 
 theta0 <- c(10,50,10,0.5,0.5,0.9,5) # Startværdier for parametre til optim
 lB     <- c(0,0,0,0,0,0.000001,-100) # Nedre grænse for parametre
@@ -50,9 +50,9 @@ set.seed
 prob <- runif(length(dat)) # Tilfældige for skift mellem regimer
 
 s <- 1 # Start regime
-spike.count.oos <- 0 # Tæller antal spikes for OOS
+spike.count <- 0 # Tæller antal spikes for OOS
 
-state.oos <- c() # Giver hvilket stadie vi befinder os i for OOS
+state <- c() # Giver hvilket stadie vi befinder os i for OOS
 
 start.oos <-  length(DK1$D) + 1 # Indeks hvor OOS starter
 slut.oos  <- start.oos + length(OOS$D) - 1 # Indeks hvor OOS slutter
@@ -75,39 +75,39 @@ mu2    <- MRS$par[7]
 for (l in start.oos:slut.oos) {
   
   if (s == 3) {
-    x.pred.oos[l]=(1 - a1)*dat[l-1] 
+    x.pred[l]=(1 - a1)*dat[l-1] 
     s = 1
-    state.oos[l] = s
+    state[l] = s
   }
   else if (s == 2) { 
-    x.pred.oos[l] = (1 - a3)*dat[l-1] 
+    x.pred[l] = (1 - a3)*dat[l-1] 
     s = 3
-    state.oos[l] = s
+    state[l] = s
   }
   else if (prob[l-start.oos + 1] >= p && s == 1) {
-    x.pred.oos[l] = dat[l-1] + mu2 
+    x.pred[l] = dat[l-1] + mu2 
     s = 2
-    state.oos[l] = s
-    spikes.count.oos <- spike.count.oos + 1
+    state[l] = s
+    spikes <- spike.count + 1
   }
   else {
-    x.pred.oos[l] <- (1 - a1)*dat[l-1] 
-    state.oos[l] = s
+    x.pred[l] <- (1 - a1)*dat[l-1] 
+    state[l] = s
   }
 }
 
 
 
 plot(dat[2000:slut.oos], type = "l", main = "Uden sason")
-lines(x.pred.oos[2000:slut.oos], col = "red")
+lines(x.pred[2000:slut.oos], col = "red")
 
 plot(OOS$A, type = "l", main = "Med sason")
-lines(x.pred.oos[start.oos:slut.oos] + OOS$s.pred, col = "red")
+lines(x.pred[start.oos:slut.oos] + OOS$s.pred, col = "red")
 
-rmse.oos <- sqrt(1/(slut.oos - start.oos + 1) * sum((dat[start.oos:slut.oos] - 
-                                                       x.pred.oos[start.oos:slut.oos])^2))
+rmse <- sqrt(1/(slut.oos - start.oos + 1) * sum((dat[start.oos:slut.oos] - 
+                                                 x.pred[start.oos:slut.oos])^2))
 
-pred.inter <- 1.96 * sqrt(var(dat[start.oos:slut.oos] - x.pred.oos[start.oos:slut.oos]))
+pred.inter <- 1.96 * sqrt(var(dat[start.oos:slut.oos] - x.pred[start.oos:slut.oos]))
 
-save(x.pred.oos, rmse.oos, rmse.oos.d, a1, a3, p, mu2, pred.inter,
+save(x.pred, rmse, a1, a3, p, mu2, pred.inter,
           file = "./Workspaces/forecast.Rdata")

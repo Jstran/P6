@@ -18,6 +18,7 @@ library(lubridate)
 library(forecast)
 library(astsa)
 library(tseries)
+library(Cairo)     # Til at gemme
 
 ### ¤¤ ggplot af rå data ¤¤ ### ---------------------------------------------------------
 
@@ -167,18 +168,18 @@ save.plots = TRUE
 wid <- 9
 
 if(save.plots == TRUE){
-    for(j in wanted.plots){
-      if(ps$l[j] == FALSE){hei <- 3}
-      else{hei <- 3.8}
-      
-      postscript(file = paste("./Grafer/",ps$names[j],".eps" , sep = ""), 
-                 width = wid, height = hei , horizontal = FALSE)
-      print(ps$p[[j]])
-      dev.off()
+  for(j in wanted.plots){
+    if(ps$l[j] == FALSE){hei <- 3}
+    else{hei <- 3.8}
+    
+    ggsave(file = paste("./Grafer/",ps$names[j],".eps" , sep = ""), 
+           width = wid, height = hei , device = cairo_ps , dpi = 600)
+    print(ps$p[[j]])
+    dev.off()
   }
 }
 
-data.frame(names = ps$names , var = ps$var )
+data.frame(names = ps$names , var = ps$var )  
 
 ### ¤¤ Det vilde vesten ¤¤ ### ----------------------------------------------------------
 

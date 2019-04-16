@@ -42,8 +42,8 @@ p.clean <-  ggplot(data.frame(X1 = dates,
   labs(x = "", y = " Spotpris i DKK/MWh", color = "") +
   p.Y
 #p.clean
-ps$p[[i]] <- p.clean ; ps$names[i] <- "plotClean" ; ps$var[i] <- "p.clean"
-ps$l[i] <- FALSE ; i <- i + 1
+ps$p[[i]] <- p.clean ; ps$names[i] <- "plotClean" ; ps$var[i] <- "p.clean"; ps$l[i] <- FALSE
+i <- i + 1
 
 
 # Histogram for priserne
@@ -75,8 +75,8 @@ p.acf.A <- ggplot(data = data.frame(X1 = acf(DK1$A, lag.max = 2190 , plot = FALS
   labs(x = "Lag", y = "ACF") +
   p.th
 #p.acf.A
-ps$p[[i]] <- p.acf.A ; ps$names[i] <- "plotACFAll" ; ps$var[i] <- "p.acf.A"
-ps$l[i] <- FALSE ; i <- i + 1
+ps$p[[i]] <- p.acf.A ; ps$names[i] <- "plotACFAll" ; ps$var[i] <- "p.acf.A" ; ps$l[i] <- FALSE 
+i <- i + 1
 
 
 ### ¤¤ Regressions plot ¤¤ ### ----------------------------------------------------------
@@ -124,8 +124,8 @@ p.d.acf <- ggplot(data = data.frame(X1 = acf(DK1$D, lag.max = 30 , plot = FALSE)
   labs(x = "Lag", y = "ACF") +
   p.th
 #p.d.acf
-ps$p[[i]] <- p.d.acf ; ps$names[i] <- "plotACFDecomp" ; ps$var[i] <- "p.d.acf"
-ps$l[i] <- FALSE ; i <- i + 1
+ps$p[[i]] <- p.d.acf ; ps$names[i] <- "plotACFDecomp" ; ps$var[i] <- "p.d.acf" ; ps$l[i] <- FALSE
+i <- i + 1
 
 # Histogram for detrended priser
 p.d.hist <- ggplot(data.frame(X2 = DK1$D),
@@ -139,7 +139,9 @@ p.d.hist <- ggplot(data.frame(X2 = DK1$D),
   scale_x_continuous() +
   geom_vline(xintercept = mean(DK1$D), col = colors[3]) +
   p.th
-p.d.hist
+#p.d.hist
+ps$p[[i]] <- p.d.hist ; ps$names[i] <- "plotHistDetrend" ; ps$var[i] <- "p.d.hist" ; ps$l[i] <- FALSE
+i <- i + 1
 
 ### ¤¤ Forecast plot ¤¤ ### -------------------------------------------------------------
 
@@ -157,13 +159,14 @@ p.forecast <- ggplot(data = data.frame(X1 = dates.all[2000:2281],
               scale_y_continuous() +
               theme(legend.position = "top" , legend.justification = "left" , 
               legend.direction = "horizontal", legend.background = element_blank()) +
-              labs(x = "", y = "Spotpris i DKK/MWh", title = "", color = "");p.forecast
-ps$p[[i]] <- p.forecast ; ps$names[i] <- "plotForecastModA" ; ps$var[i] <- "p.forecast" ; ps$l[i] <- T
+              labs(x = "", y = "Spotpris i DKK/MWh", title = "", color = "")
+#p.forecast
+ps$p[[i]] <- p.forecast ; ps$names[i] <- "plotForecastModA" ; ps$var[i] <- "p.forecast" ; ps$l[i] <- TRUE
 i <- i + 1
 
 ### ¤¤ Gemmer plots ¤¤ ### --------------------------------------------------------------
 
-wanted.plots = 1:8
+wanted.plots = 1:9
 save.plots = TRUE
 wid <- 9
 
@@ -172,14 +175,13 @@ if(save.plots == TRUE){
     if(ps$l[j] == FALSE){hei <- 3}
     else{hei <- 3.8}
     
+    print(ps$p[[j]])
     ggsave(file = paste("./Grafer/",ps$names[j],".eps" , sep = ""), 
            width = wid, height = hei , device = cairo_ps , dpi = 600)
-    print(ps$p[[j]])
-    dev.off()
   }
 }
 
-data.frame(names = ps$names , var = ps$var )  
+data.frame(names = ps$names , var = ps$var , TF = ps$l )  
 
 ### ¤¤ Det vilde vesten ¤¤ ### ----------------------------------------------------------
 

@@ -145,16 +145,16 @@ i <- i + 1
 
 ### ¤¤ Forecast plot ¤¤ ### -------------------------------------------------------------
 
-p.forecast <- ggplot(data = data.frame(X1 = dates.all[2100:2281],
-                                       X2 = c(DK1$D, OOS$D)[2100:2281] ), 
+p.forecast <- ggplot(data = data.frame(X1 = dates.all[2101:2281],
+                                       X2 = c(DK1$D, OOS$D)[2101:2281] ), 
                      aes(x = X1, y = X2) ) +
-              geom_line(aes(col = "Sæsonkorigerede", size = sz$l)) + 
+              geom_line(aes(col = "Sæsonkorigerede observationer", size = sz$l)) + 
               scale_x_date(date_labels = "%b %y", breaks = pretty(dates.all[2100:2281], n = 6)) +
               geom_line(data = data.frame(X1 = dates.all[2100:2281], 
                                           X2 = x.pred[2100:2281]), 
-                        aes(col = "Sæsonkorigerende forecast", size = sz$l)) +
-              geom_ribbon(aes(ymin = x.pred[2100:2281] - pred.inter, 
-                              ymax = x.pred[2100:2281] + pred.inter), 
+                        aes(col = "Sæsonkorigerede forecast", size = sz$l)) +
+              geom_ribbon(aes(ymin = x.pred[2101:2281] - pred.inter, 
+                              ymax = x.pred[2101:2281] + pred.inter), 
                           fill = colors[6], alpha = 0.4) +
               scale_color_manual(values = colors[1:2]) +
               p.th +
@@ -168,7 +168,7 @@ i <- i + 1
 
 ### ¤¤ Gemmer plots ¤¤ ### --------------------------------------------------------------
 
-wanted.plots = 1:9
+wanted.plots = 9
 save.plots = TRUE
 wid <- 9
 
@@ -183,7 +183,7 @@ if(save.plots == TRUE){
   }
 }
 
-data.frame(names = ps$names , var = ps$var , TF = ps$l )  
+data.frame(names = ps$names , var = ps$var )  
 
 ### ¤¤ Det vilde vesten ¤¤ ### ----------------------------------------------------------
 

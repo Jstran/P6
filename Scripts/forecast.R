@@ -104,12 +104,8 @@ lines(x.pred.oos[2000:slut.oos], col = "red")
 plot(OOS$A, type = "l", main = "Med sason")
 lines(x.pred.oos[start.oos:slut.oos] + OOS$s.pred, col = "red")
 
-rmse.oos.d <- sqrt(1/(slut.oos - start.oos + 1) * sum((dat[start.oos:slut.oos] - 
+rmse.oos <- sqrt(1/(slut.oos - start.oos + 1) * sum((dat[start.oos:slut.oos] - 
                                                        x.pred.oos[start.oos:slut.oos])^2))
-
-rmse.oos <- sqrt(1/(slut.oos - start.oos + 1) * sum((OOS$A - 
-                                                     x.pred.oos[start.oos:slut.oos] + 
-                                                     OOS$s.pred)^2))
 
 pred.inter <- 1.96 * sqrt(var(dat[start.oos:slut.oos] - x.pred.oos[start.oos:slut.oos]))
 

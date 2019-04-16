@@ -38,8 +38,8 @@ rm("dat.wd" , "dat.sat" , "dat.sun" , "dat.hol" , "ls" , "df")
 ### ¤¤ Regression ¤¤ ### ----------------------------------------------------------------
 
 # Regression på s model med kvadratisk led (t^2)
-t     <- time(DK1$A)
-pc    <- pi/365.25 
+t  <- time(DK1$A)
+pc <- pi/365.25 
 
 df <- data.frame(DK1 = DK1$A , t = t , sat = DK1$sat , sun = DK1$sun , hol = DK1$hol ,
                  sin2  = sin((2*pc)*t)  , cos2  = cos((2*pc)*t) ,
@@ -58,7 +58,22 @@ names(DK1)[[length(DK1)]] <- "s.pred"
 DK1[[length(DK1)+1]] <- c(s.lm$residuals)
 names(DK1)[[length(DK1)]] <- "D"
 
-rm("df")
+# OOS data
+t.oos  <- (length(DK1$A) + 1):(length(DK1$A) + length(OOS$A))
+df.oos <- data.frame(t = t.oos, sat = OOS$sat, sun = OOS$sun, hol = OOS$hol, 
+                     sin2  = sin((2*pc)*t.oos)  , cos2  = cos((2*pc)*t.oos) ,
+                     sin8  = sin((8*pc)*t.oos)  , cos8  = cos((8*pc)*t.oos) ,
+                     sin24 = sin((24*pc)*t.oos) , cos24 = cos((24*pc)*t.oos) )
+
+s.pred.oos <- predict(s.lm, newdata = df.oos)
+
+OOS[[length(OOS) + 1]] <- c(s.pred.oos)
+names(OOS)[[length(OOS)]] <- "s.pred"
+
+OOS[[length(OOS) + 1]] <- c(OOS$A - s.pred.oos)
+names(OOS)[[length(OOS)]] <- "D"
+
+rm("df", "df.oos")
 
 ### ¤¤ Estimater for hele perioden i vores model ¤¤ ### ---------------------------------
 
@@ -74,7 +89,7 @@ adf.test(DK1.D.filtered, k = 0)
 
 ### ¤¤ Gemmer workspace ¤¤ ### ----------------------------------------------------------
 
-save(t , s.lm, s.pred, DK1, 
+save(t , s.lm, s.pred, DK1, OOS,
      file = "./Workspaces/modelling.Rdata")
 
 ### ¤¤ Det vilde vesten ¤¤ ### ----------------------------------------------------------

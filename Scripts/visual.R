@@ -3,6 +3,7 @@
 rm(list=ls())
 load("./Workspaces/preliminary.Rdata")
 load("./Workspaces/modelling.Rdata")
+load("./Workspaces/forecast.Rdata")
 
 i <- 1
 ps <- list(names = c() , var = c(),  p = c() , i = c() , l = c())
@@ -138,6 +139,32 @@ p.d.hist <- ggplot(data.frame(X2 = DK1$D),
   geom_vline(xintercept = mean(DK1$D), col = colors[3]) +
   p.th
 p.d.hist
+
+### ¤¤ Forecast plot ¤¤ ### -------------------------------------------------------------
+X1.temp.1 <- dates.all[2000:2281]
+X2.temp.1 <- x.pred.oos[2000:2281]
+X1.temp.2 <- dates.all[2000:2281]
+X2.temp.2 <- c(DK1$D, OOS$D)[2000:2281]
+inter <- 151
+
+p.forecast <- ggplot(data = data.frame(X1 = X1.temp.2,
+                                       X2 = X2.temp.2 ), 
+                     aes(x = X1, y = X2) ) +
+              geom_line(aes(col = "Sæsonkorigerede", size = sz$l)) + 
+              scale_x_date(date_labels = "%Y", breaks = pretty(X1.temp.1, n = 6)) +
+              geom_line(data = data.frame(X1 = X1.temp.1, 
+                              X2 = X2.temp.1), 
+              aes(col = "Sæsonkorigerende forecast", size = sz$l)) +
+              geom_ribbon(aes(ymin = X2.temp.1 - inter, ymax = X2.temp.2 + inter), fill = "grey70", alpha = 0.8) +
+              scale_color_manual(values = colors[1:2]) +
+              p.th +
+              scale_y_continuous() +
+              scale_x_date(breaks = pretty(dates.all[2000:2281], n = 4)) +
+              theme(legend.position = "top" , legend.justification = "left" , 
+                    legend.direction = "horizontal", legend.background = element_blank()) +
+               labs(x = "", y = "Spotpris i DKK/MWh", title = "", color = ""); p.forecast  
+
+
 
 ### ¤¤ Gemmer plots ¤¤ ### --------------------------------------------------------------
 

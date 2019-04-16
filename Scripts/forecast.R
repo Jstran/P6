@@ -1,7 +1,7 @@
 rm(list=ls())
 load("./Workspaces/modelling.Rdata")
 
-set.seed(101296)
+set.seed(12)
 logLike <- function(theta){
   sigma1 <- theta[1]
   sigma2 <- theta[2]
@@ -60,9 +60,11 @@ slut.oos  <- start.oos + length(OOS$D) - 1 # Indeks hvor OOS slutter
 j <- start.oos - 1 # Sidste obs i IS
 
 MRS <- optim(theta0, logLike, lower = lB, upper = uB, method = "L-BFGS-B", # Finder MLE
-             control=list(trace=TRUE, maxit= 500))
+             control=list(trace=TRUE, maxit= 500), hessian = TRUE)
 
-#  sigma1 <- MRS$par[1]
+se <- sqrt(diag(solve(MRS$hessian))) # Standard error
+AIC <- 2*(length(MRS$par) - MRS$value)
+#  sigma1 <- MRS$par[1] 
 #  sigma2 <- MRS$par[2]
 #  sigma3 <- MRS$par[3]
 a1     <- MRS$par[4] 
@@ -106,7 +108,9 @@ plot(OOS$A, type = "l", main = "Med sason")
 lines(x.pred[start.oos:slut.oos] + OOS$s.pred, col = "red")
 
 rmse <- sqrt(1/(slut.oos - start.oos + 1) * sum((dat[start.oos:slut.oos] - 
-                                                 x.pred[start.oos:slut.oos])^2))
+                                                 x.pred[start.oos:slut.oos])^2));rmse
+mae <- 1/(slut.oos - start.oos + 1) * sum(abs(dat[start.oos:slut.oos] - 
+                                             x.pred[start.oos:slut.oos]));mae
 
 pred.inter <- 1.96 * sqrt(var(dat[start.oos:slut.oos] - x.pred[start.oos:slut.oos]))
 

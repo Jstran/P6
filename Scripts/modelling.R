@@ -14,6 +14,7 @@ library(MuMIn)    # Til test af modeller
 library(tseries)
 library(pracma)
 library(zoo)
+library(rms)
 
 
 ### ¤¤ Infotabeller om data ¤¤ ### ------------------------------------------------------
@@ -57,6 +58,13 @@ names(DK1)[[length(DK1)]] <- "s.pred"
 
 DK1[[length(DK1)+1]] <- c(s.lm$residuals)
 names(DK1)[[length(DK1)]] <- "D"
+
+# GLM for standard errors
+s.glm <- glm(DK1$A ~ t + DK1$sat + DK1$sun + DK1$hol +
+             sin((2*pc)*t)  +  cos((2*pc)*t) +
+             sin((8*pc)*t)  +  cos((8*pc)*t) +
+             sin((24*pc)*t) + cos((24*pc)*t) )
+summary(s.glm)
 
 # OOS data
 t.oos  <- (length(DK1$A) + 1):(length(DK1$A) + length(OOS$A))

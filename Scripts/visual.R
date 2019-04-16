@@ -145,22 +145,24 @@ i <- i + 1
 
 ### ¤¤ Forecast plot ¤¤ ### -------------------------------------------------------------
 
-p.forecast <- ggplot(data = data.frame(X1 = dates.all[2000:2281],
-                                       X2 = c(DK1$D, OOS$D)[2000:2281] ), 
+p.forecast <- ggplot(data = data.frame(X1 = dates.all[2100:2281],
+                                       X2 = c(DK1$D, OOS$D)[2100:2281] ), 
                      aes(x = X1, y = X2) ) +
               geom_line(aes(col = "Sæsonkorigerede", size = sz$l)) + 
-              scale_x_date(date_labels = "%Y", breaks = pretty(dates.all[2000:2281], n = 6)) +
-              geom_line(data = data.frame(X1 = dates.all[2000:2281], 
-                                          X2 = x.pred[2000:2281]), 
+              scale_x_date(date_labels = "%b %y", breaks = pretty(dates.all[2100:2281], n = 6)) +
+              geom_line(data = data.frame(X1 = dates.all[2100:2281], 
+                                          X2 = x.pred[2100:2281]), 
                         aes(col = "Sæsonkorigerende forecast", size = sz$l)) +
-              geom_ribbon(aes(ymin = x.pred[2000:2281] - pred.inter, ymax = x.pred[2000:2281] + pred.inter), fill = "grey70", alpha = 0.4) +
+              geom_ribbon(aes(ymin = x.pred[2100:2281] - pred.inter, 
+                              ymax = x.pred[2100:2281] + pred.inter), 
+                          fill = colors[6], alpha = 0.4) +
               scale_color_manual(values = colors[1:2]) +
               p.th +
               scale_y_continuous() +
               theme(legend.position = "top" , legend.justification = "left" , 
               legend.direction = "horizontal", legend.background = element_blank()) +
               labs(x = "", y = "Spotpris i DKK/MWh", title = "", color = "")
-#p.forecast
+p.forecast
 ps$p[[i]] <- p.forecast ; ps$names[i] <- "plotForecastModA" ; ps$var[i] <- "p.forecast" ; ps$l[i] <- TRUE
 i <- i + 1
 

@@ -162,7 +162,8 @@ colors <- c("royalblue4" ,
             "firebrick4" ,
             "darkorchid4",
             "chartreuse4",
-            "black")
+            "black",
+            "grey70")
 
 # Grå farve der matcher projektet
 myGray <- rgb(245/255, 245/255, 245/255)

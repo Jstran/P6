@@ -1,7 +1,7 @@
 rm(list=ls())
 load("./Workspaces/modelling.Rdata")
 
-
+set.seed(101296)
 logLike <- function(theta){
   sigma1 <- theta[1]
   sigma2 <- theta[2]
@@ -46,7 +46,7 @@ theta0 <- c(10,50,10,0.5,0.5,0.9,5) # Startværdier for parametre til optim
 lB     <- c(0,0,0,0,0,0.000001,-100) # Nedre grænse for parametre
 uB     <- c(100,100,100,0.99999,0.99999,0.99999,100) # Øvre grænse for parametre
 
-set.seed
+
 prob <- runif(length(dat)) # Tilfældige for skift mellem regimer
 
 s <- 1 # Start regime
@@ -88,7 +88,7 @@ for (l in start.oos:slut.oos) {
     x.pred[l] = dat[l-1] + mu2 
     s = 2
     state[l] = s
-    spikes <- spike.count + 1
+    spike.count <- spike.count + 1
   }
   else {
     x.pred[l] <- (1 - a1)*dat[l-1] 
@@ -96,6 +96,7 @@ for (l in start.oos:slut.oos) {
   }
 }
 
+x.pred.df <- data.frame(t = start.oos:slut.oos, x.pred = x.pred[start.oos:slut.oos])
 
 
 plot(dat[2000:slut.oos], type = "l", main = "Uden sason")

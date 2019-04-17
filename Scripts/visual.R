@@ -156,7 +156,7 @@ p.forecast <- ggplot(data = data.frame(X1 = dates.all[2101:2281],
               geom_ribbon(aes(ymin = x.pred[2101:2281] - pred.inter, 
                               ymax = x.pred[2101:2281] + pred.inter), 
                           fill = colors[6], alpha = 0.4) +
-              scale_color_manual(values = colors[1:2]) +
+              scale_color_manual(values = c(colors[2], colors[1])) +
               p.th +
               scale_y_continuous() +
               theme(legend.position = "top" , legend.justification = "left" , 
@@ -169,7 +169,7 @@ i <- i + 1
 ### ¤¤ Gemmer plots ¤¤ ### --------------------------------------------------------------
 
 wanted.plots = 9
-save.plots = TRUE
+save.plots = T
 wid <- 9
 
 if(save.plots == TRUE){

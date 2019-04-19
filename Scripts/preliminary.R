@@ -36,6 +36,32 @@ scoef <- function(mod){
   return(df)
 }
 
+s.se <- function(mod, type = "lm"){
+  if (type == "lm") {
+    se <- summary(mod)$coef[,2]
+  }
+  if (type == "gls") {
+    se <- summary(mod)$tTable[,2]
+  }
+  # Koefficienter til årlig periode
+  c1 <- sqrt(se[4]^2 + se[5]^2)
+  c2 <- atan(se[5]/se[4]) * 365.25/(2*pi)
+  
+  # Koefficienter til halvårlig periode
+  c3 <- sqrt(se[6]^2 + se[7]^2)
+  c4 <- atan(se[7]/se[6]) * 365.25/(8*pi)
+  
+  # Koefficienter til kvartal periode
+  c5 <- sqrt(se[8]^2 + se[9]^2)
+  c6 <- atan(se[9]/se[8]) * 365.25/(24*pi) 
+  
+  # Dataframe med alt info
+  df <- data.frame(b0 = se[1] , b1 = se[2] , b2 = se[3] , c1 = c1 , c2 = c2 ,
+                   c3 = c3 , c4 = c4 , c5 = c5, c6 = c6, 
+                   d1 = se[10] , d2 = se[11] , d3 = se[12]) 
+  return(df)
+}
+
 # Konfidensinterval
 ci <- function(n = numeric(2191)){
   qnorm((1 + 0.95)/2)/sqrt(length(n))
@@ -113,6 +139,13 @@ for (i in 1:2191) {
   } 
 }
 
+# Gør out-of-sample vindprognose til daglige forecast
+wind2019[2139,3] <- mean(wind2019[2138,3],wind2019[2140,3]) # Fjerner Na
+wind2019Daily <- c()
+for (j in 0:(length(wind2019[,2])/24 -1)) {
+  wind2019Daily[j+1] <- mean(wind2019[((j*24 + 1):((j+1)*24)),3])
+}
+
 
 # Samler hvert år samt alle år sammen for DK1 i en liste
 fq <- 1
@@ -140,7 +173,7 @@ DK1 <- list(A   = ts(c(dat2013[,8],
                       dat2018[,8]),   frequency = fq))
 
 OOS <- list(A   = ts(dat2019[,8], frequency = fq),
-            W   = wind2019[,2],
+            W   = wind2019Daily,
             sat = sat.oos,
             sun = sun.oos,
             hol = hol.oos)
@@ -153,7 +186,7 @@ DK1$A[which.max(DK1$A)] <- mean(c((DK1$A[which.max(DK1$A)-1]),
 rm("dat2013","dat2014","dat2015","dat2016","dat2017","dat2018","dat2019","fq","i","l",
    "path","sat","sun","hol","years","years.names", "wind2013" , "wind2014", 
    "wind2015", "wind2016", "wind2017", "wind2018", "years.names.win" , "years.win", 
-   "path.win", "sun.oos", "sat.oos", "hol.oos", "wind2019")
+   "path.win", "sun.oos", "sat.oos", "hol.oos", "wind2019", "wind2019Daily")
 
 ### ¤¤ Farver + tema til brug i plots ¤¤ ### -------------------------------------------
 
@@ -193,7 +226,7 @@ sz <- list(l = I(0.2) , p = I(0.1))
 
 ### ¤¤ Gemmer workspace ¤¤ ### ----------------------------------------------------------
 
-save(DK1, p.Y, p.th, colors, dates, dates2, n.obs, ci, scoef, sz, OOS, dates.all,
+save(DK1, p.Y, p.th, colors, dates, dates2, n.obs, ci, scoef, sz, OOS, dates.all, s.se,
      file = "./Workspaces/preliminary.Rdata")
 
 ### ¤¤ Det vilde vesten ¤¤ ### ----------------------------------------------------------

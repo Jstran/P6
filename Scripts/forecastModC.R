@@ -78,7 +78,7 @@ data.frame("alpha1" = c(a1, se[4]), "alpha3" = c(a3, se[5]), "mu2" = c(mu2, se[6
 ### ¤¤ In-sample ¤¤ ### -----------------------------------------------------------------
 prob.is <- runif(length(dat)) # Tilfældige for skift mellem regimer
 
-x.pred.is <- c() # Tom vektor til at indsætte de forecasted værdier ofr OOS
+x.pred.is.c <- c() # Tom vektor til at indsætte de forecasted værdier ofr OOS
 
 s.is <- 1 # Start regime
 spike.count.is <- 0 # Tæller antal spikes for OOS
@@ -90,37 +90,37 @@ state.is <- c() # Giver hvilket stadie vi befinder os i for OOS
 for (l in 2:(slut.is)) {
   p <- (exp(beta[1] + beta[2]*DK1$W[l-1])/(1 + exp(beta[1] + beta[2]*DK1$W[l-1])))
   if (s.is == 3) {
-    x.pred.is[l]=(1 - a1)*dat[l-1] 
+    x.pred.is.c[l]=(1 - a1)*dat[l-1] 
     s.is = 1
     state.is[l] = s.is
   }
   else if (s.is == 2) { 
-    x.pred.is[l] = (1 - a3)*dat[l-1] 
+    x.pred.is.c[l] = (1 - a3)*dat[l-1] 
     s.is = 3
     state.is[l] = s.is
   }
   else if (prob.is[l] >= p && s.is == 1) {
-    x.pred.is[l] = dat[l-1] + mu2 
+    x.pred.is.c[l] = dat[l-1] + mu2 
     s.is = 2
     state.is[l] = s.is
     spike.count.is <- spike.count.is + 1
   }
   else {
-    x.pred.is[l] <- (1 - a1)*dat[l-1] 
+    x.pred.is.c[l] <- (1 - a1)*dat[l-1] 
     state.is[l] = s.is
   }
 }
 
 plot(DK1$D[2:slut.is], type = "l", main = "Uden sæson (IS)")
-lines(x.pred.is[2:slut.is], col = "red")
+lines(x.pred.is.c[2:slut.is], col = "red")
 
-rmse.is <- sqrt(1/(2190) * sum((dat[2:slut.is] - x.pred.is[2:slut.is])^2));rmse.is
-mae.is  <- 1/(2190) * sum(abs(dat[2:slut.is] - x.pred.is[2:slut.is]));mae.is
+rmse.is.c <- sqrt(1/(2190) * sum((dat[2:slut.is] - x.pred.is.c[2:slut.is])^2));rmse.is.c
+mae.is.c  <- 1/(2190) * sum(abs(dat[2:slut.is] - x.pred.is.c[2:slut.is]));mae.is.c
 
 ### ¤¤ Out-of-sample ¤¤ ### -------------------------------------------------------------
 prob.oos <- runif(length(dat)) # Tilfældige for skift mellem regimer
 
-x.pred.oos <- c() # Tom vektor til at indsætte de forecasted værdier ofr OOS
+x.pred.oos.c <- c() # Tom vektor til at indsætte de forecasted værdier ofr OOS
 
 s.oos <- 1 # Start regime
 spike.count.oos <- 0 # Tæller antal spikes for OOS
@@ -132,39 +132,50 @@ p <- c()
 for (l in start.oos:slut.oos) {
   p[l-slut.is] <- (exp(beta[1] + beta[2]*datW[l-1])/(1 + exp(beta[1] + beta[2]*datW[l-1])))
   if (s.oos == 3) {
-    x.pred.oos[l]=(1 - a1)*dat[l-1] 
+    x.pred.oos.c[l]=(1 - a1)*dat[l-1] 
     s.oos = 1
     state.oos[l] = s.oos
   }
   else if (s.oos == 2) { 
-    x.pred.oos[l] = (1 - a3)*dat[l-1] 
+    x.pred.oos.c[l] = (1 - a3)*dat[l-1] 
     s.oos = 3
     state.oos[l] = s.oos
   }
   else if (prob.oos[l] >= p && s.oos == 1) {
-    x.pred.oos[l] = dat[l-1] + mu2 
+    x.pred.oos.c[l] = dat[l-1] + mu2 
     s.oos = 2
     state.oos[l] = s.oos
     spike.count.oos <- spike.count.oos + 1
   }
   else {
-    x.pred.oos[l] <- (1 - a1)*dat[l-1] 
+    x.pred.oos.c[l] <- (1 - a1)*dat[l-1] 
     state.oos[l] = s.oos
   }
 }
 
 plot(dat[2100:slut.oos], type = "l", main = "Uden sæson (OOS)")
-lines(x.pred.oos[2100:slut.oos], col = "red")
+lines(x.pred.oos.c[2100:slut.oos], col = "red")
 
 plot(OOS$A, type = "l", main = "Med sæson (OOS)")
-lines(x.pred.oos[start.oos:slut.oos] + OOS$s.pred, col = "red")
+lines(x.pred.oos.c[start.oos:slut.oos] + OOS$s.pred, col = "red")
 
-rmse.oos <- sqrt(1/(slut.oos - start.oos + 1) * sum((dat[start.oos:slut.oos] - 
-                                                     x.pred.oos[start.oos:slut.oos])^2));
-rmse.oos
+rmse.oos.c <- sqrt(1/(slut.oos - start.oos + 1) * sum((dat[start.oos:slut.oos] - 
+                                                     x.pred.oos.c[start.oos:slut.oos])^2));
+rmse.oos.c
 mae.oos  <- 1/(slut.oos - start.oos + 1) * sum(abs(dat[start.oos:slut.oos] - 
-                                                   x.pred.oos[start.oos:slut.oos]));
+                                                   x.pred.oos.c[start.oos:slut.oos]));
 mae.oos
 
 spike.count.oos
 p
+
+### ¤¤ Pred.inter mm ¤¤ ### -------------------------------------------
+
+pred.inter.c <- 1.96 * sqrt(var(dat[start.oos:slut.oos] - x.pred.oos.c[start.oos:slut.oos]))
+
+res.oos.c <- OOS$D - x.pred.oos.c[start.oos:slut.oos]
+
+res.is.c <- DK1$D[2:slut.is] - x.pred.is.c[2:slut.is]
+
+save(x.pred.is.c, x.pred.oos.c, rmse.is.c, rmse.oos.c, pred.inter.c, res.is.c, res.oos.c,
+     file = "./Workspaces/forecastModC.Rdata")

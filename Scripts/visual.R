@@ -3,7 +3,8 @@
 rm(list=ls())
 load("./Workspaces/preliminary.Rdata")
 load("./Workspaces/modelling.Rdata")
-load("./Workspaces/forecast.Rdata")
+load("./Workspaces/forecastModA.Rdata")
+load("./Workspaces/forecastModC.Rdata")
 
 i <- 1
 ps <- list(names = c() , var = c(),  p = c() , i = c() , l = c())
@@ -143,32 +144,55 @@ p.d.hist <- ggplot(data.frame(X2 = DK1$D),
 ps$p[[i]] <- p.d.hist ; ps$names[i] <- "plotHistDetrend" ; ps$var[i] <- "p.d.hist" ; ps$l[i] <- FALSE
 i <- i + 1
 
-### ¤¤ Forecast plot ¤¤ ### -------------------------------------------------------------
+### ¤¤ Forecast plot Model A ¤¤ ### -------------------------------------------------------------
 
-p.forecast <- ggplot(data = data.frame(X1 = dates.all[2101:2281],
+p.forecast.a <- ggplot(data = data.frame(X1 = dates.all[2101:2281],
                                        X2 = c(DK1$D, OOS$D)[2101:2281] ), 
                      aes(x = X1, y = X2) ) +
               geom_line(aes(col = "Sæsonkorigerede observationer", size = sz$l)) + 
-              scale_x_date(date_labels = "%b %y", breaks = pretty(dates.all[2100:2281], n = 6)) +
               geom_line(data = data.frame(X1 = dates.all[2100:2281], 
-                                          X2 = x.pred[2100:2281]), 
+                                          X2 = x.pred.oos.a[2100:2281]), 
                         aes(col = "Sæsonkorigerede forecast", size = sz$l)) +
-              geom_ribbon(aes(ymin = x.pred[2101:2281] - pred.inter, 
-                              ymax = x.pred[2101:2281] + pred.inter), 
+              geom_ribbon(aes(ymin = x.pred.oos.a[2101:2281] - pred.inter.a, 
+                              ymax = x.pred.oos.a[2101:2281] + pred.inter.a), 
                           fill = colors[6], alpha = 0.4) +
               scale_color_manual(values = c(colors[2], colors[1])) +
-              p.th +
+              scale_x_date(date_labels = "%b %y", breaks = pretty(dates.all[2100:2281], n = 6)) +
               scale_y_continuous() +
               theme(legend.position = "top" , legend.justification = "left" , 
               legend.direction = "horizontal", legend.background = element_blank()) +
+              p.th +
               labs(x = "", y = "Spotpris i DKK/MWh", title = "", color = "")
-p.forecast
-ps$p[[i]] <- p.forecast ; ps$names[i] <- "plotForecastModA" ; ps$var[i] <- "p.forecast" ; ps$l[i] <- TRUE
+p.forecast.a
+ps$p[[i]] <- p.forecast.a ; ps$names[i] <- "plotForecastModA" ; ps$var[i] <- "p.forecast.a" ; ps$l[i] <- TRUE
+i <- i + 1
+
+### ¤¤ Forecast plot Model C ¤¤ ### -------------------------------------------------------------
+
+p.forecast.c <- ggplot(data = data.frame(X1 = dates.all[2101:2281],
+                                       X2 = c(DK1$D, OOS$D)[2101:2281] ), 
+                     aes(x = X1, y = X2) ) +
+  geom_line(aes(col = "Sæsonkorigerede observationer", size = sz$l)) + 
+  geom_line(data = data.frame(X1 = dates.all[2100:2281], 
+                              X2 = x.pred.oos.c[2100:2281]), 
+            aes(col = "Sæsonkorigerede forecast", size = sz$l)) +
+  geom_ribbon(aes(ymin = x.pred.oos.c[2101:2281] - pred.inter.c, 
+                  ymax = x.pred.oos.c[2101:2281] + pred.inter.c), 
+              fill = colors[6], alpha = 0.4) +
+  scale_color_manual(values = c(colors[2], colors[1])) +
+  scale_x_date(date_labels = "%b %y", breaks = pretty(dates.all[2100:2281], n = 6)) +
+  scale_y_continuous() +
+  theme(legend.position = "top" , legend.justification = "left" , 
+        legend.direction = "horizontal", legend.background = element_blank()) +
+  p.th +
+  labs(x = "", y = "Spotpris i DKK/MWh", title = "", color = "")
+p.forecast.c
+ps$p[[i]] <- p.forecast.c ; ps$names[i] <- "plotForecastModC" ; ps$var[i] <- "p.forecast.c" ; ps$l[i] <- TRUE
 i <- i + 1
 
 ### ¤¤ Gemmer plots ¤¤ ### --------------------------------------------------------------
 
-wanted.plots = 9
+wanted.plots = 10
 save.plots = T
 wid <- 9
 

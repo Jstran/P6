@@ -146,18 +146,18 @@ i <- i + 1
 
 ### ¤¤ Forecast plot Model A ¤¤ ### -------------------------------------------------------------
 
-p.forecast.a <- ggplot(data = data.frame(X1 = dates.all[2101:2281],
-                                       X2 = c(DK1$D, OOS$D)[2101:2281] ), 
+p.forecast.a <- ggplot(data = data.frame(X1 = dates.all[2160:2281],
+                                       X2 = c(DK1$D, OOS$D)[2160:2281] ), 
                      aes(x = X1, y = X2) ) +
               geom_line(aes(col = "Sæsonkorigerede observationer", size = sz$l)) + 
-              geom_line(data = data.frame(X1 = dates.all[2100:2281], 
-                                          X2 = x.pred.oos.a[2100:2281]), 
+              geom_line(data = data.frame(X1 = dates.all[2160:2281], 
+                                          X2 = x.pred.oos.a[2160:2281]), 
                         aes(col = "Sæsonkorigerede forecast", size = sz$l)) +
-              geom_ribbon(aes(ymin = x.pred.oos.a[2101:2281] - pred.inter.a, 
-                              ymax = x.pred.oos.a[2101:2281] + pred.inter.a), 
+              geom_ribbon(aes(ymin = x.pred.oos.a[2160:2281] - pred.inter.a, 
+                              ymax = x.pred.oos.a[2160:2281] + pred.inter.a), 
                           fill = colors[6], alpha = 0.4) +
               scale_color_manual(values = c(colors[2], colors[1])) +
-              scale_x_date(date_labels = "%b %y", breaks = pretty(dates.all[2100:2281], n = 6)) +
+              scale_x_date(date_labels = "%b %y", breaks = pretty(dates.all[2160:2281], n = 6)) +
               scale_y_continuous() +
               theme(legend.position = "top" , legend.justification = "left" , 
               legend.direction = "horizontal", legend.background = element_blank()) +
@@ -169,18 +169,18 @@ i <- i + 1
 
 ### ¤¤ Forecast plot Model C ¤¤ ### -------------------------------------------------------------
 
-p.forecast.c <- ggplot(data = data.frame(X1 = dates.all[2101:2281],
-                                       X2 = c(DK1$D, OOS$D)[2101:2281] ), 
+p.forecast.c <- ggplot(data = data.frame(X1 = dates.all[2160:2281],
+                                       X2 = c(DK1$D, OOS$D)[2160:2281] ), 
                      aes(x = X1, y = X2) ) +
   geom_line(aes(col = "Sæsonkorigerede observationer", size = sz$l)) + 
-  geom_line(data = data.frame(X1 = dates.all[2100:2281], 
-                              X2 = x.pred.oos.c[2100:2281]), 
+  geom_line(data = data.frame(X1 = dates.all[2160:2281], 
+                              X2 = x.pred.oos.c[2160:2281]), 
             aes(col = "Sæsonkorigerede forecast", size = sz$l)) +
-  geom_ribbon(aes(ymin = x.pred.oos.c[2101:2281] - pred.inter.c, 
-                  ymax = x.pred.oos.c[2101:2281] + pred.inter.c), 
+  geom_ribbon(aes(ymin = x.pred.oos.c[2160:2281] - pred.inter.c, 
+                  ymax = x.pred.oos.c[2160:2281] + pred.inter.c), 
               fill = colors[6], alpha = 0.4) +
   scale_color_manual(values = c(colors[2], colors[1])) +
-  scale_x_date(date_labels = "%b %y", breaks = pretty(dates.all[2100:2281], n = 6)) +
+  scale_x_date(date_labels = "%b %y", breaks = pretty(dates.all[2160:2281], n = 6)) +
   scale_y_continuous() +
   theme(legend.position = "top" , legend.justification = "left" , 
         legend.direction = "horizontal", legend.background = element_blank()) +
@@ -192,7 +192,7 @@ i <- i + 1
 
 ### ¤¤ Gemmer plots ¤¤ ### --------------------------------------------------------------
 
-wanted.plots = 10
+wanted.plots = 9:10
 save.plots = T
 wid <- 9
 

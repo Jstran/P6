@@ -52,7 +52,7 @@ logLike <- function(theta){
   return(-likesum)
 }
 
-theta0 <- c(10,50,10,0.5,0.5,   5,   5,    5) # Startværdier for parametre til optim
+theta0 <- c(33,90,75,0.3,0.6,   4,   2,    1) # Startværdier for parametre til optim
 lB     <- c( 0, 0, 0,0  ,0  ,-500,-100, -100) # Nedre grænse for parametre
 uB     <- c(100,100,100,0.99999,0.99999,500,100,100) # Øvre grænse for parametre
 
@@ -171,7 +171,20 @@ p
 
 ### ¤¤ Pred.inter mm ¤¤ ### -------------------------------------------
 
-pred.inter.c <- 1.96 * sqrt(var(dat[start.oos:slut.oos] - x.pred.oos.c[start.oos:slut.oos]))
+pred.inter.c <- c()
+for (j in start.oos:slut.oos) {
+  if (state.oos[j] == 1){
+    pred.inter.c[j] <- sigma1
+  }
+  else if (state.oos[j] == 2){
+    pred.inter.c[j] <- sigma2
+  }
+  else {
+    pred.inter.c[j] <- sigma3
+  }
+}
+
+pred.inter.c <- 1.96 * pred.inter.c
 
 res.oos.c <- OOS$D - x.pred.oos.c[start.oos:slut.oos]
 

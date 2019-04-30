@@ -96,6 +96,12 @@ rm("df", "df.oos", "A", "sat", "sun", "hol")
 tbl <- scoef(s.lm) ; tbl
 
 ### ¤¤ ADF-test ¤¤ ### ------------------------------------------------------------------
+DK1.A.filtered <- rollmedian(DK1$A , k = 5)
+
+adf.test(DK1.A.filtered)
+
+adf.test(DK1.A.filtered, k = 0)
+
 
 DK1.D.filtered <- rollmedian(DK1$D , k = 5)
 

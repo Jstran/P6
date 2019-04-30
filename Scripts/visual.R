@@ -192,8 +192,8 @@ i <- i + 1
 
 ### ¤¤ Gemmer plots ¤¤ ### --------------------------------------------------------------
 
-wanted.plots = 9:10
-save.plots = T
+wanted.plots = 1:10
+save.plots = TRUE
 wid <- 9
 
 if(save.plots == TRUE){
@@ -203,7 +203,7 @@ if(save.plots == TRUE){
     
     print(ps$p[[j]])
     ggsave(file = paste("./Grafer/",ps$names[j],".eps" , sep = ""), 
-           width = wid, height = hei , device = cairo_ps , dpi = 600)
+           width = wid, height = hei , device = cairo_ps , dpi = 600 )
   }
 }
 

@@ -131,15 +131,17 @@ Box.test(res.is, type = "Ljung-Box") # H0 er, at tidsrækken er hvid støj.
 #  xi= matrix(nrow=l,ncol=3); xi[1,]=1/3
 #  likesum = 0
 #  for (i in 1:(l-1)) {
-#    like[i]= p*xi[i,1]*dnorm(DK1$D[i+1], mean = (1-alpha_1)*DK1$D[i], sd = sigma_1) +
-#            (1-p)*xi[i,1]*dnorm(DK1$D[i+1], mean = (-mu_2 + DK1$D[i]), sd = sigma_2) +
-#            xi[i,2]*dnorm(DK1$D[i+1], mean = ((1-alpha_3)*DK1$D[i]), sd = sigma_3) +
-#            xi[i,3]*dnorm(DK1$D[i+1], mean = ((1-alpha_1)*DK1$D[i]), sd = sigma_1)
-#    xi[i+1,1] = (p*xi[i,1]*dnorm(DK1$D[i+1], mean = (1-alpha_1)*DK1$D[i], sd = sigma_1) +
-#                xi[i,3]*dnorm(DK1$D[i+1], mean = ((1-alpha_1)*DK1$D[i]), sd = sigma_1))/
-#                (like[i])
-#    xi[i+1,2] = ((1-p)*xi[i,1]*dnorm(DK1$D[i+1], mean = (-mu_2 + DK1$D[i]), sd = sigma_2))/like[i]
-#    xi[i+1,3] = xi[i,2]*dnorm(DK1$D[i+1], mean = ((1-alpha_3)*DK1$D[i]), sd = sigma_3)/like[i]
+#    like[i]=   p *xi[i,1]*dnorm(DK1$D[i+1],  mean =  (1-alpha_1)*DK1$D[i] , sd = sigma_1) +
+#            (1-p)*xi[i,1]*dnorm(DK1$D[i+1],  mean = (-mu_2 + DK1$D[i])    , sd = sigma_2) +
+#                  xi[i,2]*dnorm(DK1$D[i+1],  mean = ((1-alpha_3)*DK1$D[i]), sd = sigma_3) +
+#                  xi[i,3]*dnorm(DK1$D[i+1],  mean = ((1-alpha_1)*DK1$D[i]), sd = sigma_1)
+
+#    xi[i+1,1] =(p*xi[i,1]*dnorm(DK1$D[i+1],  mean =  (1-alpha_1)*DK1$D[i] , sd = sigma_1) +
+#                  xi[i,3]*dnorm(DK1$D[i+1],  mean = ((1-alpha_1)*DK1$D[i]), sd = sigma_1))/(like[i])
+
+#    xi[i+1,2] =((1-p)*xi[i,1]*dnorm(DK1$D[i+1], mean = (-mu_2 + DK1$D[i]), sd = sigma_2))/like[i]
+
+#    xi[i+1,3] =   xi[i,2]*dnorm(DK1$D[i+1], mean = ((1-alpha_3)*DK1$D[i]), sd = sigma_3)/like[i]
 #    likesum = likesum + log(like[i])
 #  }
 #  return(-likesum)

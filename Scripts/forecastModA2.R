@@ -20,23 +20,25 @@ logLike <- function(theta){
   p      <- theta[6]
   mu2    <- theta[7]
   
+  eta <- numeric(3)
   like    <- c()
   xi      <- numeric(3)
   xi[1:3] <- 1/3
   likesum <-  0
   for (i in 1:(slut.is - 1)) {
     xi.temp <- xi
-    like[i] <- p*xi[1]*dnorm(DK1$D[i+1], mean = (1-alpha1)*DK1$D[i], sd = sigma1) +
-      (1-p)*xi[1]*dnorm(DK1$D[i+1], mean = (-mu2 + DK1$D[i]), sd = sigma2) +
-      xi[2]*dnorm(DK1$D[i+1], mean = ((1-alpha3)*DK1$D[i]), sd = sigma3) +
-      xi[3]*dnorm(DK1$D[i+1], mean = ((1-alpha1)*DK1$D[i]), sd = sigma1)
     
-    xi[1] <- (p*xi.temp[1]*dnorm(DK1$D[i+1], mean = (1-alpha1)*DK1$D[i], sd = sigma1) +
-               xi.temp[3]*dnorm(DK1$D[i+1], mean = ((1-alpha1)*DK1$D[i]), sd = sigma1))/like[i]
+    eta[1] <- dnorm(DK1$D[i+1], mean = (1-alpha1)*DK1$D[i], sd = sigma1)
+    eta[2] <- dnorm(DK1$D[i+1], mean = (-mu2 + DK1$D[i]), sd = sigma2)
+    eta[3] <- dnorm(DK1$D[i+1], mean = ((1-alpha3)*DK1$D[i]), sd = sigma3)
     
-    xi[2] <- ((1-p)*xi.temp[1]*dnorm(DK1$D[i+1], mean = (-mu2 + DK1$D[i]), sd = sigma2))/like[i]
+    like[i] <- p*xi[1]*eta[1] + (1-p)*xi[1]*eta[2]+ xi[2]*eta[3] + xi[3]*eta[1]
     
-    xi[3] <- xi.temp[2]*dnorm(DK1$D[i+1], mean = ((1-alpha3)*DK1$D[i]), sd = sigma3)/like[i]
+    xi[1] <- (p*xi.temp[1]*eta[1] + eta[1])/like[i]
+    
+    xi[2] <- ((1-p)*xi.temp[1]*eta[2])/like[i]
+    
+    xi[3] <- xi.temp[2]*eta[3]/like[i]
   }
   
   likesum <- sum(log(like))
@@ -62,9 +64,10 @@ mu2    <- MRS$par[7]
 se <- sqrt(diag(solve(MRS$hessian))) # Standard error
 AIC <- 2*(length(MRS$par) - MRS$value)
 
-data.frame("alpha1" = c(alpha1, se[4]), "alpha3" = c(alpha3, se[5]), "mu2" = c(mu2, se[7]), 
-           "sigma1" = c(sigma1, se[1]), "sigma2" = c(sigma2, se[2]), 
-           "sigma3" = c(sigma3, se[3]), "p11" = c(p,se[6]))
+data.frame("alpha1" = c(alpha1, se[4]), "alpha3" = c(alpha3, se[5]), 
+           "mu2" = c(mu2, se[7]), "sigma1" = c(sigma1, se[1]), 
+           "sigma2" = c(sigma2, se[2]), "sigma3" = c(sigma3, se[3]), 
+           "p11" = c(p,se[6]))
 
 
 xi <- numeric(3)
@@ -80,10 +83,7 @@ for (l in start.oos:slut.oos) {
   eta[2] <- dnorm(dat[l], mean = (-mu2 + dat[l-1]), sd = sigma2)
   eta[3] <- dnorm(dat[l], mean = ((1-alpha3)*dat[l-1]), sd = sigma3)
   
-  like[l-slut.is] <- p*xi[1]*eta[1] +
-                     (1-p)*xi[1]*eta[2] +
-                     xi[2]*eta[3] +
-                     xi[3]*dnorm(dat[l], mean = ((1-alpha1)*dat[l-1]), sd = sigma1)
+  like[l-slut.is] <- p*xi[1]*eta[1] + (1-p)*xi[1]*eta[2] + xi[2]*eta[3] + xi[3]*eta[1]
   xi.temp <- xi
   
   xi[1] <- (p*xi.temp[1]*eta[1] + xi.temp[3]*eta[1])/like[l-slut.is]
@@ -92,7 +92,8 @@ for (l in start.oos:slut.oos) {
   
   xi[3] <- xi.temp[2]*eta[3]/like[l-slut.is]
   
-  x.pred.oos.a[l] <- xi[1]*(1 - alpha1)*dat[l-1] + xi[2]*(dat[l-1] + mu2) + xi[3]*(1 - alpha3)*dat[l-1]
+  x.pred.oos.a[l] <- xi[1]*(1 - alpha1)*dat[l-1] + xi[2]*(dat[l-1] + mu2) + 
+                     xi[3]*(1 - alpha3)*dat[l-1]
 }
 
 plot(dat[2100:slut.oos], type = "l", main = "Uden sæson (OOS)")
@@ -105,6 +106,5 @@ rmse.oos.a <- sqrt(1/(slut.oos - start.oos + 1) * sum((dat[start.oos:slut.oos] -
                                                          x.pred.oos.a[start.oos:slut.oos])^2))
 rmse.oos.a
 
-mae.oos  <- 1/(slut.oos - start.oos + 1) * sum(abs(dat[start.oos:slut.oos] - 
-                                                     x.pred.oos.a[start.oos:slut.oos]))
+mae.oos  <- mean(abs(dat[start.oos:slut.oos] - x.pred.oos.a[start.oos:slut.oos]))
 mae.oos

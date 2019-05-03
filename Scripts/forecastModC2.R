@@ -71,7 +71,7 @@ beta   <- MRS$par[7:8]
 se <- sqrt(diag(solve(MRS$hessian))) # Standard error
 AIC <- 2*(length(MRS$par) - MRS$value)
 
-data.frame("alpha1" = c(a1, se[4]), "alpha3" = c(a3, se[5]), "mu2" = c(mu2, se[6]), 
+data.frame("alpha1" = c(alpha1, se[4]), "alpha3" = c(alpha3, se[5]), "mu2" = c(mu2, se[6]), 
            "sigma1" = c(sigma1, se[1]), "sigma2" = c(sigma2, se[2]), 
            "sigma3" = c(sigma3, se[3]), "beta1" = c(beta[1],se[7]),
            "beta2" = c(beta[2],se[8]))

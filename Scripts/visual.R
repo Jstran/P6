@@ -47,20 +47,38 @@ ps$p[[i]] <- p.clean ; ps$names[i] <- "plotClean" ; ps$var[i] <- "p.clean"; ps$l
 i <- i + 1
 
 
-# Histogram for priserne
-p.hist <- ggplot(data.frame(X2 = DK1$A),
+# Histogram for sæsonrensede priser
+p.hist <- ggplot(data.frame(X2 = DK1$D),
                  aes(x = X2)) +
   geom_histogram(binwidth = 20, color = "white", fill = colors[1]) + 
   stat_function(fun = function(x){dnorm(x = x, 
-                                  mean = mean(DK1$A), 
-                                  sd = sd(DK1$A))*length(DK1$A)*24.1}, 
+                                  mean = mean(DK1$D), 
+                                  sd = sd(DK1$D))*length(DK1$D)*24.1}, 
                  color = colors[2]) +
-  labs(x = "Spotpris i DKK/MWh", y = "") +
+  labs(x = "Sæsonrensede pris i DKK/MWh", y = "Tæthed") +
   scale_x_continuous() +
   p.th
-#p.hist
+p.hist
 ps$p[[i]] <- p.hist ; ps$names[i] <- "plotHist" ; ps$var[i] <- "p.hist"; ps$l[i] <- FALSE
 i <- i + 1
+
+# Q-Q plot af sæsonrensede priser
+y <- quantile(DK1$D, c(0.25, 0.75))
+x <- qnorm(c(0.25, 0.75))
+slope <- diff(y)/diff(x)
+int <- y[1L] - slope * x[1L]
+quantiles <- qqnorm(DK1$D)
+
+p.qq <- ggplot(data.frame(x = quantiles$x, y = quantiles$y), aes(x = x, y= y))+
+        geom_point(col = colors[1]) +
+        geom_abline(slope = slope, intercept = int, linetype = "dashed", col = colors[2]) + 
+        labs(x = "Teoretisk kvartil", y = "Standardiseret sæsonrensede priser") +
+        theme(legend.position="none") +
+        p.th
+p.qq    
+ps$p[[i]] <- p.qq; ps$names[i] <- "plotQQ" ; ps$var[i] <- "p.qq"; ps$l[i] <- FALSE
+i <- i + 1
+
 
 
 # Plot af acf
@@ -192,9 +210,9 @@ i <- i + 1
 
 ### ¤¤ Gemmer plots ¤¤ ### --------------------------------------------------------------
 
-wanted.plots = 9:10
+wanted.plots = 3:4
 save.plots = T
-wid <- 9
+wid <- 9/2
 
 if(save.plots == TRUE){
   for(j in wanted.plots){

@@ -3,8 +3,8 @@
 rm(list=ls())
 load("./Workspaces/preliminary.Rdata")
 load("./Workspaces/modelling.Rdata")
-load("./Workspaces/forecastModA.Rdata")
-load("./Workspaces/forecastModC.Rdata")
+load("./Workspaces/forecastModA2.Rdata")
+load("./Workspaces/forecastModC2.Rdata")
 
 i <- 1
 ps <- list(names = c() , var = c(),  p = c() , i = c() , l = c())
@@ -257,6 +257,40 @@ p.forecast.c <- ggplot(data = data.frame(X1 = dates.all[2160:2281],
   labs(x = "", y = "Spotpris i DKK/MWh", title = "", color = "")
 p.forecast.c
 ps$p[[i]] <- p.forecast.c ; ps$names[i] <- "plotForecastModC" ; ps$var[i] <- "p.forecast.c" ; ps$l[i] <- TRUE
+i <- i + 1
+
+# Q-Q plot af sæsonrensede priser
+y <- quantile(res.is.c, c(0.25, 0.75))
+x <- qnorm(c(0.25, 0.75))
+slope <- diff(y)/diff(x)
+int <- y[1L] - slope * x[1L]
+quantiles <- qqnorm(res.is.a)
+
+p.qq.res.c <- ggplot(data.frame(x = quantiles$x, y = quantiles$y), aes(x = x, y = y))+
+  geom_point(col = colors[1], size = sz$p) +
+  geom_abline(slope = slope, intercept = int, linetype = "dashed", col = colors[2],
+              size = sz$l) + 
+  labs(x = "Teoretisk kvantil", y = "Standardiseret residualer") +
+  theme(legend.position="none") +
+  p.th
+p.qq.res.c    
+ps$p[[i]] <- p.qq.res.c; ps$names[i] <- "plotQqResC" ; ps$var[i] <- "p.qq.res.c"; ps$l[i] <- FALSE
+i <- i + 1
+
+# ACF residualer Model A
+p.acf.res.c <- ggplot(data.frame(X1 = acf(res.is.c, lag.max = 2190 , plot = FALSE)$lag[2:2190],
+                                 X2 = acf(res.is.c, lag.max = 2190 , plot = FALSE)$acf[2:2190]), 
+                      aes(x = X1, y = X2)) +
+  geom_hline(aes(yintercept =  0, size = sz$l)) +
+  geom_segment(aes(xend = X1, yend = 0), color = colors[1]) +
+  geom_hline(aes(yintercept = -ci(res.is.c)), 
+             color = colors[2], linetype = "dotted") +
+  geom_hline(aes(yintercept =  ci(res.is.c)), 
+             color = colors[2], linetype = "dotted") +
+  labs(x = "Lag", y = "ACF") +
+  p.th
+p.acf.res.c
+ps$p[[i]] <- p.acf.res.c ; ps$names[i] <- "plotACFModC" ; ps$var[i] <- "p.acf.res.c" ; ps$l[i] <- FALSE 
 i <- i + 1
 
 ### ¤¤ Gemmer plots ¤¤ ### --------------------------------------------------------------

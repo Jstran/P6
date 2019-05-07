@@ -160,4 +160,4 @@ res.oos.a <- OOS$D - x.pred.oos.a[start.oos:slut.oos]
 res.is.a <- DK1$D[2:slut.is] - x.pred.is.a
 
 save(x.pred.is.a, x.pred.oos.a, rmse.is.a, rmse.oos.a, pred.inter.a, res.is.a, res.oos.a,
-     file = "./Workspaces/forecastModA.Rdata")
+     file = "./Workspaces/forecastModA2.Rdata")

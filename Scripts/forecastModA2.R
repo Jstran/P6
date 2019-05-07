@@ -11,6 +11,7 @@ start.oos <-  length(DK1$D) + 1 # Indeks hvor OOS starter
 slut.oos  <- start.oos + length(OOS$D) - 1 # Indeks hvor OOS slutter
 slut.is   <- start.oos - 1 # Sidste obs i IS
 
+### ¤¤ MLE ¤¤ ### -----------------------------------------------------------------------
 logLike <- function(theta){
   sigma1 <- theta[1]
   sigma2 <- theta[2]
@@ -70,6 +71,45 @@ data.frame("alpha1" = c(alpha1, se[4]), "alpha3" = c(alpha3, se[5]),
            "p11" = c(p,se[6]))
 
 
+
+### ¤¤ IS mm ¤¤ ### ---------------------------------------------------------------------
+xi <- numeric(3)
+xi[1:3] <- 1/3
+
+eta <- numeric(3)
+
+x.pred.is.a <- c() # Tom vektor til at indsætte de forecasted værdier for OOS
+
+for (l in 2:slut.is) {
+  eta[1] <- dnorm(dat[l], mean = (1-alpha1)*dat[l-1], sd = sigma1)
+  eta[2] <- dnorm(dat[l], mean = (-mu2 + dat[l-1]), sd = sigma2)
+  eta[3] <- dnorm(dat[l], mean = ((1-alpha3)*dat[l-1]), sd = sigma3)
+  
+  like <- p*xi[1]*eta[1] + (1-p)*xi[1]*eta[2] + xi[2]*eta[3] + xi[3]*eta[1]
+  xi.temp <- xi
+  
+  xi[1] <- (p*xi.temp[1]*eta[1] + xi.temp[3]*eta[1])/like
+  
+  xi[2] <- ((1-p)*xi.temp[1]*eta[2])/like
+  
+  xi[3] <- xi.temp[2]*eta[3]/like
+  
+  x.pred.is.a[l] <- xi[1]*(1 - alpha1)*dat[l-1] + xi[2]*(dat[l-1] + mu2) + 
+    xi[3]*(1 - alpha3)*dat[l-1]
+}
+x.pred.is.a <- x.pred.is.a[-1]
+
+plot(dat[2:slut.is], type = "l", main = "Uden sæson (OOS)")
+lines(x.pred.is.a[1:slut.is], col = "red")
+
+
+rmse.is.a <- sqrt(1/slut.is * sum((dat[2:slut.is] - x.pred.is.a)^2))
+rmse.is.a
+
+mae.is  <- mean(abs(dat[2:slut.is] - x.pred.is.a))
+mae.is
+
+### ¤¤ OOS mm ¤¤ ### --------------------------------------------------------------------
 xi <- numeric(3)
 xi[1:3] <- 1/3
 
@@ -77,6 +117,8 @@ eta <- numeric(3)
 
 x.pred.oos.a <- c() # Tom vektor til at indsætte de forecasted værdier for OOS
 like <- c()
+
+pred.inter.a <- c()
 
 for (l in start.oos:slut.oos) {
   eta[1] <- dnorm(dat[l], mean = (1-alpha1)*dat[l-1], sd = sigma1)
@@ -94,6 +136,7 @@ for (l in start.oos:slut.oos) {
   
   x.pred.oos.a[l] <- xi[1]*(1 - alpha1)*dat[l-1] + xi[2]*(dat[l-1] + mu2) + 
                      xi[3]*(1 - alpha3)*dat[l-1]
+  pred.inter.a[l] <- xi[1]*sigma1 + xi[2]*sigma2 + xi[3]*sigma3
 }
 
 plot(dat[2100:slut.oos], type = "l", main = "Uden sæson (OOS)")
@@ -108,3 +151,13 @@ rmse.oos.a
 
 mae.oos  <- mean(abs(dat[start.oos:slut.oos] - x.pred.oos.a[start.oos:slut.oos]))
 mae.oos
+
+### ¤¤ Pred.inter mm ¤¤ ### -------------------------------------------
+pred.inter.a <- 1.96 * pred.inter.a
+
+res.oos.a <- OOS$D - x.pred.oos.a[start.oos:slut.oos]
+
+res.is.a <- DK1$D[2:slut.is] - x.pred.is.a
+
+save(x.pred.is.a, x.pred.oos.a, rmse.is.a, rmse.oos.a, pred.inter.a, res.is.a, res.oos.a,
+     file = "./Workspaces/forecastModA.Rdata")

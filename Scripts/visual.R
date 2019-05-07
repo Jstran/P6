@@ -54,7 +54,7 @@ p.hist <- ggplot(data.frame(X2 = DK1$D),
   stat_function(fun = function(x){dnorm(x = x, 
                                   mean = mean(DK1$D), 
                                   sd = sd(DK1$D))*length(DK1$D)*24.1}, 
-                 color = colors[2]) +
+                 color = colors[2], size = sz$l) +
   labs(x = "Sæsonrensede pris i DKK/MWh", y = "Tæthed") +
   scale_x_continuous() +
   p.th
@@ -69,10 +69,11 @@ slope <- diff(y)/diff(x)
 int <- y[1L] - slope * x[1L]
 quantiles <- qqnorm(DK1$D)
 
-p.qq <- ggplot(data.frame(x = quantiles$x, y = quantiles$y), aes(x = x, y= y))+
-        geom_point(col = colors[1]) +
-        geom_abline(slope = slope, intercept = int, linetype = "dashed", col = colors[2]) + 
-        labs(x = "Teoretisk kvartil", y = "Standardiseret sæsonrensede priser") +
+p.qq <- ggplot(data.frame(x = quantiles$x, y = quantiles$y), aes(x = x, y = y))+
+        geom_point(col = colors[1], size = sz$p) +
+        geom_abline(slope = slope, intercept = int, linetype = "dashed", col = colors[2],
+                    size = sz$l) + 
+        labs(x = "Teoretisk kvantil", y = "Standardiseret sæsonrensede priser") +
         theme(legend.position="none") +
         p.th
 p.qq    
@@ -93,7 +94,7 @@ p.acf.A <- ggplot(data = data.frame(X1 = acf(DK1$A, lag.max = 2190 , plot = FALS
              color = colors[1], linetype = "dotted") +
   labs(x = "Lag", y = "ACF") +
   p.th
-#p.acf.A
+p.acf.A
 ps$p[[i]] <- p.acf.A ; ps$names[i] <- "plotACFAll" ; ps$var[i] <- "p.acf.A" ; ps$l[i] <- FALSE 
 i <- i + 1
 
@@ -185,6 +186,56 @@ p.forecast.a
 ps$p[[i]] <- p.forecast.a ; ps$names[i] <- "plotForecastModA" ; ps$var[i] <- "p.forecast.a" ; ps$l[i] <- TRUE
 i <- i + 1
 
+# Histogram for residualer Model A
+p.hist.res.a <- ggplot(data.frame(X2 = res.is.a),
+                       aes(x = X2)) +
+  geom_histogram(binwidth = 20, color = "white", fill = colors[1]) + 
+  stat_function(fun = function(x){dnorm(x = x, 
+                                        mean = mean(res.is.a), 
+                                        sd = sd(res.is.a))*length(res.is.a)*24.1}, 
+                color = colors[2], size = sz$l) +
+  labs(x = "Residualer", y = "Tæthed") +
+  scale_x_continuous() +
+  p.th
+p.hist.res.a
+ps$p[[i]] <- p.hist.res.a ; ps$names[i] <- "plotHistResA" ; ps$var[i] <- "p.hist.res.a"; ps$l[i] <- FALSE
+i <- i + 1
+
+# Q-Q plot af sæsonrensede priser
+y <- quantile(res.is.a, c(0.25, 0.75))
+x <- qnorm(c(0.25, 0.75))
+slope <- diff(y)/diff(x)
+int <- y[1L] - slope * x[1L]
+quantiles <- qqnorm(res.is.a)
+
+p.qq.res.a <- ggplot(data.frame(x = quantiles$x, y = quantiles$y), aes(x = x, y = y))+
+  geom_point(col = colors[1], size = sz$p) +
+  geom_abline(slope = slope, intercept = int, linetype = "dashed", col = colors[2],
+              size = sz$l) + 
+  labs(x = "Teoretisk kvantil", y = "Standardiseret residualer") +
+  theme(legend.position="none") +
+  p.th
+p.qq.res.a    
+ps$p[[i]] <- p.qq.res.a; ps$names[i] <- "plotQqResA" ; ps$var[i] <- "p.qq.res.a"; ps$l[i] <- FALSE
+i <- i + 1
+
+# ACF residualer Model A
+p.acf.res.a <- ggplot(data.frame(X1 = acf(res.is.a, lag.max = 2190 , plot = FALSE)$lag[2:2190],
+                                 X2 = acf(res.is.a, lag.max = 2190 , plot = FALSE)$acf[2:2190]), 
+                  aes(x = X1, y = X2)) +
+  geom_hline(aes(yintercept =  0, size = sz$l)) +
+  geom_segment(aes(xend = X1, yend = 0), color = colors[1]) +
+  geom_hline(aes(yintercept = -ci(res.is.a)), 
+             color = colors[2], linetype = "dotted") +
+  geom_hline(aes(yintercept =  ci(res.is.a)), 
+             color = colors[2], linetype = "dotted") +
+  labs(x = "Lag", y = "ACF") +
+  p.th
+p.acf.res.a
+ps$p[[i]] <- p.acf.res.a ; ps$names[i] <- "plotACFModA" ; ps$var[i] <- "p.acf.res.a" ; ps$l[i] <- FALSE 
+i <- i + 1
+
+
 ### ¤¤ Forecast plot Model C ¤¤ ### -------------------------------------------------------------
 
 p.forecast.c <- ggplot(data = data.frame(X1 = dates.all[2160:2281],
@@ -209,10 +260,11 @@ ps$p[[i]] <- p.forecast.c ; ps$names[i] <- "plotForecastModC" ; ps$var[i] <- "p.
 i <- i + 1
 
 ### ¤¤ Gemmer plots ¤¤ ### --------------------------------------------------------------
+data.frame(names = ps$names , var = ps$var )  
 
-wanted.plots = 3:4
+wanted.plots = 13
 save.plots = T
-wid <- 9/2
+wid <- 9
 
 if(save.plots == TRUE){
   for(j in wanted.plots){
@@ -225,7 +277,8 @@ if(save.plots == TRUE){
   }
 }
 
-data.frame(names = ps$names , var = ps$var )  
+
+
 
 ### ¤¤ Det vilde vesten ¤¤ ### ----------------------------------------------------------
 

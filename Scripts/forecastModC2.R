@@ -27,24 +27,24 @@ logLike <- function(theta){
   
   eta <- numeric(3)
   like    <- c()
-  x       <- numeric(3)
-  x[1:3]  <- 1/3
+  xi       <- numeric(3)
+  xi[1:3]  <- 1/3
   likesum <-  0
   for (i in 1:(slut.is - 1)) {
-    x.temp <- x
+    xi.temp <- xi
     p <- exp(beta[1] + beta[2]*DK1$W[i])/(1+exp(beta[1] + beta[2]*DK1$W[i]))
     
     eta[1] <- dnorm(DK1$D[i+1], mean = (1-alpha1)*DK1$D[i], sd = sigma1)
     eta[2] <- dnorm(DK1$D[i+1], mean = (-mu2 + DK1$D[i]), sd = sigma2)
     eta[3] <- dnorm(DK1$D[i+1], mean = ((1-alpha3)*DK1$D[i]), sd = sigma3)
     
-    like[i] <- p*x[1]*eta[1] + (1-p)*x[1]*eta[2] + x[2]*eta[3] + x[3]*eta[1]
+    like[i] <- p*xi[1]*eta[1] + (1-p)*xi[1]*eta[2] + xi[2]*eta[3] + xi[3]*eta[1]
     
-    x[1] <- (p*x.temp[1]*eta[1] + x.temp[3]*eta[1])/like[i]
+    xi[1] <- (p*xi.temp[1]*eta[1] + xi.temp[3]*eta[1])/like[i]
     
-    x[2] <- (1-p)*x.temp[1]*eta[2]/like[i]
+    xi[2] <- (1-p)*xi.temp[1]*eta[2]/like[i]
     
-    x[3] <- x.temp[2]*eta[3]/like[i]
+    xi[3] <- xi.temp[2]*eta[3]/like[i]
   }
   
   likesum <- sum(log(like))
@@ -86,8 +86,6 @@ like <- c()
 p <- c()
 
 for (l in start.oos:slut.oos) {
-#l <- start.oos + 1
-
   p[l-slut.is] <- (exp(beta[1] + beta[2]*datW[l-1])/
                   (1 + exp(beta[1] + beta[2]*datW[l-1])))
   

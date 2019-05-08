@@ -91,9 +91,14 @@ names(OOS)[[length(OOS)]] <- "D"
 
 rm("df", "df.oos", "A", "sat", "sun", "hol")
 
-### ¤¤ Estimater for hele perioden i vores model ¤¤ ### ---------------------------------
+### ¤¤ Tabel med estimater og std. fejl i OLS og GLS ¤¤ ### -----------------------------
 
-tbl <- scoef(s.lm) ; tbl
+co.sd.lm <- scoef(s.lm)
+sd.gls <- scoef(s.gls)$sdc
+
+tbl <- data.frame(Estimates = as.numeric(co.sd.lm$coef) , sdOLS = as.numeric(co.sd.lm$sdc) , 
+                  sdGLS = as.numeric(sd.gls) ) ; rownames(tbl) <- colnames(co.sd.lm$coef)
+tbl
 
 ### ¤¤ ADF-test ¤¤ ### ------------------------------------------------------------------
 

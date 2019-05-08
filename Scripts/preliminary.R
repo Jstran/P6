@@ -15,51 +15,40 @@ library(tseries)
 
 # Omregning til kende koefficienter af s(t) 
 scoef <- function(mod){
-  coef <- as.numeric(mod$coefficients)
-  
+  coef   <- as.numeric(mod$coefficients)
+  cm     <- vcov(s.lm)
   # Koefficienter til årlig periode
-  c1 <- sqrt(coef[4]^2 + coef[5]^2)
-  c2 <- atan(coef[5]/coef[4]) * 365.25/(2*pi)
+  c1  <- sqrt(coef[4]^2 + coef[5]^2)
+  c2  <- atan(coef[5]/coef[4]) * 365.25/(2*pi)
   
   # Koefficienter til halvårlig periode
-  c3 <- sqrt(coef[6]^2 + coef[7]^2)
-  c4 <- atan(coef[7]/coef[6]) * 365.25/(8*pi)
+  c3  <- sqrt(coef[6]^2 + coef[7]^2)
+  c4  <- atan(coef[7]/coef[6]) * 365.25/(8*pi)
   
   # Koefficienter til kvartal periode
-  c5 <- sqrt(coef[8]^2 + coef[9]^2)
-  c6 <- atan(coef[9]/coef[8]) * 365.25/(24*pi) 
+  c5  <- sqrt(coef[8]^2 + coef[9]^2)
+  c6  <- atan(coef[9]/coef[8]) * 365.25/(24*pi) 
+  
+  # Standardafvigelser til årlig periode
+  sdc1 <- sqrt( 1/(coef[4]^2 + coef[5]^2)*(coef[4]^2 * cm[4,4] + coef[5]^2*cm[5,5] + coef[4]*coef[5] * cm[4,5]) )
+  sdc2 <- sqrt( (365/( 2*pi*(coef[4]^2 + coef[5]^2) ) )^2 * ( coef[5]^2 * cm[4,4] + coef[4]^2 * cm[5,5] - 2*coef[4]*coef[5]*cm[4,5])  )
+  
+  # Standardafvigelser til halvårlig periode
+  sdc3 <- sqrt( 1/(coef[6]^2 + coef[7]^2)*(coef[6]^2 * cm[6,6] + coef[7]^2*cm[7,7] + coef[6]*coef[7] * cm[6,7]) )
+  sdc4 <- sqrt( (365/( 2*pi*(coef[6]^2 + coef[7]^2) ) )^2 * ( coef[7]^2 * cm[6,6] + coef[6]^2 * cm[7,7] - 2*coef[6]*coef[7]*cm[6,7])  )
+  
+  # Standardafvigelser til kvartal periode
+  sdc5 <- sqrt( 1/(coef[8]^2 + coef[9]^2)*(coef[8]^2 * cm[8,8] + coef[9]^2*cm[9,9] + coef[8]*coef[9] * cm[8,9]) )
+  sdc6 <- sqrt( (365/( 2*pi*(coef[8]^2 + coef[9]^2) ) )^2 * ( coef[9]^2 * cm[8,8] + coef[8]^2 * cm[9,9] - 2*coef[8]*coef[9]*cm[8,9])  )
   
   # Dataframe med alt info
-  df <- data.frame(b0 = coef[1] , b1 = coef[2] , b2 = coef[3] , c1 = c1 , c2 = c2 ,
-                   c3 = c3 , c4 = c4 , c5 = c5, c6 = c6, 
-                   d1 = coef[10] , d2 = coef[11] , d3 = coef[12]) 
-  return(df)
-}
-
-s.se <- function(mod, type = "lm"){
-  if (type == "lm") {
-    se <- summary(mod)$coef[,2]
-  }
-  if (type == "gls") {
-    se <- summary(mod)$tTable[,2]
-  }
-  # Koefficienter til årlig periode
-  c1 <- sqrt(se[4]^2 + se[5]^2)
-  c2 <- atan(se[5]/se[4]) * 365.25/(2*pi)
-  
-  # Koefficienter til halvårlig periode
-  c3 <- sqrt(se[6]^2 + se[7]^2)
-  c4 <- atan(se[7]/se[6]) * 365.25/(8*pi)
-  
-  # Koefficienter til kvartal periode
-  c5 <- sqrt(se[8]^2 + se[9]^2)
-  c6 <- atan(se[9]/se[8]) * 365.25/(24*pi) 
-  
-  # Dataframe med alt info
-  df <- data.frame(b0 = se[1] , b1 = se[2] , b2 = se[3] , c1 = c1 , c2 = c2 ,
-                   c3 = c3 , c4 = c4 , c5 = c5, c6 = c6, 
-                   d1 = se[10] , d2 = se[11] , d3 = se[12]) 
-  return(df)
+  ls <- list( coef = data.frame(b0 = coef[1] , b1 = coef[2] , b2 = coef[3] , c1 = c1 , c2 = c2 ,
+                                c3 = c3 , c4 = c4 , c5 = c5, c6 = c6, 
+                                d1 = coef[10] , d2 = coef[11] , d3 = coef[12]) ,
+              sdc  = data.frame(b0 = sqrt(cm[1,1]) , b1 = sqrt(cm[2,2]) , b2 = sqrt(cm[3,3]) , 
+                                c1 = sdc1 , c2 = sdc2 , c3 = sdc3 , c4 = sdc4 , c5 = sdc5 , c6 = sdc6 ,
+                                d1 = sqrt(cm[10,10]) , d2 = sqrt(cm[11,11]) , d3 = sqrt(cm[12,12])  ) )
+  return(ls)
 }
 
 # Konfidensinterval
@@ -226,7 +215,7 @@ sz <- list(l = I(0.2) , p = I(0.1))
 
 ### ¤¤ Gemmer workspace ¤¤ ### ----------------------------------------------------------
 
-save(DK1, p.Y, p.th, colors, dates, dates2, n.obs, ci, scoef, sz, OOS, dates.all, s.se,
+save(DK1, p.Y, p.th, colors, dates, dates2, n.obs, ci, scoef, sz, OOS, dates.all,
      file = "./Workspaces/preliminary.Rdata")
 
 ### ¤¤ Det vilde vesten ¤¤ ### ----------------------------------------------------------

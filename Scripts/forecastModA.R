@@ -186,3 +186,4 @@ res.is.a <- DK1$D[2:slut.is] - x.pred.is.a[2:slut.is]
 
 save(x.pred.is.a, x.pred.oos.a, rmse.is.a, rmse.oos.a, pred.inter.a, res.is.a, res.oos.a,
      file = "./Workspaces/forecastModA.Rdata")
+

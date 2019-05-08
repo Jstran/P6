@@ -46,7 +46,7 @@ logLike <- function(theta){
   return(-likesum)
 }
 
-theta0 <- c(10,50,10,0.5,0.5,0.9,5) # Startværdier for parametre til optim
+theta0 <- c(33,90,75,0.3,0.6,0.9,7) # Startværdier for parametre til optim
 lB     <- c(0,0,0,0,0,0.000001,-100) # Nedre grænse for parametre
 uB     <- c(100,100,100,0.99999,0.99999,0.99999,100) # Øvre grænse for parametre
 
@@ -164,7 +164,21 @@ mae.oos
 spike.count.oos
 ### ¤¤ Pred.inter mm ¤¤ ### -------------------------------------------
 
-pred.inter.a <- 1.96 * sqrt(var(dat[start.oos:slut.oos] - x.pred.oos.a[start.oos:slut.oos]))
+#pred.inter.a <- 1.96 * sqrt(var(dat[start.oos:slut.oos] - x.pred.oos.a[start.oos:slut.oos]))
+pred.inter.a <- c()
+for (j in start.oos:slut.oos) {
+  if (state.oos[j] == 1){
+    pred.inter.a[j] <- sigma1
+  }
+  else if (state.oos[j] == 2){
+    pred.inter.a[j] <- sigma2
+  }
+  else {
+    pred.inter.a[j] <- sigma3
+  }
+}
+
+pred.inter.a <- 1.96 * pred.inter.a
 
 res.oos.a <- OOS$D - x.pred.oos.a[start.oos:slut.oos]
 
@@ -172,3 +186,5 @@ res.is.a <- DK1$D[2:slut.is] - x.pred.is.a[2:slut.is]
 
 save(x.pred.is.a, x.pred.oos.a, rmse.is.a, rmse.oos.a, pred.inter.a, res.is.a, res.oos.a,
      file = "./Workspaces/forecastModA.Rdata")
+
+

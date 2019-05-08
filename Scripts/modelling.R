@@ -30,7 +30,7 @@ ls <- list(wd = dat.wd , sat = dat.sat , sun = dat.sun , hol = dat.hol , A = DK1
 df <- data.frame(mean = sapply(ls , mean)         ,
                  sd   = sapply(ls , sd)           ,
                  skew = sapply(ls , skewness)     ,
-                 kurt = sapply(ls , kurtosis) + 3 ,
+                 kurt = sapply(ls , kurtosis) + 3 , 
                  min  = sapply(ls , min)          ,
                  max  = sapply(ls , max)          ,
                  len  = sapply(ls , length)       )
@@ -101,6 +101,12 @@ tbl <- data.frame(Estimates = as.numeric(co.sd.lm$coef) , sdOLS = as.numeric(co.
 tbl
 
 ### ¤¤ ADF-test ¤¤ ### ------------------------------------------------------------------
+DK1.A.filtered <- rollmedian(DK1$A , k = 5)
+
+adf.test(DK1.A.filtered)
+
+adf.test(DK1.A.filtered, k = 0)
+
 
 DK1.D.filtered <- rollmedian(DK1$D , k = 5)
 

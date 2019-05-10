@@ -17,6 +17,7 @@ library(pracma)
 library(zoo)
 library(rms)
 library(nlme)
+library(psd)
 
 
 ### ¤¤ Infotabeller om data ¤¤ ### ------------------------------------------------------
@@ -96,7 +97,7 @@ rm("df", "df.oos", "A", "sat", "sun", "hol")
 co.sd.lm <- scoef(s.lm)
 sd.gls <- scoef(s.gls)$sdc
 
-tbl <- data.frame(Estimates = as.numeric(co.sd.lm$coef) , sdOLS = as.numeric(co.sd.lm$sdc) , 
+tbl <- data.frame(Estimates = as.numeric(co.sd.lm$coef),sdOLS = as.numeric(co.sd.lm$sdc), 
                   sdGLS = as.numeric(sd.gls) ) ; rownames(tbl) <- colnames(co.sd.lm$coef)
 tbl
 
@@ -114,166 +115,43 @@ adf.test(DK1.D.filtered)
 
 adf.test(DK1.D.filtered, k = 0)
 
+### ¤¤ ARMAX ¤¤ ### ---------------------------------------------------------------------
+# Kilde: https://onlinecourses.science.psu.edu/stat510/lesson/9/9.1
+ccf(DK1$D, DK1$W)
+
+# Nedenstående tyder på MA(3)
+acf(DK1$W)
+pacf(DK1$W)
+
+w.arma <- auto.arima(DK1$W)
+w.arma
+
+plot(w.arma$residuals)
+dk1.d.prew <- residuals(Arima(DK1$D, model = w.arma))
+
+ccf(w.arma$residuals, dk1.d.prew)
+
+
+# Consumption
+ccf(DK1$D, DK1$C)
+
+# Nedenstående tyder på MA(3)
+acf(DK1$C)
+pacf(DK1$C)
+
+c.arma <- auto.arima(DK1$C)
+c.arma
+
+plot(c.arma$residuals)
+dk1.d.prew.c <- residuals(Arima(DK1$D, model = c.arma))
+
+ccf(c.arma$residuals, dk1.d.prew.c)
+
+
 ### ¤¤ Gemmer workspace ¤¤ ### ----------------------------------------------------------
 
 save(t , s.lm, s.pred, DK1, OOS,
      file = "./Workspaces/modelling.Rdata")
 
 ### ¤¤ Det vilde vesten ¤¤ ### ----------------------------------------------------------
-plot(res.is.a, type = "l", main = "Residualer for Model A")
-acf(res.is.a, main = "Residualer for Model A")
-Box.test(res.is.a, type = "Ljung-Box") # H0 er, at tidsrækken er hvid støj.
 
-
-modARMA <- auto.arima(DK1$W)
-vind.pre <- residuals(Arima(DK1$D, model = modARMA))
-
-
-# Random walk model
-x.pred.rw <- c(DK1$D[2191], OOS$D[-90])
-rmse.rw <- sqrt(1/90 * sum((OOS$D - x.pred.rw)^2))
-
-x.pred.rw <- sqrt(var(DK1$D)) * rnorm(90)
-
-plot(x.pred.rw, type = "l", col = "red")
-lines(OOS$D)
-
-x.pred.average <- mean(DK1$D)
-rmse.average <- sqrt(1/90 * sum((OOS$D - x.pred.average)^2))
-
-# Parameter estimering ----------------------------------------------------
-# Hamilton, Regime-Switching Models, 2005, metode til MLE
-
-#DK1$D = as.numeric(DK1$D)
-#l = length(DK1$D)
-#f = function(theta){
-#  sigma_1 = theta[1];sigma_2=theta[2];sigma_3=theta[3];alpha_1=theta[4];alpha_3=theta[5];p = theta[6];mu_2=theta[7]
-#  like=c()
-#  xi= matrix(nrow=l,ncol=3); xi[1,]=1/3
-#  likesum = 0
-#  for (i in 1:(l-1)) {
-#    like[i]=   p *xi[i,1]*dnorm(DK1$D[i+1],  mean =  (1-alpha_1)*DK1$D[i] , sd = sigma_1) +
-#            (1-p)*xi[i,1]*dnorm(DK1$D[i+1],  mean = (-mu_2 + DK1$D[i])    , sd = sigma_2) +
-#                  xi[i,2]*dnorm(DK1$D[i+1],  mean = ((1-alpha_3)*DK1$D[i]), sd = sigma_3) +
-#                  xi[i,3]*dnorm(DK1$D[i+1],  mean = ((1-alpha_1)*DK1$D[i]), sd = sigma_1)
-
-#    xi[i+1,1] =(p*xi[i,1]*dnorm(DK1$D[i+1],  mean =  (1-alpha_1)*DK1$D[i] , sd = sigma_1) +
-#                  xi[i,3]*dnorm(DK1$D[i+1],  mean = ((1-alpha_1)*DK1$D[i]), sd = sigma_1))/(like[i])
-
-#    xi[i+1,2] =((1-p)*xi[i,1]*dnorm(DK1$D[i+1], mean = (-mu_2 + DK1$D[i]), sd = sigma_2))/like[i]
-
-#    xi[i+1,3] =   xi[i,2]*dnorm(DK1$D[i+1], mean = ((1-alpha_3)*DK1$D[i]), sd = sigma_3)/like[i]
-#    likesum = likesum + log(like[i])
-#  }
-#  return(-likesum)
-#}
-#par = c(10,50,10,0.5,0.5,0.9,5)
-#f(par)
-#MRS = optim(par, f, lower = c(0,0,0,0,0,0.000001,-100), 
-#      upper = c(100,100,100,0.99999,0.99999,0.99999,100), method = "L-BFGS-B", control=list(trace=TRUE, maxit= 500))
-
-
-# Simulering --------------------------------------------------------------
-#set.seed(10)
-#a_1 = MRS$par[4]
-#a_3 = MRS$par[5]
-#r_1= numeric(1)
-#r_2= numeric(1)
-#r_3= numeric(1)
-#X_t= numeric(1)
-
-#eps = rnorm(2191, mean = 0, sd = 1)
-#prob = runif(2191)
-#limit = MRS$par[6]
-#sigma_1 = MRS$par[1]
-#sigma_2 = MRS$par[2]
-#sigma_3 = MRS$par[3]
-#mu = MRS$par[7]
-#s=1
-#spikes = 0
-#state = c()
-#r_1[i] = (1-a_1)*r_1[i-1] + sigma_1*eps[i]
-#r_2[i] = r_2[i-1] + mu + sigma_2*eps[i]
-#r_3[i] = (1-a_3)*r_3[i-1] + sigma_3*eps[i]
-
-#for (i in 2:100) {
-#  if (s == 3) {
-#    X_t[i]=(1-a_1)*X_t[i-1] + sigma_1*eps[i]
-#    s = 1
-#    state = c(state,s)
-#  }
-#  if (s == 2) { 
-#    X_t[i] = (1-a_3)*X_t[i-1] + sigma_3*eps[i]
-#    s = 3
-#    state = c(state,s)
-#  }
-#  if (prob[i]>=limit && s == 1) {
-#    X_t[i] = X_t[i-1] + mu + sigma_2*eps[i]
-#    s = 2
-#    state = c(state,s)
-#    spikes = spikes + 1
-#  }
-#  if (prob[i]<limit && s == 1) {
-#    X_t[i]=(1-a_1)*X_t[i-1] + sigma_1*eps[i]
-#    state = c(state,s)
-#  }
-#}
-#
-#xt <- X_t
-#xt[1] <- DK1$D[2191-100]
-#df <- data.frame(t = seq(to = 191, length.out = 100), xt)
-
-#plot(DK1$D[2000:2191], type = "l")
-#lines(df, col = "red")
-
-#plot(state)
-#par(mfrow=c(2,1))
-#ts.plot(X_t)
-#ts.plot(DK1$D)
-
-#par(mfrow = c(1,1))
-
-#quantile(X_t)
-#quantile(DK1$D)
-
-
-# Model med mulighed for flere regime 2 og 3 i streg ----------------------
-#DK1$D = as.numeric(DK1$D)
-#l = length(DK1$D)
-#f_2 = function(theta){
-  
-#  sigma_1 = theta[1];sigma_2=theta[2];sigma_3=theta[3];
-#  alpha_1=theta[4];alpha_3=theta[5];p_11 = theta[6];p_22 = theta[7]; p_33 = theta[8];mu_2=theta[9]
-#  like=c()
-#  xi= matrix(nrow=l,ncol=3); xi[1,]=1/3
-#  likesum = 0
-#  for (i in 1:(l-1)) {
-#    like[i]= p_11*xi[i,1]*dnorm(DK1$D[i+1], mean = (1-alpha_1)*DK1$D[i], sd = sigma_1) +
-#      (1-p_11)*xi[i,1]*dnorm(DK1$D[i+1], mean = (-mu_2 + DK1$D[i]), sd = sigma_2) +
-#      p_22*xi[i,2]*dnorm(DK1$D[i+1], mean = (-mu_2 + DK1$D[i]), sd = sigma_2) +
-#      (1-p_22)*xi[i,2]*dnorm(DK1$D[i+1], mean = ((1-alpha_3)*DK1$D[i]), sd = sigma_3) +
-#      (1-p_33)*xi[i,3]*dnorm(DK1$D[i+1], mean = ((1-alpha_1)*DK1$D[i]), sd = sigma_1) +
-#      p_33*xi[i,3]*dnorm(DK1$D[i+1], mean = ((1-alpha_3)*DK1$D[i]), sd = sigma_3)
-#    
-#    
-#    xi[i+1,1] = (p_11*xi[i,1]*dnorm(DK1$D[i+1], mean = (1-alpha_1)*DK1$D[i], sd = sigma_1) +
-#                (1-p_33)*xi[i,3]*dnorm(DK1$D[i+1], mean = ((1-alpha_1)*DK1$D[i]), sd = sigma_1))/(like[i])
-#    xi[i+1,2] = ((1-p_11)*xi[i,2]*dnorm(DK1$D[i+1], mean = (-mu_2 + DK1$D[i]), sd = sigma_2)+
-#                p_22*xi[i,2]*dnorm(DK1$D[i+1], mean = (-mu_2 + DK1$D[i]), sd = sigma_2))/(like[i])
-#    xi[i+1,3] = ((1-p_22)*xi[i,2]*dnorm(DK1$D[i+1], mean = ((1-alpha_3)*DK1$D[i]), sd = sigma_3)+
-#                p_33*xi[i,3]*dnorm(DK1$D[i+1], mean = ((1-alpha_3)*DK1$D[i]), sd = sigma_3))/(like[i])
-#    likesum = likesum + log(like[i])
-#  }
-#  return(-likesum)
-#}
-#upper = c(100,100,100,0.99999,0.99999,0.99999,0.99999,0.99999,20)
-#lower = c(10,30,50,0.01,0.01,0.01,0.01,0.01,-20)
-#par2 = c(30,80,70,0.1,0.1,0.5,0.5,0.5,5)
-## par = sigma1,sigma2,sigma3,alpha_1,alpha_3,p_11,p_22,p_33,mu
-#MRS2 = optim(par2, f_2, lower = lower, upper=upper, method = "L-BFGS-B", 
-#             control=list(trace=TRUE, maxit= 500,
-#                          parscale=c(0.5,0.5,0.5,0.05,0.05,0.001,0.001,0.001,0.1), factr = 1e-12))
-
-#library(optimx)
-#MRS2 = optimx(par2, f_2, lower = lower, upper=upper, method = "L-BFGS-B", 
-#             control=list(trace=TRUE, maxit= 500,parscale=c(0.5,0.5,0.5,0.05,0.05,0.001,0.001,0.001,0.1)))

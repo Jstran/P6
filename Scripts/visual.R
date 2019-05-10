@@ -238,11 +238,11 @@ ps$p[[i]] <- p.acf.res.a ; ps$names[i] <- "ModA/plotACFModA" ; ps$var[i] <- "p.a
 i <- i + 1
 
 # Ljung-Box residualer Model A
-lag.max <- 20
+lag.max <- 30
 which.lag <- 1:lag.max
 p.vals <- numeric(lag.max)
 for (l in 1:lag.max){
-  p.vals[l] <- Box.test(res.is.a , lag = l)$p.value
+  p.vals[l] <- Box.test(res.is.a , lag = l, type = "Ljung")$p.value
 }
 p.lbox.res.a <- ggplot(data.frame(X1 = which.lag,
                                   X2 = p.vals), 
@@ -332,7 +332,7 @@ ps$p[[i]] <- p.hist.res.c ; ps$names[i] <- "ModC/plotHistResC" ; ps$var[i] <- "p
 i <- i + 1
 
 # Ljung-Box residualer Model C
-lag.max <- 20
+lag.max <- 2000
 which.lag <- 1:lag.max
 p.vals <- numeric(lag.max)
 for (l in 1:lag.max){
@@ -368,9 +368,5 @@ if(save.plots == TRUE){
            width = ps$w[j] , height = ps$h[j] , device = cairo_ps , dpi = 600)
   }
 }
-
-
-
-
 ### ¤¤ Det vilde vesten ¤¤ ### ----------------------------------------------------------
 

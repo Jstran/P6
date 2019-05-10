@@ -73,7 +73,7 @@ p.qq <- ggplot(data.frame(x = quantiles$x, y = quantiles$y), aes(x = x, y = y))+
         geom_point(col = colors[1], size = sz$p) +
         geom_abline(slope = slope, intercept = int, linetype = "dashed", col = colors[2],
                     size = sz$l) + 
-        labs(x = "Teoretisk kvantil", y = "Standardiseret sæsonrensede priser") +
+        labs(x = "Standard normal teoretisk fraktil", y = "Standardiseret sæsonrensede priser") +
         theme(legend.position="none") +
         p.th
 p.qq    
@@ -212,7 +212,7 @@ p.qq.res.a <- ggplot(data.frame(x = quantiles$x, y = quantiles$y), aes(x = x, y 
   geom_point(col = colors[1], size = sz$p) +
   geom_abline(slope = slope, intercept = int, linetype = "dashed", col = colors[2],
               size = sz$l) + 
-  labs(x = "Teoretisk kvantil", y = "Standardiseret residualer") +
+  labs(x = "Standard normal teoretisk fraktil", y = "Standardiserede residualer") +
   theme(legend.position="none") +
   p.th
 p.qq.res.a    
@@ -270,7 +270,7 @@ p.qq.res.c <- ggplot(data.frame(x = quantiles$x, y = quantiles$y), aes(x = x, y 
   geom_point(col = colors[1], size = sz$p) +
   geom_abline(slope = slope, intercept = int, linetype = "dashed", col = colors[2],
               size = sz$l) + 
-  labs(x = "Teoretisk kvantil", y = "Standardiseret residualer") +
+  labs(x = "Standard normal teoretisk fraktil", y = "Standardiserede residualer") +
   theme(legend.position="none") +
   p.th
 p.qq.res.c    
@@ -293,12 +293,27 @@ p.acf.res.c
 ps$p[[i]] <- p.acf.res.c ; ps$names[i] <- "plotACFModC" ; ps$var[i] <- "p.acf.res.c" ; ps$l[i] <- FALSE 
 i <- i + 1
 
+# Histogram for residualer Model C
+p.hist.res.c <- ggplot(data.frame(X2 = res.is.c),
+                       aes(x = X2)) +
+  geom_histogram(binwidth = 20, color = "white", fill = colors[1]) + 
+  stat_function(fun = function(x){dnorm(x = x, 
+                                        mean = mean(res.is.c), 
+                                        sd = sd(res.is.c))*length(res.is.c)*24.1}, 
+                color = colors[2], size = sz$l) +
+  labs(x = "Residualer", y = "Tæthed") +
+  scale_x_continuous() +
+  p.th
+p.hist.res.c
+ps$p[[i]] <- p.hist.res.c ; ps$names[i] <- "plotHistResC" ; ps$var[i] <- "p.hist.res.c"; ps$l[i] <- FALSE
+i <- i + 1
+
 ### ¤¤ Gemmer plots ¤¤ ### --------------------------------------------------------------
 data.frame(names = ps$names , var = ps$var )  
 
-wanted.plots = 13
+wanted.plots = c(4,12,15)
 save.plots = T
-wid <- 9
+wid <- 9/2
 
 if(save.plots == TRUE){
   for(j in wanted.plots){

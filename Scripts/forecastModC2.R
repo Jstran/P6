@@ -77,7 +77,7 @@ data.frame("alpha1" = c(alpha1, se[4]), "alpha3" = c(alpha3, se[5]), "mu2" = c(m
            "beta2" = c(beta[2],se[8]))
 
 ### ¤¤ IS mm ¤¤ ### ---------------------------------------------------------------------
-xi <- numeric(3)
+xi <- c()
 xi[1:3] <- 1/3
 
 eta <- numeric(3)
@@ -88,6 +88,9 @@ p.is <- c()
 for (l in 2:slut.is) {
   p.is[l] <- (exp(beta[1] + beta[2]*datW[l-1])/
              (1 + exp(beta[1] + beta[2]*datW[l-1])))
+  
+  x.pred.is.c[l] <- xi[1]*(1 - alpha1)*dat[l-1] + xi[2]*(dat[l-1] + mu2) + 
+                    xi[3]*(1 - alpha3)*dat[l-1]
   
   eta[1] <- dnorm(dat[l], mean = (1-alpha1)*dat[l-1], sd = sigma1)
   eta[2] <- dnorm(dat[l], mean = (-mu2 + dat[l-1]), sd = sigma2)
@@ -101,9 +104,6 @@ for (l in 2:slut.is) {
   xi[2] <- ((1-p.is[l])*xi.temp[1]*eta[2])/like
   
   xi[3] <- xi.temp[2]*eta[3]/like
-  
-  x.pred.is.c[l] <- xi[1]*(1 - alpha1)*dat[l-1] + xi[2]*(dat[l-1] + mu2) + 
-    xi[3]*(1 - alpha3)*dat[l-1]
 }
 x.pred.is.c <- x.pred.is.c[-1]
 
@@ -131,6 +131,10 @@ for (l in start.oos:slut.oos) {
   p[l-slut.is] <- (exp(beta[1] + beta[2]*datW[l-1])/
                   (1 + exp(beta[1] + beta[2]*datW[l-1])))
   
+  x.pred.oos.c[l] <- xi[1]*(1 - alpha1)*dat[l-1] + xi[2]*(dat[l-1] + mu2) + 
+                     xi[3]*(1 - alpha3)*dat[l-1]
+  pred.inter.c[l] <- xi[1]*sigma1 + xi[2]*sigma2 + xi[3]*sigma3
+  
   eta[1] <- dnorm(dat[l], mean = (1-alpha1)*dat[l-1], sd = sigma1)
   eta[2] <- dnorm(dat[l], mean = (-mu2 + dat[l-1]), sd = sigma2)
   eta[3] <- dnorm(dat[l], mean = ((1-alpha3)*dat[l-1]), sd = sigma3)
@@ -145,10 +149,6 @@ for (l in start.oos:slut.oos) {
   xi[2] <- ((1-p[l-slut.is])*xi.temp[1]*eta[2])/like
 
   xi[3] <- xi.temp[2]*eta[3]/like
-  
-  x.pred.oos.c[l] <- xi[1]*(1 - alpha1)*dat[l-1] + xi[2]*(dat[l-1] + mu2) + 
-                     xi[3]*(1 - alpha3)*dat[l-1]
-  pred.inter.c[l] <- xi[1]*sigma1 + xi[2]*sigma2 + xi[3]*sigma3
 }
 
 plot(dat[2100:slut.oos], type = "l", main = "Uden sæson (IS)")

@@ -115,10 +115,26 @@ save(t , s.lm, s.pred, DK1, OOS,
      file = "./Workspaces/modelling.Rdata")
 
 ### ¤¤ Det vilde vesten ¤¤ ### ----------------------------------------------------------
-plot(res.is, type = "l", main = "Residualer")
-acf(res.is, main = "Residualer")
-Box.test(res.is, type = "Ljung-Box") # H0 er, at tidsrækken er hvid støj.
+plot(res.is.a, type = "l", main = "Residualer for Model A")
+acf(res.is.a, main = "Residualer for Model A")
+Box.test(res.is.a, type = "Ljung-Box") # H0 er, at tidsrækken er hvid støj.
 
+
+modARMA <- auto.arima(DK1$W)
+vind.pre <- residuals(Arima(DK1$D, model = modARMA))
+
+
+# Random walk model
+x.pred.rw <- c(DK1$D[2191], OOS$D[-90])
+rmse.rw <- sqrt(1/90 * sum((OOS$D - x.pred.rw)^2))
+
+x.pred.rw <- sqrt(var(DK1$D)) * rnorm(90)
+
+plot(x.pred.rw, type = "l", col = "red")
+lines(OOS$D)
+
+x.pred.average <- mean(DK1$D)
+rmse.average <- sqrt(1/90 * sum((OOS$D - x.pred.average)^2))
 
 # Parameter estimering ----------------------------------------------------
 # Hamilton, Regime-Switching Models, 2005, metode til MLE

@@ -203,11 +203,12 @@ ps$p[[i]] <- p.hist.res.a ; ps$names[i] <- "ModA/plotHistResA" ; ps$var[i] <- "p
 i <- i + 1
 
 # Q-Q plot af sæsonrensede priser
-y <- quantile(res.is.a, c(0.25, 0.75))
+std.res.a <- (res.is.a - mean(res.is.a))/sqrt(var(res.is.a))
+y <- quantile(std.res.a, c(0.25, 0.75))
 x <- qnorm(c(0.25, 0.75))
 slope <- diff(y)/diff(x)
 int <- y[1L] - slope * x[1L]
-quantiles <- qqnorm(res.is.a)
+quantiles <- qqnorm(std.res.a)
 
 p.qq.res.a <- ggplot(data.frame(x = quantiles$x, y = quantiles$y), aes(x = x, y = y))+
   geom_point(col = colors[1], size = sz$p) +
@@ -281,11 +282,12 @@ ps$p[[i]] <- p.forecast.c ; ps$names[i] <- "ModC/plotForecastModC" ; ps$var[i] <
 i <- i + 1
 
 # Q-Q plot af sæsonrensede priser
-y <- quantile(res.is.c, c(0.25, 0.75))
+std.res.c <- (res.is.c - mean(res.is.c))/sqrt(var(res.is.c))
+y <- quantile(std.res.c, c(0.25, 0.75))
 x <- qnorm(c(0.25, 0.75))
 slope <- diff(y)/diff(x)
 int <- y[1L] - slope * x[1L]
-quantiles <- qqnorm(res.is.a)
+quantiles <- qqnorm(std.res.c)
 
 p.qq.res.c <- ggplot(data.frame(x = quantiles$x, y = quantiles$y), aes(x = x, y = y))+
   geom_point(col = colors[1], size = sz$p) +

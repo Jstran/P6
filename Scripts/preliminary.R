@@ -16,7 +16,7 @@ library(tseries)
 # Omregning til kende koefficienter af s(t) 
 scoef <- function(mod){
   coef   <- as.numeric(mod$coefficients)
-  cm     <- vcov(s.lm)
+  cm     <- vcov(mod)
   # Koefficienter til årlig periode
   c1  <- sqrt(coef[4]^2 + coef[5]^2)
   c2  <- atan(coef[5]/coef[4]) * 365.25/(2*pi)
@@ -30,16 +30,16 @@ scoef <- function(mod){
   c6  <- atan(coef[9]/coef[8]) * 365.25/(24*pi) 
   
   # Standardafvigelser til årlig periode
-  sdc1 <- sqrt( 1/(coef[4]^2 + coef[5]^2)*(coef[4]^2 * cm[4,4] + coef[5]^2*cm[5,5] + coef[4]*coef[5] * cm[4,5]) )
-  sdc2 <- sqrt( (365/( 2*pi*(coef[4]^2 + coef[5]^2) ) )^2 * ( coef[5]^2 * cm[4,4] + coef[4]^2 * cm[5,5] - 2*coef[4]*coef[5]*cm[4,5])  )
+  sdc1 <- sqrt( 1/(coef[4]^2 + coef[5]^2)*(coef[4]^2 * cm[4,4] + coef[5]^2*cm[5,5] + coef[4]*coef[5] * 2*cm[4,5]) )
+  sdc2 <- sqrt( (365.25/( 2*pi*(coef[4]^2 + coef[5]^2) ) )^2 * ( coef[5]^2 * cm[4,4] + coef[4]^2 * cm[5,5] - 2*coef[4]*coef[5]*cm[4,5])  )
   
   # Standardafvigelser til halvårlig periode
-  sdc3 <- sqrt( 1/(coef[6]^2 + coef[7]^2)*(coef[6]^2 * cm[6,6] + coef[7]^2*cm[7,7] + coef[6]*coef[7] * cm[6,7]) )
-  sdc4 <- sqrt( (365/( 2*pi*(coef[6]^2 + coef[7]^2) ) )^2 * ( coef[7]^2 * cm[6,6] + coef[6]^2 * cm[7,7] - 2*coef[6]*coef[7]*cm[6,7])  )
+  sdc3 <- sqrt( 1/(coef[6]^2 + coef[7]^2)*(coef[6]^2 * cm[6,6] + coef[7]^2*cm[7,7] + coef[6]*coef[7] * 2*cm[6,7]) )
+  sdc4 <- sqrt( (365.25/( 2*pi*(coef[6]^2 + coef[7]^2) ) )^2 * ( coef[7]^2 * cm[6,6] + coef[6]^2 * cm[7,7] - 2*coef[6]*coef[7]*cm[6,7])  )
   
   # Standardafvigelser til kvartal periode
-  sdc5 <- sqrt( 1/(coef[8]^2 + coef[9]^2)*(coef[8]^2 * cm[8,8] + coef[9]^2*cm[9,9] + coef[8]*coef[9] * cm[8,9]) )
-  sdc6 <- sqrt( (365/( 2*pi*(coef[8]^2 + coef[9]^2) ) )^2 * ( coef[9]^2 * cm[8,8] + coef[8]^2 * cm[9,9] - 2*coef[8]*coef[9]*cm[8,9])  )
+  sdc5 <- sqrt( 1/(coef[8]^2 + coef[9]^2)*(coef[8]^2 * cm[8,8] + coef[9]^2*cm[9,9] + coef[8]*coef[9] * 2*cm[8,9]) )
+  sdc6 <- sqrt( (365.25/( 2*pi*(coef[8]^2 + coef[9]^2) ) )^2 * ( coef[9]^2 * cm[8,8] + coef[8]^2 * cm[9,9] - 2*coef[8]*coef[9]*cm[8,9])  )
   
   # Dataframe med alt info
   ls <- list( coef = data.frame(b0 = coef[1] , b1 = coef[2] , b2 = coef[3] , c1 = c1 , c2 = c2 ,

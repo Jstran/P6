@@ -326,21 +326,17 @@ p.hist.res.c <- ggplot(data.frame(X2 = res.is.c),
   scale_x_continuous() +
   p.th
 p.hist.res.c
-ps$p[[i]] <- p.hist.res.c ; ps$names[i] <- "plotHistResC" ; ps$var[i] <- "p.hist.res.c"; ps$l[i] <- FALSE
+ps$p[[i]] <- p.hist.res.c ; ps$names[i] <- "ModC/plotHistResC" ; ps$var[i] <- "p.hist.res.c"; ps$h[i] <- 3; ps$w[i] <- 9/2
 i <- i + 1
 
 ### ¤¤ Gemmer plots ¤¤ ### --------------------------------------------------------------
 data.frame(names = ps$names , var = ps$var , w = ps$w , h = ps$h)  
 
-# wanted.plots <- 1:length(ps$names)
-wanted.plots <- 4
+#wanted.plots <- 1:length(ps$names)
+wanted.plots <- 18
 
-wanted.plots = c(4,12,15)
-save.plots = T
+save.plots = TRUE
 wid <- 9/2
-
-save.plots <- TRUE
-
 
 if(save.plots == TRUE){
   for(j in wanted.plots){

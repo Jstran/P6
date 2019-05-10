@@ -49,7 +49,7 @@ logLike <- function(theta){
 
 theta0 <- c(33,90,75,0.3,0.6,0.9,7) # Startværdier for parametre til optim
 lB     <- c(0,0,0,0,0,0.000001,-100) # Nedre grænse for parametre
-uB     <- c(100,100,100,0.99999,0.99999,0.99999,100) # Øvre grænse for parametre
+uB     <- c(200,200,200,0.99999,0.99999,0.99999,100) # Øvre grænse for parametre
 
 MRS <- optim(theta0, logLike, lower = lB, upper = uB, method = "L-BFGS-B", # Finder MLE
              control=list(trace=TRUE, maxit= 500), hessian = TRUE)
@@ -64,6 +64,7 @@ mu2    <- MRS$par[7]
 
 se <- sqrt(diag(solve(MRS$hessian))) # Standard error
 AIC <- 2*(length(MRS$par) - MRS$value)
+AIC
 
 data.frame("alpha1" = c(alpha1, se[4]), "alpha3" = c(alpha3, se[5]), 
            "mu2" = c(mu2, se[7]), "sigma1" = c(sigma1, se[1]), 
@@ -110,9 +111,6 @@ mae.is  <- mean(abs(dat[2:slut.is] - x.pred.is.a))
 mae.is
 
 ### ¤¤ OOS mm ¤¤ ### --------------------------------------------------------------------
-xi <- numeric(3)
-xi[1:3] <- 1/3
-
 eta <- numeric(3)
 
 x.pred.oos.a <- c() # Tom vektor til at indsætte de forecasted værdier for OOS
@@ -145,14 +143,14 @@ lines(x.pred.oos.a[2100:slut.oos], col = "red")
 plot(OOS$A, type = "l", main = "Med sæson (OOS)")
 lines(x.pred.oos.a[start.oos:slut.oos] + OOS$s.pred, col = "red")
 
-rmse.oos.a <- sqrt(1/(slut.oos - start.oos + 1) * sum((dat[start.oos:slut.oos] - 
-                                                         x.pred.oos.a[start.oos:slut.oos])^2))
+rmse.oos.a <- sqrt(1/(slut.oos-start.oos+1)*sum((dat[start.oos:slut.oos] - 
+                                                 x.pred.oos.a[start.oos:slut.oos])^2))
 rmse.oos.a
 
 mae.oos  <- mean(abs(dat[start.oos:slut.oos] - x.pred.oos.a[start.oos:slut.oos]))
 mae.oos
 
-### ¤¤ Pred.inter mm ¤¤ ### -------------------------------------------
+### ¤¤ Pred.inter mm ¤¤ ### -------------------------------------------------------------
 pred.inter.a <- 1.96 * pred.inter.a
 
 res.oos.a <- OOS$D - x.pred.oos.a[start.oos:slut.oos]

@@ -71,10 +71,10 @@ beta   <- MRS$par[7:8]
 se <- sqrt(diag(solve(MRS$hessian))) # Standard error
 AIC <- 2*(length(MRS$par) - MRS$value)
 
-data.frame("alpha1" = c(alpha1, se[4]), "alpha3" = c(alpha3, se[5]), "mu2" = c(mu2, se[6]), 
-           "sigma1" = c(sigma1, se[1]), "sigma2" = c(sigma2, se[2]), 
-           "sigma3" = c(sigma3, se[3]), "beta1" = c(beta[1],se[7]),
-           "beta2" = c(beta[2],se[8]))
+data.frame("alpha1" = c(alpha1, se[4]), "alpha3" = c(alpha3, se[5]), 
+           "mu2" = c(mu2, se[6]), "sigma1" = c(sigma1, se[1]), 
+           "sigma2" = c(sigma2, se[2]), "sigma3" = c(sigma3, se[3]), 
+           "beta1" = c(beta[1],se[7]), "beta2" = c(beta[2],se[8]))
 
 ### ¤¤ IS mm ¤¤ ### ---------------------------------------------------------------------
 xi <- c()
@@ -118,9 +118,6 @@ mae.is  <- mean(abs(dat[2:slut.is] - x.pred.is.c))
 mae.is
 
 ### ¤¤ OOS mm ¤¤ ### --------------------------------------------------------------------
-xi <- numeric(3)
-xi[1:3] <- 1/3
-
 eta <- numeric(3)
 
 x.pred.oos.c <- c() # Tom vektor til at indsætte de forecasted værdier for OOS
@@ -157,8 +154,8 @@ lines(x.pred.oos.c[2100:slut.oos], col = "red")
 plot(OOS$A, type = "l", main = "Med sæson (OOS)")
 lines(x.pred.oos.c[start.oos:slut.oos] + OOS$s.pred, col = "red")
 
-rmse.oos.c <- sqrt(1/(slut.oos - start.oos + 1) * sum((dat[start.oos:slut.oos] - 
-                                                      x.pred.oos.c[start.oos:slut.oos])^2))
+rmse.oos.c <- sqrt(1/(slut.oos-start.oos+1)*sum((dat[start.oos:slut.oos] - 
+                                                 x.pred.oos.c[start.oos:slut.oos])^2))
 rmse.oos.c
 
 mae.oos  <- mean(abs(dat[start.oos:slut.oos] - x.pred.oos.c[start.oos:slut.oos]))

@@ -126,31 +126,16 @@ pacf(DK1$W)
 w.arma <- auto.arima(DK1$W)
 w.arma
 
-plot(w.arma$residuals)
+w.arma.res <- w.arma$residuals
+
+plot(w.arma.res)
 dk1.d.prew <- residuals(Arima(DK1$D, model = w.arma))
 
 ccf(w.arma$residuals, dk1.d.prew)
 
-
-# Consumption
-ccf(DK1$D, DK1$C)
-
-# Nedenstående tyder på MA(3)
-acf(DK1$C)
-pacf(DK1$C)
-
-c.arma <- auto.arima(DK1$C)
-c.arma
-
-plot(c.arma$residuals)
-dk1.d.prew.c <- residuals(Arima(DK1$D, model = c.arma))
-
-ccf(c.arma$residuals, dk1.d.prew.c)
-
-
 ### ¤¤ Gemmer workspace ¤¤ ### ----------------------------------------------------------
 
-save(t , s.lm, s.pred, DK1, OOS,
+save(t , s.lm, s.pred, DK1, OOS, w.arma.res, dk1.d.prew,
      file = "./Workspaces/modelling.Rdata")
 
 ### ¤¤ Det vilde vesten ¤¤ ### ----------------------------------------------------------

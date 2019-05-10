@@ -329,11 +329,32 @@ p.hist.res.c
 ps$p[[i]] <- p.hist.res.c ; ps$names[i] <- "ModC/plotHistResC" ; ps$var[i] <- "p.hist.res.c"; ps$h[i] <- 3; ps$w[i] <- 9/2
 i <- i + 1
 
+# Ljung-Box residualer Model C
+lag.max <- 20
+which.lag <- 1:lag.max
+p.vals <- numeric(lag.max)
+for (l in 1:lag.max){
+  p.vals[l] <- Box.test(res.is.c , lag = l)$p.value
+}
+p.lbox.res.c <- ggplot(data.frame(X1 = which.lag,
+                                  X2 = p.vals), 
+                       aes(x = X1, y = X2)) +
+  geom_hline(aes(yintercept =  0, size = sz$l)) +
+  geom_point(aes(), color = colors[1]) +
+  geom_hline(aes(yintercept =  0.05 ), 
+             color = colors[2], linetype = "dotted") +
+  labs(x = "Lag", y = "P-værdi") +
+  coord_cartesian(ylim=c(0,1)) +
+  p.th
+p.lbox.res.c
+ps$p[[i]] <- p.lbox.res.c ; ps$names[i] <- "ModC/plotLboxResC" ; ps$var[i] <- "p.lbox.res.c" ; ps$h[i] <- 3; ps$w[i] <- 9/2
+i <- i + 1
+
 ### ¤¤ Gemmer plots ¤¤ ### --------------------------------------------------------------
 data.frame(names = ps$names , var = ps$var , w = ps$w , h = ps$h)  
 
-#wanted.plots <- 1:length(ps$names)
-wanted.plots <- 18
+wanted.plots <- 1:length(ps$names)
+#wanted.plots <- 18
 
 save.plots = TRUE
 wid <- 9/2
@@ -351,8 +372,3 @@ if(save.plots == TRUE){
 
 ### ¤¤ Det vilde vesten ¤¤ ### ----------------------------------------------------------
 
-#x <- seq(0,1,length.out = 2000)
-
-#curve(sin(2*pi*x) , x , col = "purple")
-#lines(x , sin(4*pi*x) , col = "blue")
-#lines(x , sin(8*pi*x) , col = "green")

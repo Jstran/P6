@@ -5,6 +5,7 @@ load("./Workspaces/preliminary.Rdata")
 load("./Workspaces/modelling.Rdata")
 load("./Workspaces/forecastModA2.Rdata")
 load("./Workspaces/forecastModC2.Rdata")
+load("./Workspaces/forecastModB.Rdata")
 
 i <- 1
 ps <- list(names = c() , var = c(),  p = c() , i = c() , h = c() , w = c())
@@ -369,13 +370,107 @@ p.lbox.res.c <- ggplot(data.frame(X1 = which.lag,
 ps$p[[i]] <- p.lbox.res.c ; ps$names[i] <- "ModC/plotLboxResC" ; ps$var[i] <- "p.lbox.res.c" ; ps$h[i] <- 3; ps$w[i] <- 9/2
 i <- i + 1
 
+### ¤¤ Model B ¤¤ ### -------------------------------------------------------------
+
+p.forecast.b <- ggplot(data = data.frame(X1 = dates.all[2160:2281],
+                                         X2 = c(DK1$D, OOS$D)[2160:2281] ), 
+                       aes(x = X1, y = X2) ) +
+  geom_line(aes(col = "Sæsonkorigerede observationer", size = sz$l)) + 
+  geom_line(data = data.frame(X1 = dates.all[2192:2281], 
+                              X2 = x.pred.oos.b[2192:2281]), 
+            aes(col = "Sæsonkorigerede forecast", size = sz$l)) +
+  geom_ribbon(aes(ymin = x.pred.oos.b[2160:2281] - pred.inter.b[2160:2281], 
+                  ymax = x.pred.oos.b[2160:2281] + pred.inter.b[2160:2281]), 
+              fill = colors[6], alpha = 0.4) +
+  scale_color_manual(values = c(colors[2], colors[1])) +
+  scale_x_date(date_labels = "%b %y", breaks = pretty(dates.all[2160:2281], n = 6)) +
+  scale_y_continuous() +
+  theme(legend.position = "top" , legend.justification = "left" , 
+        legend.direction = "horizontal", legend.background = element_blank()) +
+  p.th +
+  labs(x = "", y = "Spotpris i DKK/MWh", title = "", color = "")
+p.forecast.b
+ps$p[[i]] <- p.forecast.b ; ps$names[i] <- "ModC/plotForecastModB" ; ps$var[i] <- "p.forecast.b" ; ps$h[i] <- 3.8; ps$w[i] <- 9
+i <- i + 1
+
+# Q-Q plot af sæsonrensede priser
+std.res.b <- (res.is.b - mean(res.is.b))/sqrt(var(res.is.b))
+y <- quantile(std.res.b, c(0.25, 0.75))
+x <- qnorm(c(0.25, 0.75))
+slope <- diff(y)/diff(x)
+int <- y[1L] - slope * x[1L]
+quantiles <- qqnorm(std.res.b)
+
+p.qq.res.b <- ggplot(data.frame(x = quantiles$x, y = quantiles$y), aes(x = x, y = y))+
+  geom_point(col = colors[1], size = sz$p) +
+  geom_abline(slope = slope, intercept = int, linetype = "dashed", col = colors[2],
+              size = sz$l) + 
+  labs(x = "Standard normal teoretisk fraktil", y = "Standardiserede residualer") +
+  theme(legend.position="none") +
+  p.th
+#p.qq.res.b    
+ps$p[[i]] <- p.qq.res.b; ps$names[i] <- "ModB/plotQqResB" ; ps$var[i] <- "p.qq.res.b"; ps$h[i] <- 3; ps$w[i] <- 9/2
+i <- i + 1
+
+# ACF residualer Model A
+p.acf.res.b <- ggplot(data.frame(X1 = acf(res.is.c, lag.max = 2190 , plot = FALSE)$lag[2:31],
+                                 X2 = acf(res.is.b, lag.max = 2190 , plot = FALSE)$acf[2:31]), 
+                      aes(x = X1, y = X2)) +
+  geom_hline(aes(yintercept =  0, size = sz$l)) +
+  geom_segment(aes(xend = X1, yend = 0), color = colors[1]) +
+  geom_hline(aes(yintercept = -ci(res.is.b)), 
+             color = colors[2], linetype = "dotted") +
+  geom_hline(aes(yintercept =  ci(res.is.b)), 
+             color = colors[2], linetype = "dotted") +
+  labs(x = "Lag", y = "ACF") +
+  p.th
+#p.acf.res.b
+ps$p[[i]] <- p.acf.res.b ; ps$names[i] <- "ModB/plotACFModB" ; ps$var[i] <- "p.acf.res.b" ; ps$h[i] <- 3; ps$w[i] <- 9/2 
+i <- i + 1
+
+# Histogram for residualer Model B
+p.hist.res.b <- ggplot(data.frame(X2 = res.is.b),
+                       aes(x = X2)) +
+  geom_histogram(binwidth = 20, color = "white", fill = colors[1]) + 
+  stat_function(fun = function(x){dnorm(x = x, 
+                                        mean = mean(res.is.b), 
+                                        sd = sd(res.is.b))*length(res.is.b)*24.1}, 
+                color = colors[2], size = sz$l) +
+  labs(x = "Residualer", y = "Tæthed") +
+  scale_x_continuous() +
+  p.th
+#p.hist.res.b
+ps$p[[i]] <- p.hist.res.b ; ps$names[i] <- "ModB/plotHistResB" ; ps$var[i] <- "p.hist.res.b"; ps$h[i] <- 3; ps$w[i] <- 9/2
+i <- i + 1
+
+# Ljung-Box residualer Model B
+lag.max <- 2000
+which.lag <- 1:lag.max
+p.vals <- numeric(lag.max)
+for (l in 1:lag.max){
+  p.vals[l] <- Box.test(res.is.B , lag = l)$p.value
+}
+p.lbox.res.b <- ggplot(data.frame(X1 = which.lag,
+                                  X2 = p.vals), 
+                       aes(x = X1, y = X2)) +
+  geom_hline(aes(yintercept =  0, size = sz$l)) +
+  geom_point(aes(), color = colors[1]) +
+  geom_hline(aes(yintercept =  0.05 ), 
+             color = colors[2], linetype = "dotted") +
+  labs(x = "Lag", y = "P-værdi") +
+  coord_cartesian(ylim=c(0,1)) +
+  p.th
+#p.lbox.res.b
+ps$p[[i]] <- p.lbox.res.c ; ps$names[i] <- "ModB/plotLboxResB" ; ps$var[i] <- "p.lbox.res.b" ; ps$h[i] <- 3; ps$w[i] <- 9/2
+i <- i + 1
+
 ### ¤¤ Gemmer plots ¤¤ ### --------------------------------------------------------------
 data.frame(names = ps$names , var = ps$var , w = ps$w , h = ps$h)  
 
 wanted.plots <- 1:length(ps$names)
 #wanted.plots <- 18
 
-save.plots = FALSE
+save.plots = TRUE
 wid <- 9/2
 
 if(save.plots == TRUE){

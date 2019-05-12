@@ -21,7 +21,7 @@ library(astsa)
 library(tseries)
 library(Cairo)     # Til at gemme
 
-### ¤¤ ggplot af rå data ¤¤ ### ---------------------------------------------------------
+### ¤¤ "Rå" data ¤¤ ### ---------------------------------------------------------
 
 # Plot af ukorrigerede data
 p.raw <-  ggplot(data.frame(X1 = dates, 
@@ -58,7 +58,7 @@ p.hist <- ggplot(data.frame(X2 = DK1$D),
   labs(x = "Sæsonrensede pris i DKK/MWh", y = "Tæthed") +
   scale_x_continuous() +
   p.th
-p.hist
+#p.hist
 ps$p[[i]] <- p.hist ; ps$names[i] <- "plotHist" ; ps$var[i] <- "p.hist"; ps$h[i] <- 3; ps$w[i] <- 9/2
 i <- i + 1
 
@@ -77,7 +77,7 @@ p.qq <- ggplot(data.frame(x = quantiles$x, y = quantiles$y), aes(x = x, y = y))+
         labs(x = "Teoretisk kvantil", y = "Standardiserede sæsonrensede priser") +
         theme(legend.position="none") +
         p.th
-p.qq    
+#p.qq    
 ps$p[[i]] <- p.qq; ps$names[i] <- "plotQQ" ; ps$var[i] <- "p.qq"; ps$h[i] <- 3; ps$w[i] <- 9/2
 i <- i + 1
 
@@ -95,12 +95,12 @@ p.acf.A <- ggplot(data = data.frame(X1 = acf(DK1$A, lag.max = 2190 , plot = FALS
              color = colors[1], linetype = "dotted") +
   labs(x = "Lag", y = "ACF") +
   p.th
-p.acf.A
+#p.acf.A
 ps$p[[i]] <- p.acf.A ; ps$names[i] <- "plotACFAll" ; ps$var[i] <- "p.acf.A" ; ps$h[i] <- 3; ps$w[i] <- 9
 i <- i + 1
 
 
-### ¤¤ Regressions plot ¤¤ ### ----------------------------------------------------------
+### ¤¤ s(t) ¤¤ ### ----------------------------------------------------------
 
 # Plotter priser hvor det deterministiske er fjernet
 p.d <- ggplot(data = data.frame(X1 = dates,
@@ -109,7 +109,7 @@ p.d <- ggplot(data = data.frame(X1 = dates,
   geom_line(color = colors[1]) +
   labs(x = "", y = "Spotpris i DKK/MWh") + 
   p.Y
-p.d
+#p.d
 ps$p[[i]] <- p.d ; ps$names[i] <- "plotRemDet" ; ps$var[i] <- "p.d" ; ps$h[i] <- 3; ps$w[i] <- 9
 i <- i + 1
 
@@ -164,14 +164,14 @@ p.d.hist <- ggplot(data.frame(X2 = DK1$D),
 ps$p[[i]] <- p.d.hist ; ps$names[i] <- "plotHistDetrend" ; ps$var[i] <- "p.d.hist" ; ps$h[i] <- 3; ps$w[i] <- 9
 i <- i + 1
 
-### ¤¤ Forecast plot Model A ¤¤ ### -------------------------------------------------------------
+### ¤¤ Model A ¤¤ ### -------------------------------------------------------------
 
 p.forecast.a <- ggplot(data = data.frame(X1 = dates.all[2160:2281],
                                        X2 = c(DK1$D, OOS$D)[2160:2281] ), 
                      aes(x = X1, y = X2) ) +
               geom_line(aes(col = "Sæsonkorigerede observationer", size = sz$l)) + 
-              geom_line(data = data.frame(X1 = dates.all[2160:2281], 
-                                          X2 = x.pred.oos.a[2160:2281]), 
+              geom_line(data = data.frame(X1 = dates.all[2192:2281], 
+                                          X2 = x.pred.oos.a[2192:2281]), 
                         aes(col = "Sæsonkorigerede forecast", size = sz$l)) +
               geom_ribbon(aes(ymin = x.pred.oos.a[2160:2281] - pred.inter.a[2160:2281], 
                               ymax = x.pred.oos.a[2160:2281] + pred.inter.a[2160:2281]), 
@@ -183,7 +183,7 @@ p.forecast.a <- ggplot(data = data.frame(X1 = dates.all[2160:2281],
               legend.direction = "horizontal", legend.background = element_blank()) +
               p.th +
               labs(x = "", y = "Spotpris i DKK/MWh", title = "", color = "")
-p.forecast.a
+#p.forecast.a
 ps$p[[i]] <- p.forecast.a ; ps$names[i] <- "ModA/plotForecastModA" ; ps$var[i] <- "p.forecast.a" ; ps$h[i] <- 3.8; ps$w[i] <- 9
 i <- i + 1
 
@@ -198,7 +198,7 @@ p.hist.res.a <- ggplot(data.frame(X2 = res.is.a),
   labs(x = "Residualer", y = "Tæthed") +
   scale_x_continuous() +
   p.th
-p.hist.res.a
+#p.hist.res.a
 ps$p[[i]] <- p.hist.res.a ; ps$names[i] <- "ModA/plotHistResA" ; ps$var[i] <- "p.hist.res.a"; ps$h[i] <- 3; ps$w[i] <- 9/2
 i <- i + 1
 
@@ -217,7 +217,7 @@ p.qq.res.a <- ggplot(data.frame(x = quantiles$x, y = quantiles$y), aes(x = x, y 
   labs(x = "Standard normal teoretisk fraktil", y = "Standardiserede residualer") +
   theme(legend.position="none") +
   p.th
-p.qq.res.a    
+#p.qq.res.a    
 ps$p[[i]] <- p.qq.res.a; ps$names[i] <- "ModA/plotQqResA" ; ps$var[i] <- "p.qq.res.a"; ps$h[i] <- 3; ps$w[i] <- 9/2
 i <- i + 1
 
@@ -233,7 +233,7 @@ p.acf.res.a <- ggplot(data.frame(X1 = acf(res.is.a, lag.max = 2190 , plot = FALS
              color = colors[2], linetype = "dotted") +
   labs(x = "Lag", y = "ACF") +
   p.th
-p.acf.res.a
+#p.acf.res.a
 ps$p[[i]] <- p.acf.res.a ; ps$names[i] <- "ModA/plotACFModA" ; ps$var[i] <- "p.acf.res.a" ; ps$h[i] <- 3; ps$w[i] <- 9/2
 i <- i + 1
 
@@ -254,18 +254,35 @@ p.lbox.res.a <- ggplot(data.frame(X1 = which.lag,
   labs(x = "Lag", y = "P-værdi") +
   coord_cartesian(ylim=c(0,1)) +
   p.th
-p.lbox.res.a
+#p.lbox.res.a
 ps$p[[i]] <- p.lbox.res.a ; ps$names[i] <- "ModA/plotLboxResA" ; ps$var[i] <- "p.lbox.res.a" ; ps$h[i] <- 3; ps$w[i] <- 9/2
 i <- i + 1
 
-### ¤¤ Forecast plot Model C ¤¤ ### -------------------------------------------------------------
+
+### ¤¤ Model B ¤¤ ### -------------------------------------------------------------------
+# CCF vind og pris
+p.ccf <- ggplot(data.frame(X1 = ccf(w.arma.res, dk1.d.prew, plot = FALSE)$lag,
+                           X2 = ccf(w.arma.res, dk1.d.prew, plot = FALSE)$acf), 
+                      aes(x = X1, y = X2)) +
+  geom_hline(aes(yintercept =  0, size = sz$l)) +
+  geom_segment(aes(xend = X1, yend = 0), color = colors[1]) +
+  geom_hline(aes(yintercept = -ci()), 
+             color = colors[2], linetype = "dotted") +
+  geom_hline(aes(yintercept =  ci()), 
+             color = colors[2], linetype = "dotted") +
+  labs(x = "Lag", y = "CCF") +
+  p.th
+p.ccf
+ps$p[[i]] <- p.ccf ; ps$names[i] <- "ModB/plotCCF" ; ps$var[i] <- "p.ccf" ; ps$h[i] <- 3; ps$w[i] <- 9
+i <- i + 1
+### ¤¤ Model C ¤¤ ### -------------------------------------------------------------
 
 p.forecast.c <- ggplot(data = data.frame(X1 = dates.all[2160:2281],
                                          X2 = c(DK1$D, OOS$D)[2160:2281] ), 
                        aes(x = X1, y = X2) ) +
   geom_line(aes(col = "Sæsonkorigerede observationer", size = sz$l)) + 
-  geom_line(data = data.frame(X1 = dates.all[2160:2281], 
-                              X2 = x.pred.oos.c[2160:2281]), 
+  geom_line(data = data.frame(X1 = dates.all[2192:2281], 
+                              X2 = x.pred.oos.c[2192:2281]), 
             aes(col = "Sæsonkorigerede forecast", size = sz$l)) +
   geom_ribbon(aes(ymin = x.pred.oos.c[2160:2281] - pred.inter.c[2160:2281], 
                   ymax = x.pred.oos.c[2160:2281] + pred.inter.c[2160:2281]), 
@@ -296,7 +313,7 @@ p.qq.res.c <- ggplot(data.frame(x = quantiles$x, y = quantiles$y), aes(x = x, y 
   labs(x = "Standard normal teoretisk fraktil", y = "Standardiserede residualer") +
   theme(legend.position="none") +
   p.th
-p.qq.res.c    
+#p.qq.res.c    
 ps$p[[i]] <- p.qq.res.c; ps$names[i] <- "ModC/plotQqResC" ; ps$var[i] <- "p.qq.res.c"; ps$h[i] <- 3; ps$w[i] <- 9/2
 i <- i + 1
 
@@ -312,7 +329,7 @@ p.acf.res.c <- ggplot(data.frame(X1 = acf(res.is.c, lag.max = 2190 , plot = FALS
              color = colors[2], linetype = "dotted") +
   labs(x = "Lag", y = "ACF") +
   p.th
-p.acf.res.c
+#p.acf.res.c
 ps$p[[i]] <- p.acf.res.c ; ps$names[i] <- "ModC/plotACFModC" ; ps$var[i] <- "p.acf.res.c" ; ps$h[i] <- 3; ps$w[i] <- 9/2 
 i <- i + 1
 
@@ -327,7 +344,7 @@ p.hist.res.c <- ggplot(data.frame(X2 = res.is.c),
   labs(x = "Residualer", y = "Tæthed") +
   scale_x_continuous() +
   p.th
-p.hist.res.c
+#p.hist.res.c
 ps$p[[i]] <- p.hist.res.c ; ps$names[i] <- "ModC/plotHistResC" ; ps$var[i] <- "p.hist.res.c"; ps$h[i] <- 3; ps$w[i] <- 9/2
 i <- i + 1
 
@@ -348,7 +365,7 @@ p.lbox.res.c <- ggplot(data.frame(X1 = which.lag,
   labs(x = "Lag", y = "P-værdi") +
   coord_cartesian(ylim=c(0,1)) +
   p.th
-p.lbox.res.c
+#p.lbox.res.c
 ps$p[[i]] <- p.lbox.res.c ; ps$names[i] <- "ModC/plotLboxResC" ; ps$var[i] <- "p.lbox.res.c" ; ps$h[i] <- 3; ps$w[i] <- 9/2
 i <- i + 1
 
@@ -358,7 +375,7 @@ data.frame(names = ps$names , var = ps$var , w = ps$w , h = ps$h)
 wanted.plots <- 1:length(ps$names)
 #wanted.plots <- 18
 
-save.plots = TRUE
+save.plots = FALSE
 wid <- 9/2
 
 if(save.plots == TRUE){

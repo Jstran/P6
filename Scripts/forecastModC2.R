@@ -7,8 +7,6 @@ OOS$D  <- as.numeric(OOS$D) # Bare pga. R
 dat    <- c(DK1$D, OOS$D)
 datW   <- c(as.numeric(DK1$W), as.numeric(OOS$W))
 datW <- diff(log(datW))
-DK1$W  <- as.numeric(diff(log(DK1$W)))
-OOS$W  <- as.numeric(diff(log(OOS$W)))
 
 start.oos <-  length(DK1$D) + 1 # Indeks hvor OOS starter
 slut.oos  <- start.oos + length(OOS$D) - 1 # Indeks hvor OOS slutter
@@ -31,7 +29,7 @@ logLike <- function(theta){
   likesum <-  0
   for (i in 1:(slut.is - 1)) {
     xi.temp <- xi
-    p <- exp(beta[1] + beta[2]*DK1$W[i])/(1+exp(beta[1] + beta[2]*DK1$W[i]))
+    p <- exp(beta[1] + beta[2]*datW[i])/(1+exp(beta[1] + beta[2]*datW[i]))
     
     eta[1] <- dnorm(DK1$D[i+1], mean = (1-alpha1)*DK1$D[i], sd = sigma1)
     eta[2] <- dnorm(DK1$D[i+1], mean = (-mu2 + DK1$D[i]), sd = sigma2)
@@ -154,14 +152,6 @@ logLike.oos <- function(theta){
   return(-likesum)
 }
 
-sigma1 <- 33 
-sigma2 <- 90
-sigma3 <- 75
-alpha1 <- 0.3 
-alpha3 <- 0.6
-mu2    <- 4
-beta   <- c(2,1)
-
 eta <- numeric(3)
 
 x.pred.oos.c <- c() # Tom vektor til at indsætte de forecasted værdier for OOS
@@ -177,7 +167,7 @@ for (l in start.oos:slut.oos) {
   #theta0 <- c(33,90,75,0.3,0.6,0.9,7)
   
   MRS <- optim(theta0, logLike.oos, lower = lB, upper = uB, method = "L-BFGS-B",
-               control = list(trace = FALSE, maxit = 500), hessian = FALSE)
+               control = list(trace = TRUE, maxit = 500), hessian = FALSE)
   
   sigma1 <- MRS$par[1] 
   sigma2 <- MRS$par[2]

@@ -76,6 +76,15 @@ for (l in 1:length(years.names.win)) {
   assign(paste("wind", years.names.win[l], sep = ""), read.csv2(years.win[l], skip = 2))
 }
 
+# Indlaeser csv filerne som "con20xx".
+path.con        <- file.path("./Data/Consumption")
+years.con       <- list.files(path.con ,pattern =".csv",full.names = 1)
+years.names.con <- seq(2013, length.out = length(years.con))
+
+for (l in 1:length(years.names.con)) {
+  assign(paste("con", years.names.win[l], sep = ""), read.csv2(years.con[l], skip = 2))
+}
+
 ### ¤¤ Data frame og lister med data ¤¤ ### ---------------------------------------------
 
 # Laver datoer.
@@ -132,7 +141,8 @@ for (i in 1:2191) {
 wind2019[2139,3] <- mean(wind2019[2138,3],wind2019[2140,3]) # Fjerner Na
 wind2019Daily <- c()
 for (j in 0:(length(wind2019[,2])/24 -1)) {
-  wind2019Daily[j+1] <- mean(wind2019[((j*24 + 1):((j+1)*24)),3])
+#  wind2019Daily[j+1] <- mean(wind2019[((j*24 + 1):((j+1)*24)),3])
+  wind2019Daily[j+1] <- sum(wind2019[((j*24 + 1):((j+1)*24)),3])
 }
 
 
@@ -159,7 +169,13 @@ DK1 <- list(A   = ts(c(dat2013[,8],
                       dat2015[,8],
                       dat2016[,8],
                       dat2017[,8],
-                      dat2018[,8]),   frequency = fq))
+                      dat2018[,8]),   frequency = fq),
+            C   = ts(c(con2013[,2],
+                       con2014[,2],
+                       con2015[,2],
+                       con2016[,2],
+                       con2017[,2],
+                       con2018[,2]), frequency = fq))
 
 OOS <- list(A   = ts(dat2019[,8], frequency = fq),
             W   = wind2019Daily,

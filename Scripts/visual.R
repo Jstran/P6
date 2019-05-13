@@ -241,7 +241,7 @@ lag.max <- 20
 which.lag <- 1:lag.max
 p.vals <- numeric(lag.max)
 for (l in 1:lag.max){
-  p.vals[l] <- Box.test(res.is.a , lag = l)$p.value
+  p.vals[l] <- Box.test(res.is.a , lag = l , type = "Ljung-Box")$p.value
 }
 p.lbox.res.a <- ggplot(data.frame(X1 = which.lag,
                                   X2 = p.vals), 
@@ -334,7 +334,7 @@ lag.max <- 20
 which.lag <- 1:lag.max
 p.vals <- numeric(lag.max)
 for (l in 1:lag.max){
-  p.vals[l] <- Box.test(res.is.c , lag = l)$p.value
+  p.vals[l] <- Box.test(res.is.c , lag = l , type = "Ljung-Box")$p.value
 }
 p.lbox.res.c <- ggplot(data.frame(X1 = which.lag,
                                   X2 = p.vals), 

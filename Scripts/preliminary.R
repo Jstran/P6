@@ -76,14 +76,24 @@ for (l in 1:length(years.names.win)) {
   assign(paste("wind", years.names.win[l], sep = ""), read.csv2(years.win[l], skip = 2))
 }
 
-# Indlaeser csv filerne som "con20xx".
-path.con        <- file.path("./Data/Consumption")
-years.con       <- list.files(path.con ,pattern =".csv",full.names = 1)
-years.names.con <- seq(2013, length.out = length(years.con))
+# Indlaeser csv filerne som "windProg20xx".
+path.win.prog        <- file.path("./Data/Vind/Prognose")
+years.win.prog       <- list.files(path.win.prog ,pattern =".csv",full.names = 1)
+years.names.win.prog <- seq(2019, length.out = length(years.win.prog))
 
-for (l in 1:length(years.names.con)) {
-  assign(paste("con", years.names.win[l], sep = ""), read.csv2(years.con[l], skip = 2))
+for (l in 1:length(years.names.win.prog)) {
+  assign(paste("wind.prog", years.names.win.prog[l], sep = ""), read.csv2(years.win.prog[l], 
+                                                                     skip = 2))
 }
+
+# Indlaeser csv filerne som "con20xx".
+# path.con        <- file.path("./Data/Consumption")
+# years.con       <- list.files(path.con ,pattern =".csv",full.names = 1)
+# years.names.con <- seq(2013, length.out = length(years.con))
+# 
+# for (l in 1:length(years.names.con)) {
+#   assign(paste("con", years.names.win[l], sep = ""), read.csv2(years.con[l], skip = 2))
+# }
 
 ### ¤¤ Data frame og lister med data ¤¤ ### ---------------------------------------------
 
@@ -138,11 +148,11 @@ for (i in 1:2191) {
 }
 
 # Gør out-of-sample vindprognose til daglige forecast
-wind2019[2139,3] <- mean(wind2019[2138,3],wind2019[2140,3]) # Fjerner Na
-wind2019Daily <- c()
-for (j in 0:(length(wind2019[,2])/24 -1)) {
+wind.prog2019[2139,3] <- mean(wind.prog2019[2138,3],wind.prog2019[2140,3]) # Fjerner Na
+wind.prog2019Daily <- c()
+for (j in 0:(length(wind.prog2019[,2])/24 -1)) {
 #  wind2019Daily[j+1] <- mean(wind2019[((j*24 + 1):((j+1)*24)),3])
-  wind2019Daily[j+1] <- sum(wind2019[((j*24 + 1):((j+1)*24)),3])
+  wind.prog2019Daily[j+1] <- sum(wind.prog2019[((j*24 + 1):((j+1)*24)),3])
 }
 
 
@@ -169,16 +179,11 @@ DK1 <- list(A   = ts(c(dat2013[,8],
                       dat2015[,8],
                       dat2016[,8],
                       dat2017[,8],
-                      dat2018[,8]),   frequency = fq),
-            C   = ts(c(con2013[,2],
-                       con2014[,2],
-                       con2015[,2],
-                       con2016[,2],
-                       con2017[,2],
-                       con2018[,2]), frequency = fq))
+                      dat2018[,8]),   frequency = fq))
 
 OOS <- list(A   = ts(dat2019[,8], frequency = fq),
-            W   = wind2019Daily,
+            W   = wind2019[1:90,2],
+            WP  = wind.prog2019Daily,
             sat = sat.oos,
             sun = sun.oos,
             hol = hol.oos)
@@ -191,7 +196,8 @@ DK1$A[which.max(DK1$A)] <- mean(c((DK1$A[which.max(DK1$A)-1]),
 rm("dat2013","dat2014","dat2015","dat2016","dat2017","dat2018","dat2019","fq","i","l",
    "path","sat","sun","hol","years","years.names", "wind2013" , "wind2014", 
    "wind2015", "wind2016", "wind2017", "wind2018", "years.names.win" , "years.win", 
-   "path.win", "sun.oos", "sat.oos", "hol.oos", "wind2019", "wind2019Daily")
+   "path.win", "sun.oos", "sat.oos", "hol.oos", "wind2019", "wind2019Daily",
+   "years.win.prog", "wind.prog2019", "wind.prog2019Daily", "years.names.win.prog", "j")
 
 ### ¤¤ Farver + tema til brug i plots ¤¤ ### -------------------------------------------
 

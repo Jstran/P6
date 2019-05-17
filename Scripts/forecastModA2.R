@@ -137,7 +137,7 @@ logLike.oos <- function(theta){
     
     like[i] <- p*xi[1]*eta[1] + (1-p)*xi[1]*eta[2]+ xi[2]*eta[3] + xi[3]*eta[1]
     
-    xi[1] <- (p*xi.temp[1]*eta[1] + eta[1])/like[i]
+    xi[1] <- (p*xi.temp[1]*eta[1] + xi.temp[3]*eta[1])/like[i]
     
     xi[2] <- ((1-p)*xi.temp[1]*eta[2])/like[i]
     
@@ -209,7 +209,7 @@ plot(OOS$A, type = "l", main = "Med sæson (OOS)")
 lines(x.pred.oos.a[start.oos:slut.oos] + OOS$s.pred, col = "red")
 
 rmse.oos.a <- sqrt(1/(slut.oos-start.oos+1)*sum((dat[(start.oos+1):slut.oos] - 
-                                                   x.pred.oos.a[(start.oos+1):slut.oos])^2))
+                                              x.pred.oos.a[(start.oos+1):slut.oos])^2))
 rmse.oos.a
 
 mae.oos  <- mean(abs(dat[start.oos:slut.oos] - x.pred.oos.a[start.oos:slut.oos]))

@@ -6,7 +6,9 @@ DK1$D  <- as.numeric(DK1$D) # Bare pga. R
 OOS$D  <- as.numeric(OOS$D) # Bare pga. R
 dat    <- c(DK1$D, OOS$D)
 datW   <- c(as.numeric(DK1$W), as.numeric(OOS$W))
-datW <- diff(log(datW))
+datW   <- diff(log(datW))
+datW.pred <- c(DK1$W, OOS$WP)
+datW.pred <- diff(log(datW.pred))
 
 start.oos <-  length(DK1$D) + 1 # Indeks hvor OOS starter
 slut.oos  <- start.oos + length(OOS$D) - 1 # Indeks hvor OOS slutter
@@ -24,13 +26,13 @@ logLike <- function(theta){
   
   eta <- numeric(3)
   like    <- c()
-  xi       <- numeric(3)
-  xi[1:3]  <- 1/3
+  xi      <- numeric(3)
+  xi[1:3] <- 1/3
   likesum <-  0
   for (i in 2:(slut.is - 1)) {
     xi.temp <- xi
-    p <- exp(beta[1] + beta[2]*datW[i+1]+beta[3]*datW[i])/
-      (1+exp(beta[1] + beta[2]*datW[i+1] + beta[3]*datW[i]))
+    p <- exp(beta[1] + beta[2]*datW.pred[i] + beta[3]*datW[i-1])/
+      (1+exp(beta[1] + beta[2]*datW.pred[i] + beta[3]*datW[i-1]))
     
     eta[1] <- dnorm(DK1$D[i+1], mean = (1-alpha1)*DK1$D[i], sd = sigma1)
     eta[2] <- dnorm(DK1$D[i+1], mean = (-mu2 + DK1$D[i]), sd = sigma2)
@@ -89,8 +91,8 @@ x.pred.is.c <- c() # Tom vektor til at indsætte de forecasted værdier for OOS
 p.is <- c()
 
 for (l in 3:slut.is) {
-  p.is[l] <- (exp(beta[1] + beta[2]*datW[l] + beta[3]*datW[l-1])/
-             (1 + exp(beta[1] + beta[2]*datW[l]+ beta[3]*datW[l-1])))
+  p.is[l] <- (exp(beta[1] + beta[2]*datW.pred[l-1] + beta[3]*datW[l-2])/
+             (1 + exp(beta[1] + beta[2]*datW.pred[l-1]+ beta[3]*datW[l-2])))
   
   x.pred.is.c[l] <- xi[1]*(1 - alpha1)*dat[l-1] + xi[2]*(dat[l-1] + mu2) + 
                     xi[3]*(1 - alpha3)*dat[l-1]
@@ -136,8 +138,8 @@ logLike.oos <- function(theta){
   xi[1:3] <- 1/3
   likesum <-  0
   for (i in (1+l-slut.is):(l-1)) {
-    p <- exp(beta[1] + beta[2]*datW[i]+ beta[3]*datW[i-1])/
-      (1+exp(beta[1] + beta[2]*datW[i]+ beta[3]*datW[i-1]))
+    p <- exp(beta[1] + beta[2]*datW.pred[i-1]+ beta[3]*datW[i-2])/
+      (1+exp(beta[1] + beta[2]*datW.pred[i-1]+ beta[3]*datW[i-2]))
     
     xi.temp <- xi
     
@@ -147,7 +149,7 @@ logLike.oos <- function(theta){
     
     like[i] <- p*xi[1]*eta[1] + (1-p)*xi[1]*eta[2]+ xi[2]*eta[3] + xi[3]*eta[1]
     
-    xi[1] <- (p*xi.temp[1]*eta[1] + eta[1])/like[i]
+    xi[1] <- (p*xi.temp[1]*eta[1] + xi.temp[3]*eta[1])/like[i]
     
     xi[2] <- ((1-p)*xi.temp[1]*eta[2])/like[i]
     
@@ -180,8 +182,8 @@ for (l in start.oos:slut.oos) {
   mu2    <- MRS$par[6]
   beta   <- MRS$par[7:9]
 
-  p[l-slut.is] <- (exp(beta[1] + beta[2]*datW[l-1]+ beta[3]*datW[l-2])/
-                  (1 + exp(beta[1] + beta[2]*datW[l-1]+ beta[3]*datW[l-2])))
+  p[l-slut.is] <- (exp(beta[1] + beta[2]*datW.pred[l-1]+ beta[3]*datW[l-2])/
+                  (1 + exp(beta[1] + beta[2]*datW.pred[l-1]+ beta[3]*datW[l-2])))
   
   x.pred.oos.c[l] <- xi[1]*(1 - alpha1)*dat[l-1] + xi[2]*(dat[l-1] + mu2) + 
                      xi[3]*(1 - alpha3)*dat[l-1]

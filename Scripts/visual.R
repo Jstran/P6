@@ -375,17 +375,11 @@ i <- i + 1
 p.forecast.c <- ggplot(data = data.frame(X1 = dates.all[2160:2281],
                                          X2 = c(DK1$D, OOS$D)[2160:2281] ), 
                        aes(x = X1, y = X2) ) +
-<<<<<<< HEAD
+
   geom_line(aes(col = "Sæsonkorrigerede observationer", size = sz$l)) + 
   geom_line(data = data.frame(X1 = dates.all[2192:2281], 
                               X2 = x.pred.oos.c[2192:2281]), 
             aes(col = "Sæsonkorrigerede forecast", size = sz$l)) +
-=======
-  geom_line(aes(col = "Sæsonkorigerede observationer", size = sz$l)) + 
-  geom_line(data = data.frame(X1 = dates.all[2160:2281], 
-                              X2 = x.pred.oos.c[2160:2281]), 
-            aes(col = "Sæsonkorigerede forecast", size = sz$l)) +
->>>>>>> d0f2e1211b6ebb6d96a9293491542680f73e6e98
   geom_ribbon(aes(ymin = x.pred.oos.c[2160:2281] - pred.inter.c[2160:2281], 
                   ymax = x.pred.oos.c[2160:2281] + pred.inter.c[2160:2281]), 
               fill = colors[6], alpha = 0.4) +

@@ -34,7 +34,7 @@ logLike <- function(theta){
     
     like[i] <- p*xi[1]*eta[1] + (1-p)*xi[1]*eta[2]+ xi[2]*eta[3] + xi[3]*eta[1]
     
-    xi[1] <- (p*xi.temp[1]*eta[1] + eta[1])/like[i]
+    xi[1] <- (p*xi.temp[1]*eta[1] + xi.temp[3]*eta[1])/like[i]
     
     xi[2] <- ((1-p)*xi.temp[1]*eta[2])/like[i]
     
@@ -65,10 +65,13 @@ se <- sqrt(diag(solve(MRS$hessian))) # Standard error
 AIC <- 2*(length(MRS$par) - MRS$value)
 AIC
 
-data.frame("alpha1" = c(alpha1, se[4]), "alpha3" = c(alpha3, se[5]), 
-           "mu2" = c(mu2, se[7]), "sigma1" = c(sigma1, se[1]), 
-           "sigma2" = c(sigma2, se[2]), "sigma3" = c(sigma3, se[3]), 
-           "p11" = c(p,se[6]))
+data.frame("alpha1" = c(alpha1, se[4], MRS$par[4]/se[4]), 
+           "alpha3" = c(alpha3, se[5], MRS$par[5]/se[5]), 
+           "mu2"    = c(mu2,    se[7], MRS$par[7]/se[7]), 
+           "sigma1" = c(sigma1, se[1], MRS$par[1]/se[1]), 
+           "sigma2" = c(sigma2, se[2], MRS$par[2]/se[2]), 
+           "sigma3" = c(sigma3, se[3], MRS$par[3]/se[3]), 
+           "p11"    = c(p,      se[6], MRS$par[6]/se[6]))
 
 
 
@@ -80,7 +83,7 @@ eta <- numeric(3)
 
 x.pred.is.a <- c() # Tom vektor til at indsætte de forecasted værdier for OOS
 
-for (l in 2:slut.is) {
+for (l in 3:slut.is) {
   x.pred.is.a[l] <- xi[1]*(1 - alpha1)*dat[l-1] + xi[2]*(dat[l-1] + mu2) + 
                     xi[3]*(1 - alpha3)*dat[l-1]
   
@@ -97,16 +100,16 @@ for (l in 2:slut.is) {
   
   xi[3] <- xi.temp[2]*eta[3]/like
 }
-x.pred.is.a <- x.pred.is.a[-1]
+x.pred.is.a <- x.pred.is.a[-c(1,2)]
 
-plot(dat[2:slut.is], type = "l", main = "Uden sæson (OOS)")
+plot(dat[3:slut.is], type = "l", main = "Uden sæson (OOS)")
 lines(x.pred.is.a[1:slut.is], col = "red")
 
 
-rmse.is.a <- sqrt(1/slut.is * sum((dat[2:slut.is] - x.pred.is.a)^2))
+rmse.is.a <- sqrt(1/slut.is * sum((dat[3:slut.is] - x.pred.is.a)^2))
 rmse.is.a
 
-mae.is  <- mean(abs(dat[2:slut.is] - x.pred.is.a))
+mae.is  <- mean(abs(dat[3:slut.is] - x.pred.is.a))
 mae.is
 
 ### ¤¤ OOS mm ¤¤ ### --------------------------------------------------------------------
@@ -205,8 +208,8 @@ lines(x.pred.oos.a[2100:slut.oos], col = "red")
 plot(OOS$A, type = "l", main = "Med sæson (OOS)")
 lines(x.pred.oos.a[start.oos:slut.oos] + OOS$s.pred, col = "red")
 
-rmse.oos.a <- sqrt(1/(slut.oos-start.oos+1)*sum((dat[start.oos:slut.oos] - 
-                                                   x.pred.oos.a[start.oos:slut.oos])^2))
+rmse.oos.a <- sqrt(1/(slut.oos-start.oos+1)*sum((dat[(start.oos+1):slut.oos] - 
+                                                   x.pred.oos.a[(start.oos+1):slut.oos])^2))
 rmse.oos.a
 
 mae.oos  <- mean(abs(dat[start.oos:slut.oos] - x.pred.oos.a[start.oos:slut.oos]))
@@ -216,7 +219,7 @@ pred.inter.a <- 1.96 * pred.inter.a
 
 res.oos.a <- OOS$D - x.pred.oos.a[start.oos:slut.oos]
 
-res.is.a <- DK1$D[2:slut.is] - x.pred.is.a
+res.is.a <- DK1$D[3:slut.is] - x.pred.is.a
 
 ### ¤¤ Gemmer workspace ¤¤ ### ----------------------------------------------------------
 save(x.pred.is.a, x.pred.oos.a, rmse.is.a, rmse.oos.a, pred.inter.a, res.is.a, res.oos.a,

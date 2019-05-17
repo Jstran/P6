@@ -97,8 +97,12 @@ rm("df", "df.oos", "A", "sat", "sun", "hol")
 co.sd.lm <- scoef(s.lm)
 sd.gls <- scoef(s.gls)$sdc
 
-tbl <- data.frame(Estimates = as.numeric(co.sd.lm$coef),sdOLS = as.numeric(co.sd.lm$sdc), 
-                  sdGLS = as.numeric(sd.gls) ) ; rownames(tbl) <- colnames(co.sd.lm$coef)
+tbl <- data.frame("Estimates"  = as.numeric(co.sd.lm$coef),
+                  "sdOLS"      = as.numeric(co.sd.lm$sdc), 
+                  "sdGLS"      = as.numeric(sd.gls),
+                  "t-valueOLS" = as.numeric(co.sd.lm$coef/co.sd.lm$sdc),
+                  "t-valueGLS" = as.numeric(co.sd.lm$coef/sd.gls)); 
+rownames(tbl) <- colnames(co.sd.lm$coef) 
 tbl
 
 ### ¤¤ ADF-test ¤¤ ### ------------------------------------------------------------------

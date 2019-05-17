@@ -64,11 +64,12 @@ ps$p[[i]] <- p.hist ; ps$names[i] <- "plotHist" ; ps$var[i] <- "p.hist"; ps$h[i]
 i <- i + 1
 
 # Q-Q plot af sæsonrensede priser
-y <- quantile(DK1$D, c(0.25, 0.75))
+dk1.d.stand <- (DK1$D - mean(DK1$D))/sqrt(var(DK1$D))
+y <- quantile(dk1.d.stand, c(0.25, 0.75))
 x <- qnorm(c(0.25, 0.75))
 slope <- diff(y)/diff(x)
 int <- y[1L] - slope * x[1L]
-quantiles <- qqnorm(DK1$D)
+quantiles <- qqnorm(dk1.d.stand)
 
 p.qq <- ggplot(data.frame(x = quantiles$x, y = quantiles$y), aes(x = x, y = y))+
         geom_point(col = colors[1], size = sz$p) +
@@ -255,7 +256,7 @@ p.lbox.res.a <- ggplot(data.frame(X1 = which.lag,
   labs(x = "Lag", y = "P-værdi") +
   coord_cartesian(ylim=c(0,1)) +
   p.th
-#p.lbox.res.a
+p.lbox.res.a
 ps$p[[i]] <- p.lbox.res.a ; ps$names[i] <- "ModA/plotLboxResA" ; ps$var[i] <- "p.lbox.res.a" ; ps$h[i] <- 3; ps$w[i] <- 9/2
 i <- i + 1
 
@@ -339,7 +340,7 @@ p.hist.res.b <- ggplot(data.frame(X2 = res.is.b),
   geom_histogram(binwidth = 20, color = "white", fill = colors[1]) + 
   stat_function(fun = function(x){dnorm(x = x, 
                                         mean = mean(res.is.b), 
-                                        sd = sd(res.is.b))*length(res.is.b)*25.25}, 
+                                        sd = sd(res.is.b))*length(res.is.b)*25.85}, 
                 color = colors[2], size = sz$l) +
   labs(x = "Residualer", y = "Tæthed") +
   scale_x_continuous() +

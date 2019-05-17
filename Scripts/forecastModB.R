@@ -243,7 +243,8 @@ lines(x.pred.oos.b[2100:slut.oos], col = "red")
 plot(OOS$A, type = "l", main = "Med sæson (OOS)")
 lines(x.pred.oos.b[start.oos:slut.oos] + OOS$s.pred, col = "red")
 
-rmse.oos.b <- sqrt(1/(slut.oos-start.oos+1)*sum((dat[start.oos:slut.oos] - 
+rmse.oos.b <- sqrt(1/length(x.pred.oos.b[start.oos:slut.oos])*
+                     sum((dat[start.oos:slut.oos]-
                                                  x.pred.oos.b[start.oos:slut.oos])^2))
 rmse.oos.b
 

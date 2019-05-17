@@ -35,11 +35,11 @@ logLike <- function(theta){
   for (i in 2:(slut.is - 1)) {
     xi.temp <- xi
 
-    eta[1] <- dnorm(DK1$D[i+1], mean = ((1-alpha1)*DK1$D[i]+omega01*datW[i] + 
-                                        omega11*datW[i-1]), sd = sigma1)
-    eta[2] <- dnorm(DK1$D[i+1], mean = (-mu2 + DK1$D[i]+omega02*datW[i] + 
-                                        omega12*datW[i-1]), sd = sigma2)
-    eta[3] <- dnorm(DK1$D[i+1], mean = ((1-alpha3)*DK1$D[i]+omega03*datW[i]), 
+    eta[1] <- dnorm(DK1$D[i+1], mean = ((1-alpha1)*DK1$D[i]+omega01*datW[i+1] + 
+                                        omega11*datW[i]), sd = sigma1)
+    eta[2] <- dnorm(DK1$D[i+1], mean = (-mu2 + DK1$D[i]+omega02*datW[i+1] + 
+                                        omega12*datW[i]), sd = sigma2)
+    eta[3] <- dnorm(DK1$D[i+1], mean = ((1-alpha3)*DK1$D[i]+omega03*datW[i+1]), 
                     sd = sigma3)
     
     like[i] <- p*xi[1]*eta[1] + (1-p)*xi[1]*eta[2] + xi[2]*eta[3] + xi[3]*eta[1]
@@ -61,7 +61,7 @@ lB     <- c( 0, 0, 0,0  ,0  ,-500,0.00001, -1000, -1000, -1000, -1000, -1000)
 uB     <- c(100,100,100,0.99999,0.99999,500,0.99999,100, 100, 100, 100, 100) 
 
 MRS <- optim(theta0, logLike, lower = lB, upper = uB, method = "L-BFGS-B", # Finder MLE
-             control=list(trace=TRUE, maxit= 500), hessian = TRUE)
+             control=list(trace=TRUE, maxit= 1000), hessian = TRUE)
 
 sigma1 <- MRS$par[1] 
 sigma2 <- MRS$par[2]
@@ -106,11 +106,11 @@ for (l in 2:slut.is) {
   x.pred.is.b[l] <- xi[1]*(1 - alpha1)*dat[l-1] + xi[2]*(dat[l-1] + mu2) + 
                     xi[3]*(1 - alpha3)*dat[l-1]
   
-  eta[1] <- dnorm(dat[l], mean = ((1-alpha1)*dat[l-1]+omega01*datW[l-1] + 
+  eta[1] <- dnorm(dat[l], mean = ((1-alpha1)*dat[l-1]+omega01*datW[l] + 
                                   omega11*datW[l-1]), sd = sigma1)
-  eta[2] <- dnorm(dat[l], mean = (-mu2 + dat[l-1]+omega02*datW[l-1]+ 
+  eta[2] <- dnorm(dat[l], mean = (-mu2 + dat[l-1]+omega02*datW[l]+ 
                                   omega12*datW[l-1]), sd = sigma2)
-  eta[3] <- dnorm(dat[l], mean = ((1-alpha3)*dat[l-1]+omega03*datW[l-1]), sd = sigma3)
+  eta[3] <- dnorm(dat[l], mean = ((1-alpha3)*dat[l-1]+omega03*datW[l]), sd = sigma3)
   
   like <- p*xi[1]*eta[1] + (1-p)*xi[1]*eta[2] + xi[2]*eta[3] + xi[3]*eta[1]
   xi.temp <- xi
@@ -156,11 +156,11 @@ logLike.oos <- function(theta){
   for (i in (1+l-slut.is):(l-1)) {
     xi.temp <- xi
     
-    eta[1] <- dnorm(dat[l], mean = ((1-alpha1)*dat[l-1]+omega01*datW[l-1] + 
+    eta[1] <- dnorm(dat[l], mean = ((1-alpha1)*dat[l-1]+omega01*datW[l] + 
                                     omega11*datW[l-1]), sd = sigma1)
-    eta[2] <- dnorm(dat[l], mean = (-mu2 + dat[l-1]+omega02*datW[l-1]+ 
+    eta[2] <- dnorm(dat[l], mean = (-mu2 + dat[l-1]+omega02*datW[l]+ 
                                     omega12*datW[l-1]), sd = sigma2)
-    eta[3] <- dnorm(dat[l], mean = ((1-alpha3)*dat[l-1]+omega03*datW[l-1]), sd = sigma3)
+    eta[3] <- dnorm(dat[l], mean = ((1-alpha3)*dat[l-1]+omega03*datW[l]), sd = sigma3)
     
     like[i] <- p*xi[1]*eta[1] + (1-p)*xi[1]*eta[2]+ xi[2]*eta[3] + xi[3]*eta[1]
     
@@ -217,11 +217,11 @@ for (l in start.oos:slut.oos) {
                      xi[3]*(1 - alpha3)*dat[l-1]
   pred.inter.b[l] <- xi[1]*sigma1 + xi[2]*sigma2 + xi[3]*sigma3
   
-  eta[1] <- dnorm(dat[l], mean = ((1-alpha1)*dat[l-1]+omega01*datW[l-1] + 
+  eta[1] <- dnorm(dat[l], mean = ((1-alpha1)*dat[l-1]+omega01*datW[l] + 
                                   omega11*datW[l-1]), sd = sigma1)
-  eta[2] <- dnorm(dat[l], mean = (-mu2 + dat[l-1]+omega02*datW[l-1]+ 
+  eta[2] <- dnorm(dat[l], mean = (-mu2 + dat[l-1]+omega02*datW[l]+ 
                                   omega12*datW[l-1]), sd = sigma2)
-  eta[3] <- dnorm(dat[l], mean = ((1-alpha3)*dat[l-1]+omega03*datW[l-1]), sd = sigma3)
+  eta[3] <- dnorm(dat[l], mean = ((1-alpha3)*dat[l-1]+omega03*datW[l]), sd = sigma3)
   
   like <- p*xi[1]*eta[1] + (1-p)*xi[1]*eta[2] + 
           xi[2]*eta[3] + xi[3]*eta[1]

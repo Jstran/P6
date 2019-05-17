@@ -200,7 +200,7 @@ p.hist.res.a <- ggplot(data.frame(X2 = res.is.a),
   labs(x = "Residualer", y = "Tæthed") +
   scale_x_continuous() +
   p.th
-p.hist.res.a
+# p.hist.res.a
 ps$p[[i]] <- p.hist.res.a ; ps$names[i] <- "ModA/plotHistResA" ; ps$var[i] <- "p.hist.res.a"; ps$h[i] <- 3; ps$w[i] <- 9/2
 i <- i + 1
 
@@ -256,7 +256,7 @@ p.lbox.res.a <- ggplot(data.frame(X1 = which.lag,
   labs(x = "Lag", y = "P-værdi") +
   coord_cartesian(ylim=c(0,1)) +
   p.th
-p.lbox.res.a
+# p.lbox.res.a
 ps$p[[i]] <- p.lbox.res.a ; ps$names[i] <- "ModA/plotLboxResA" ; ps$var[i] <- "p.lbox.res.a" ; ps$h[i] <- 3; ps$w[i] <- 9/2
 i <- i + 1
 
@@ -319,7 +319,7 @@ ps$p[[i]] <- p.qq.res.b; ps$names[i] <- "ModB/plotQqResB" ; ps$var[i] <- "p.qq.r
 i <- i + 1
 
 # ACF residualer Model A
-p.acf.res.b <- ggplot(data.frame(X1 = acf(res.is.c, lag.max = 2190 , plot = FALSE)$lag[2:31],
+p.acf.res.b <- ggplot(data.frame(X1 = acf(res.is.b, lag.max = 2190 , plot = FALSE)$lag[2:31],
                                  X2 = acf(res.is.b, lag.max = 2190 , plot = FALSE)$acf[2:31]), 
                       aes(x = X1, y = X2)) +
   geom_hline(aes(yintercept =  0, size = sz$l)) +
@@ -330,7 +330,7 @@ p.acf.res.b <- ggplot(data.frame(X1 = acf(res.is.c, lag.max = 2190 , plot = FALS
              color = colors[2], linetype = "dotted") +
   labs(x = "Lag", y = "ACF") +
   p.th
-#p.acf.res.b
+p.acf.res.b
 ps$p[[i]] <- p.acf.res.b ; ps$names[i] <- "ModB/plotACFModB" ; ps$var[i] <- "p.acf.res.b" ; ps$h[i] <- 3; ps$w[i] <- 9/2 
 i <- i + 1
 
@@ -354,7 +354,7 @@ lag.max <- 30
 which.lag <- 1:lag.max
 p.vals <- numeric(lag.max)
 for (l in 1:lag.max){
-  p.vals[l] <- Box.test(res.is.c , lag = l , type = "Ljung-Box")$p.value
+  p.vals[l] <- Box.test(res.is.b , lag = l , type = "Ljung-Box")$p.value
 }
 p.lbox.res.b <- ggplot(data.frame(X1 = which.lag,
                                   X2 = p.vals), 
@@ -366,7 +366,7 @@ p.lbox.res.b <- ggplot(data.frame(X1 = which.lag,
   labs(x = "Lag", y = "P-værdi") +
   coord_cartesian(ylim=c(0,1)) +
   p.th
-#p.lbox.res.b
+p.lbox.res.b
 ps$p[[i]] <- p.lbox.res.b ; ps$names[i] <- "ModB/plotLboxResB" ; ps$var[i] <- "p.lbox.res.b" ; ps$h[i] <- 3; ps$w[i] <- 9/2
 i <- i + 1
 
@@ -389,7 +389,7 @@ p.forecast.c <- ggplot(data = data.frame(X1 = dates.all[2160:2281],
         legend.direction = "horizontal", legend.background = element_blank()) +
   p.th +
   labs(x = "", y = "Spotpris i DKK/MWh", title = "", color = "")
-#p.forecast.c
+p.forecast.c
 ps$p[[i]] <- p.forecast.c ; ps$names[i] <- "ModC/plotForecastModC" ; ps$var[i] <- "p.forecast.c" ; ps$h[i] <- 3.8; ps$w[i] <- 9
 i <- i + 1
 
@@ -408,7 +408,7 @@ p.qq.res.c <- ggplot(data.frame(x = quantiles$x, y = quantiles$y), aes(x = x, y 
   labs(x = "Standard normal teoretisk fraktil", y = "Standardiserede residualer") +
   theme(legend.position="none") +
   p.th
-#p.qq.res.c    
+p.qq.res.c
 ps$p[[i]] <- p.qq.res.c; ps$names[i] <- "ModC/plotQqResC" ; ps$var[i] <- "p.qq.res.c"; ps$h[i] <- 3; ps$w[i] <- 9/2
 i <- i + 1
 
@@ -424,7 +424,7 @@ p.acf.res.c <- ggplot(data.frame(X1 = acf(res.is.c, lag.max = 2190 , plot = FALS
              color = colors[2], linetype = "dotted") +
   labs(x = "Lag", y = "ACF") +
   p.th
-#p.acf.res.c
+p.acf.res.c
 ps$p[[i]] <- p.acf.res.c ; ps$names[i] <- "ModC/plotACFModC" ; ps$var[i] <- "p.acf.res.c" ; ps$h[i] <- 3; ps$w[i] <- 9/2 
 i <- i + 1
 
@@ -439,7 +439,7 @@ p.hist.res.c <- ggplot(data.frame(X2 = res.is.c),
   labs(x = "Residualer", y = "Tæthed") +
   scale_x_continuous() +
   p.th
-#p.hist.res.c
+p.hist.res.c
 ps$p[[i]] <- p.hist.res.c ; ps$names[i] <- "ModC/plotHistResC" ; ps$var[i] <- "p.hist.res.c"; ps$h[i] <- 3; ps$w[i] <- 9/2
 i <- i + 1
 
@@ -460,7 +460,7 @@ p.lbox.res.c <- ggplot(data.frame(X1 = which.lag,
   labs(x = "Lag", y = "P-værdi") +
   coord_cartesian(ylim=c(0,1)) +
   p.th
-#p.lbox.res.c
+p.lbox.res.c
 ps$p[[i]] <- p.lbox.res.c ; ps$names[i] <- "ModC/plotLboxResC" ; ps$var[i] <- "p.lbox.res.c" ; ps$h[i] <- 3; ps$w[i] <- 9/2
 i <- i + 1
 

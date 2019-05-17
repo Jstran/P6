@@ -137,6 +137,15 @@ dk1.d.prew <- residuals(Arima(DK1$D, model = w.arma))
 
 ccf(w.arma$residuals, dk1.d.prew)
 
+lag.max <- 30
+which.lag <- 1:lag.max
+p.vals <- numeric(lag.max)
+for (l in 1:lag.max){
+  p.vals[l] <- Box.test(w.arma.res , lag = l , type = "Ljung-Box")$p.value
+}
+plot(p.vals)
+abline(h = 0.05, col = "red")
+
 ### ¤¤ Gemmer workspace ¤¤ ### ----------------------------------------------------------
 
 save(t , s.lm, s.pred, DK1, OOS, w.arma.res, dk1.d.prew,

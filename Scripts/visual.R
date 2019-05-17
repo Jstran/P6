@@ -376,8 +376,8 @@ p.forecast.c <- ggplot(data = data.frame(X1 = dates.all[2160:2281],
                                          X2 = c(DK1$D, OOS$D)[2160:2281] ), 
                        aes(x = X1, y = X2) ) +
   geom_line(aes(col = "Sæsonkorigerede observationer", size = sz$l)) + 
-  geom_line(data = data.frame(X1 = dates.all[2192:2281], 
-                              X2 = x.pred.oos.c[2192:2281]), 
+  geom_line(data = data.frame(X1 = dates.all[2160:2281], 
+                              X2 = x.pred.oos.c[2160:2281]), 
             aes(col = "Sæsonkorigerede forecast", size = sz$l)) +
   geom_ribbon(aes(ymin = x.pred.oos.c[2160:2281] - pred.inter.c[2160:2281], 
                   ymax = x.pred.oos.c[2160:2281] + pred.inter.c[2160:2281]), 
@@ -470,7 +470,7 @@ data.frame(names = ps$names , var = ps$var , w = ps$w , h = ps$h)
 wanted.plots <- 1:length(ps$names)
 #wanted.plots <- 18
 
-save.plots = TRUE
+save.plots = FALSE
 wid <- 9/2
 
 if(save.plots == TRUE){
@@ -482,3 +482,36 @@ if(save.plots == TRUE){
 }
 ### ¤¤ Det vilde vesten ¤¤ ### ----------------------------------------------------------
 
+inter <- 2192:2281
+ymin  <- x.pred.oos.a[inter] - pred.inter.a[inter] 
+ymax  <- x.pred.oos.a[inter] + pred.inter.a[inter]
+
+over  <- as.numeric(c(DK1$D , OOS$D)[inter] > ymax)
+under <- as.numeric(c(DK1$D , OOS$D)[inter] < ymin)
+
+oob <- sum(over + under)
+
+aout <- oob/length(inter)*100
+
+
+ymin  <- x.pred.oos.b[inter] - pred.inter.b[inter] 
+ymax  <- x.pred.oos.b[inter] + pred.inter.b[inter]
+
+over  <- as.numeric(c(DK1$D , OOS$D)[inter] > ymax)
+under <- as.numeric(c(DK1$D , OOS$D)[inter] < ymin)
+
+oob <- sum(over + under)
+
+bout <- oob/length(inter)*100
+
+ymin  <- x.pred.oos.c[inter] - pred.inter.c[inter] 
+ymax  <- x.pred.oos.c[inter] + pred.inter.c[inter]
+
+over  <- as.numeric(c(DK1$D , OOS$D)[inter] > ymax)
+under <- as.numeric(c(DK1$D , OOS$D)[inter] < ymin)
+
+oob <- sum(over + under)
+
+cout <- oob/length(inter)*100
+
+data.frame(a.outside = aout , b.outside = bout , c.outside = cout)

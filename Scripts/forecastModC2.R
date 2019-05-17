@@ -70,6 +70,7 @@ beta   <- MRS$par[7:9]
 
 se <- sqrt(diag(solve(MRS$hessian))) # Standard error
 AIC <- 2*(length(MRS$par) - MRS$value)
+AIC
 
 data.frame("alpha1" = c(alpha1, se[4], MRS$par[4]/se[4]), 
            "alpha3" = c(alpha3, se[5], MRS$par[5]/se[5]), 
@@ -137,7 +138,7 @@ logLike.oos <- function(theta){
   xi      <- numeric(3)
   xi[1:3] <- 1/3
   likesum <-  0
-  for (i in (1+l-slut.is):(l-1)) {
+  for (i in (2+l-slut.is):(l-1)) {
     p <- exp(beta[1] + beta[2]*datW.pred[i-1]+ beta[3]*datW[i-2])/
       (1+exp(beta[1] + beta[2]*datW.pred[i-1]+ beta[3]*datW[i-2]))
     
@@ -227,6 +228,6 @@ res.oos.c <- OOS$D - x.pred.oos.c[start.oos:slut.oos]
 
 res.is.c <- DK1$D[3:slut.is] - x.pred.is.c
 
-ee### ¤¤ Gemmer workspace ¤¤ ### ----------------------------------------------------------
+### ¤¤ Gemmer workspace ¤¤ ### ----------------------------------------------------------
 save(x.pred.is.c, x.pred.oos.c, rmse.is.c, rmse.oos.c, pred.inter.c, res.is.c, res.oos.c,
      file = "./Workspaces/forecastModC2.Rdata")

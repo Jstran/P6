@@ -22,7 +22,7 @@ library(astsa)
 library(tseries)
 library(Cairo)     # Til at gemme
 
-### ¤¤ "Rå" data ¤¤ ### ---------------------------------------------------------
+### ¤¤ "Rå" data ¤¤ ### -----------------------------------------------------------------
 
 # Plot af ukorrigerede data
 p.raw <-  ggplot(data.frame(X1 = dates, 
@@ -33,7 +33,8 @@ p.raw <-  ggplot(data.frame(X1 = dates,
        color = "") +
   p.Y
 #p.raw
-ps$p[[i]] <- p.raw ; ps$names[i] <- "plotRaw" ; ps$var[i] <- "p.raw"; ps$h[i] <- 3; ps$w[i] <- 9
+ps$p[[i]] <- p.raw ; ps$names[i] <- "plotRaw" ; ps$var[i] <- "p.raw"; 
+ps$h[i] <- 3; ps$w[i] <- 9
 i <- i + 1
 
 # Plot af korrigerede data
@@ -44,7 +45,8 @@ p.clean <-  ggplot(data.frame(X1 = dates,
   labs(x = "", y = " Spotpris i DKK/MWh", color = "") +
   p.Y
 #p.clean
-ps$p[[i]] <- p.clean ; ps$names[i] <- "plotClean" ; ps$var[i] <- "p.clean"; ps$h[i] <- 3; ps$w[i] <- 9
+ps$p[[i]] <- p.clean ; ps$names[i] <- "plotClean" ; ps$var[i] <- "p.clean"; 
+ps$h[i] <- 3; ps$w[i] <- 9
 i <- i + 1
 
 
@@ -60,7 +62,8 @@ p.hist <- ggplot(data.frame(X2 = DK1$D),
   scale_x_continuous() +
   p.th
 #p.hist
-ps$p[[i]] <- p.hist ; ps$names[i] <- "plotHist" ; ps$var[i] <- "p.hist"; ps$h[i] <- 3; ps$w[i] <- 9/2
+ps$p[[i]] <- p.hist ; ps$names[i] <- "plotHist" ; ps$var[i] <- "p.hist"; 
+ps$h[i] <- 3; ps$w[i] <- 9/2
 i <- i + 1
 
 # Q-Q plot af sæsonrensede priser
@@ -75,12 +78,13 @@ p.qq <- ggplot(data.frame(x = quantiles$x, y = quantiles$y), aes(x = x, y = y))+
         geom_point(col = colors[1], size = sz$p) +
         geom_abline(slope = slope, intercept = int, linetype = "dashed", col = colors[2],
                     size = sz$l) + 
-        labs(x = "Standard normal teoretisk fraktil", y = "Standardiseret sæsonrensede priser") +
-        labs(x = "Teoretisk kvantil", y = "Standardiserede sæsonrensede priser") +
+        labs(x = "Standard normal teoretisk fraktil", 
+             y = "Standardiseret sæsonrensede priser") +
         theme(legend.position="none") +
         p.th
 #p.qq    
-ps$p[[i]] <- p.qq; ps$names[i] <- "plotQQ" ; ps$var[i] <- "p.qq"; ps$h[i] <- 3; ps$w[i] <- 9/2
+ps$p[[i]] <- p.qq; ps$names[i] <- "plotQQ" ; ps$var[i] <- "p.qq"; 
+ps$h[i] <- 3; ps$w[i] <- 9/2
 i <- i + 1
 
 
@@ -98,7 +102,8 @@ p.acf.A <- ggplot(data = data.frame(X1 = acf(DK1$A, lag.max = 2190 , plot = FALS
   labs(x = "Lag", y = "ACF") +
   p.th
 #p.acf.A
-ps$p[[i]] <- p.acf.A ; ps$names[i] <- "plotACFAll" ; ps$var[i] <- "p.acf.A" ; ps$h[i] <- 3; ps$w[i] <- 9
+ps$p[[i]] <- p.acf.A ; ps$names[i] <- "plotACFAll" ; ps$var[i] <- "p.acf.A" ; 
+ps$h[i] <- 3; ps$w[i] <- 9
 i <- i + 1
 
 
@@ -112,7 +117,8 @@ p.d <- ggplot(data = data.frame(X1 = dates,
   labs(x = "", y = "Spotpris i DKK/MWh") + 
   p.Y
 #p.d
-ps$p[[i]] <- p.d ; ps$names[i] <- "plotRemDet" ; ps$var[i] <- "p.d" ; ps$h[i] <- 3; ps$w[i] <- 9
+ps$p[[i]] <- p.d ; ps$names[i] <- "plotRemDet" ; ps$var[i] <- "p.d" ;
+ps$h[i] <- 3; ps$w[i] <- 9
 i <- i + 1
 
 
@@ -130,7 +136,8 @@ p.s.A <-  ggplot(data.frame(X1 = dates,
   theme(legend.position = "top" , legend.justification = "left" , 
         legend.direction = "horizontal", legend.background = element_blank())
 #p.s.A
-ps$p[[i]] <- p.s.A ; ps$names[i] <- "plotSpotDet" ; ps$var[i] <- "p.s.A"; ps$h[i] <- 3.8; ps$w[i] <- 9
+ps$p[[i]] <- p.s.A ; ps$names[i] <- "plotSpotDet" ; ps$var[i] <- "p.s.A"; 
+ps$h[i] <- 3.8; ps$w[i] <- 9
 i <- i + 1
 
 
@@ -147,7 +154,8 @@ p.d.acf <- ggplot(data = data.frame(X1 = acf(DK1$D, lag.max = 30 , plot = FALSE)
   labs(x = "Lag", y = "ACF") +
   p.th
 #p.d.acf
-ps$p[[i]] <- p.d.acf ; ps$names[i] <- "plotACFDecomp" ; ps$var[i] <- "p.d.acf" ; ps$h[i] <- 3; ps$w[i] <- 9
+ps$p[[i]] <- p.d.acf ; ps$names[i] <- "plotACFDecomp" ; ps$var[i] <- "p.d.acf" ; 
+ps$h[i] <- 3; ps$w[i] <- 9
 i <- i + 1
 
 # Histogram for detrended priser
@@ -163,30 +171,32 @@ p.d.hist <- ggplot(data.frame(X2 = DK1$D),
   geom_vline(xintercept = mean(DK1$D), col = colors[3]) +
   p.th
 #p.d.hist
-ps$p[[i]] <- p.d.hist ; ps$names[i] <- "plotHistDetrend" ; ps$var[i] <- "p.d.hist" ; ps$h[i] <- 3; ps$w[i] <- 9
+ps$p[[i]] <- p.d.hist ; ps$names[i] <- "plotHistDetrend" ; ps$var[i] <- "p.d.hist" ;
+ps$h[i] <- 3; ps$w[i] <- 9
 i <- i + 1
 
 ### ¤¤ Model A ¤¤ ### -------------------------------------------------------------
 
-p.forecast.a <- ggplot(data = data.frame(X1 = dates.all[2160:2281],
-                                       X2 = c(DK1$D, OOS$D)[2160:2281] ), 
+p.forecast.a <- ggplot(data.frame(X1 = dates.all[2160:2281],
+                                  X2 = c(DK1$D, OOS$D)[2160:2281] ), 
                      aes(x = X1, y = X2) ) +
-              geom_line(aes(col = "Sæsonkorrigerede observationer", size = sz$l)) + 
-              geom_line(data = data.frame(X1 = dates.all[2192:2281], 
-                                          X2 = x.pred.oos.a[2192:2281]), 
-                        aes(col = "Sæsonkorrigerede forecast", size = sz$l)) +
-              geom_ribbon(aes(ymin = x.pred.oos.a[2160:2281] - pred.inter.a[2160:2281], 
-                              ymax = x.pred.oos.a[2160:2281] + pred.inter.a[2160:2281]), 
-                          fill = colors[6], alpha = 0.4) +
-              scale_color_manual(values = c(colors[2], colors[1])) +
-              scale_x_date(date_labels = "%b %y", breaks = pretty(dates.all[2160:2281], n = 6)) +
-              scale_y_continuous() +
-              theme(legend.position = "top" , legend.justification = "left" , 
-              legend.direction = "horizontal", legend.background = element_blank()) +
-              p.th +
-              labs(x = "", y = "Spotpris i DKK/MWh", title = "", color = "")
-p.forecast.a
-ps$p[[i]] <- p.forecast.a ; ps$names[i] <- "ModA/plotForecastModA" ; ps$var[i] <- "p.forecast.a" ; ps$h[i] <- 3.8; ps$w[i] <- 9
+  geom_line(aes(col = "Sæsonkorrigerede observationer", size = sz$l)) + 
+  geom_line(data = data.frame(X1 = dates.all[2192:2281], 
+                              X2 = x.pred.oos.a[2192:2281]), 
+            aes(col = "Sæsonkorrigerede forecast", size = sz$l)) +
+  geom_ribbon(aes(ymin = x.pred.oos.a[2160:2281] - pred.inter.a[2160:2281], 
+                  ymax = x.pred.oos.a[2160:2281] + pred.inter.a[2160:2281]), 
+                  fill = colors[6], alpha = 0.2, color = colors[6], size = sz$l) +
+  scale_color_manual(values = c(colors[2], colors[1])) +
+  scale_x_date(date_labels = "%b %y", breaks = pretty(dates.all[2160:2281], n = 6)) +
+  scale_y_continuous() +
+  theme(legend.position = "top" , legend.justification = "left" , 
+  legend.direction = "horizontal", legend.background = element_blank()) +
+  p.th +
+  labs(x = "", y = "Spotpris i DKK/MWh", title = "", color = "")
+# p.forecast.a
+ps$p[[i]] <- p.forecast.a ; ps$names[i] <- "ModA/plotForecastModA" ; 
+ps$var[i] <- "p.forecast.a" ; ps$h[i] <- 3.8; ps$w[i] <- 9
 i <- i + 1
 
 # Histogram for residualer Model A
@@ -201,7 +211,8 @@ p.hist.res.a <- ggplot(data.frame(X2 = res.is.a),
   scale_x_continuous() +
   p.th
 p.hist.res.a
-ps$p[[i]] <- p.hist.res.a ; ps$names[i] <- "ModA/plotHistResA" ; ps$var[i] <- "p.hist.res.a"; ps$h[i] <- 3; ps$w[i] <- 9/2
+ps$p[[i]] <- p.hist.res.a ; ps$names[i] <- "ModA/plotHistResA" ; 
+ps$var[i] <- "p.hist.res.a"; ps$h[i] <- 3; ps$w[i] <- 9/2
 i <- i + 1
 
 # Q-Q plot af sæsonrensede priser
@@ -220,12 +231,17 @@ p.qq.res.a <- ggplot(data.frame(x = quantiles$x, y = quantiles$y), aes(x = x, y 
   theme(legend.position="none") +
   p.th
 p.qq.res.a
-ps$p[[i]] <- p.qq.res.a; ps$names[i] <- "ModA/plotQqResA" ; ps$var[i] <- "p.qq.res.a"; ps$h[i] <- 3; ps$w[i] <- 9/2
+ps$p[[i]] <- p.qq.res.a; ps$names[i] <- "ModA/plotQqResA" ; ps$var[i] <- "p.qq.res.a"; 
+ps$h[i] <- 3; ps$w[i] <- 9/2
 i <- i + 1
 
 # ACF residualer Model A
-p.acf.res.a <- ggplot(data.frame(X1 = acf(res.is.a, lag.max = 2190 , plot = FALSE)$lag[2:31],
-                                 X2 = acf(res.is.a, lag.max = 2190 , plot = FALSE)$acf[2:31]), 
+p.acf.res.a <- ggplot(data.frame(X1 = acf(res.is.a, 
+                                          lag.max = 2190 , 
+                                          plot = FALSE)$lag[2:31],
+                                 X2 = acf(res.is.a, 
+                                          lag.max = 2190 , 
+                                          plot = FALSE)$acf[2:31]), 
                   aes(x = X1, y = X2)) +
   geom_hline(aes(yintercept =  0, size = sz$l)) +
   geom_segment(aes(xend = X1, yend = 0), color = colors[1]) +
@@ -236,7 +252,8 @@ p.acf.res.a <- ggplot(data.frame(X1 = acf(res.is.a, lag.max = 2190 , plot = FALS
   labs(x = "Lag", y = "ACF") +
   p.th
 p.acf.res.a
-ps$p[[i]] <- p.acf.res.a ; ps$names[i] <- "ModA/plotACFModA" ; ps$var[i] <- "p.acf.res.a" ; ps$h[i] <- 3; ps$w[i] <- 9/2
+ps$p[[i]] <- p.acf.res.a ; ps$names[i] <- "ModA/plotACFModA" ; 
+ps$var[i] <- "p.acf.res.a" ; ps$h[i] <- 3; ps$w[i] <- 9/2
 i <- i + 1
 
 # Ljung-Box residualer Model A
@@ -256,8 +273,9 @@ p.lbox.res.a <- ggplot(data.frame(X1 = which.lag,
   labs(x = "Lag", y = "P-værdi") +
   coord_cartesian(ylim=c(0,1)) +
   p.th
-# p.lbox.res.a
-ps$p[[i]] <- p.lbox.res.a ; ps$names[i] <- "ModA/plotLboxResA" ; ps$var[i] <- "p.lbox.res.a" ; ps$h[i] <- 3; ps$w[i] <- 9/2
+p.lbox.res.a
+ps$p[[i]] <- p.lbox.res.a ; ps$names[i] <- "ModA/plotLboxResA" ; 
+ps$var[i] <- "p.lbox.res.a" ; ps$h[i] <- 3; ps$w[i] <- 9/2
 i <- i + 1
 
 
@@ -275,7 +293,8 @@ p.ccf <- ggplot(data.frame(X1 = ccf(w.arma.res, dk1.d.prew, plot = FALSE)$lag,
   labs(x = "Lag", y = "CCF") +
   p.th
 #p.ccf
-ps$p[[i]] <- p.ccf ; ps$names[i] <- "ModB/plotCCF" ; ps$var[i] <- "p.ccf" ; ps$h[i] <- 3; ps$w[i] <- 9
+ps$p[[i]] <- p.ccf ; ps$names[i] <- "ModB/plotCCF" ; ps$var[i] <- "p.ccf" ; 
+ps$h[i] <- 3; ps$w[i] <- 9
 i <- i + 1
 
 p.forecast.b <- ggplot(data = data.frame(X1 = dates.all[2160:2281],
@@ -287,7 +306,7 @@ p.forecast.b <- ggplot(data = data.frame(X1 = dates.all[2160:2281],
             aes(col = "Sæsonkorrigerede forecast", size = sz$l)) +
   geom_ribbon(aes(ymin = x.pred.oos.b[2160:2281] - pred.inter.b[2160:2281], 
                   ymax = x.pred.oos.b[2160:2281] + pred.inter.b[2160:2281]), 
-              fill = colors[6], alpha = 0.4) +
+              fill = colors[6], alpha = 0.2, color = colors[6], size = sz$l) +
   scale_color_manual(values = c(colors[2], colors[1])) +
   scale_x_date(date_labels = "%b %y", breaks = pretty(dates.all[2160:2281], n = 6)) +
   scale_y_continuous() +
@@ -295,8 +314,9 @@ p.forecast.b <- ggplot(data = data.frame(X1 = dates.all[2160:2281],
         legend.direction = "horizontal", legend.background = element_blank()) +
   p.th +
   labs(x = "", y = "Spotpris i DKK/MWh", title = "", color = "")
-#p.forecast.b
-ps$p[[i]] <- p.forecast.b ; ps$names[i] <- "ModB/plotForecastModB" ; ps$var[i] <- "p.forecast.b" ; ps$h[i] <- 3.8; ps$w[i] <- 9
+# p.forecast.b
+ps$p[[i]] <- p.forecast.b ; ps$names[i] <- "ModB/plotForecastModB" ; 
+ps$var[i] <- "p.forecast.b" ; ps$h[i] <- 3.8; ps$w[i] <- 9
 i <- i + 1
 
 # Q-Q plot af sæsonrensede priser
@@ -315,12 +335,17 @@ p.qq.res.b <- ggplot(data.frame(x = quantiles$x, y = quantiles$y), aes(x = x, y 
   theme(legend.position="none") +
   p.th
 #p.qq.res.b    
-ps$p[[i]] <- p.qq.res.b; ps$names[i] <- "ModB/plotQqResB" ; ps$var[i] <- "p.qq.res.b"; ps$h[i] <- 3; ps$w[i] <- 9/2
+ps$p[[i]] <- p.qq.res.b; ps$names[i] <- "ModB/plotQqResB" ; ps$var[i] <- "p.qq.res.b"; 
+ps$h[i] <- 3; ps$w[i] <- 9/2
 i <- i + 1
 
 # ACF residualer Model A
-p.acf.res.b <- ggplot(data.frame(X1 = acf(res.is.b, lag.max = 2190 , plot = FALSE)$lag[2:31],
-                                 X2 = acf(res.is.b, lag.max = 2190 , plot = FALSE)$acf[2:31]), 
+p.acf.res.b <- ggplot(data.frame(X1 = acf(res.is.b, 
+                                          lag.max = 2190, 
+                                          plot = FALSE)$lag[2:31],
+                                 X2 = acf(res.is.b, 
+                                          lag.max = 2190, 
+                                          plot = FALSE)$acf[2:31]), 
                       aes(x = X1, y = X2)) +
   geom_hline(aes(yintercept =  0, size = sz$l)) +
   geom_segment(aes(xend = X1, yend = 0), color = colors[1]) +
@@ -331,7 +356,8 @@ p.acf.res.b <- ggplot(data.frame(X1 = acf(res.is.b, lag.max = 2190 , plot = FALS
   labs(x = "Lag", y = "ACF") +
   p.th
 # p.acf.res.b
-ps$p[[i]] <- p.acf.res.b ; ps$names[i] <- "ModB/plotACFModB" ; ps$var[i] <- "p.acf.res.b" ; ps$h[i] <- 3; ps$w[i] <- 9/2 
+ps$p[[i]] <- p.acf.res.b ; ps$names[i] <- "ModB/plotACFModB"; ps$var[i] <- "p.acf.res.b";
+ps$h[i] <- 3; ps$w[i] <- 9/2 
 i <- i + 1
 
 # Histogram for residualer Model B
@@ -346,7 +372,8 @@ p.hist.res.b <- ggplot(data.frame(X2 = res.is.b),
   scale_x_continuous() +
   p.th
 #p.hist.res.b
-ps$p[[i]] <- p.hist.res.b ; ps$names[i] <- "ModB/plotHistResB" ; ps$var[i] <- "p.hist.res.b"; ps$h[i] <- 3; ps$w[i] <- 9/2
+ps$p[[i]] <- p.hist.res.b ; ps$names[i] <- "ModB/plotHistResB" ; 
+ps$var[i] <- "p.hist.res.b"; ps$h[i] <- 3; ps$w[i] <- 9/2
 i <- i + 1
 
 # Ljung-Box residualer Model B
@@ -367,13 +394,14 @@ p.lbox.res.b <- ggplot(data.frame(X1 = which.lag,
   coord_cartesian(ylim=c(0,1)) +
   p.th
 # p.lbox.res.b
-ps$p[[i]] <- p.lbox.res.b ; ps$names[i] <- "ModB/plotLboxResB" ; ps$var[i] <- "p.lbox.res.b" ; ps$h[i] <- 3; ps$w[i] <- 9/2
+ps$p[[i]] <- p.lbox.res.b ; ps$names[i] <- "ModB/plotLboxResB" ; 
+ps$var[i] <- "p.lbox.res.b" ; ps$h[i] <- 3; ps$w[i] <- 9/2
 i <- i + 1
 
 ### ¤¤ Model C ¤¤ ### -------------------------------------------------------------
 
-p.forecast.c <- ggplot(data = data.frame(X1 = dates.all[2160:2281],
-                                         X2 = c(DK1$D, OOS$D)[2160:2281] ), 
+p.forecast.c <- ggplot(data.frame(X1 = dates.all[2160:2281],
+                                  X2 = c(DK1$D, OOS$D)[2160:2281] ), 
                        aes(x = X1, y = X2) ) +
   geom_line(aes(col = "Sæsonkorrigerede observationer", size = sz$l)) + 
   geom_line(data = data.frame(X1 = dates.all[2192:2281], 
@@ -381,7 +409,7 @@ p.forecast.c <- ggplot(data = data.frame(X1 = dates.all[2160:2281],
             aes(col = "Sæsonkorrigerede forecast", size = sz$l)) +
   geom_ribbon(aes(ymin = x.pred.oos.c[2160:2281] - pred.inter.c[2160:2281], 
                   ymax = x.pred.oos.c[2160:2281] + pred.inter.c[2160:2281]), 
-              fill = colors[6], alpha = 0.4) +
+              fill = colors[6], alpha = 0.2, color = colors[6], size = sz$l) +
   scale_color_manual(values = c(colors[2], colors[1])) +
   scale_x_date(date_labels = "%b %y", breaks = pretty(dates.all[2160:2281], n = 6)) +
   scale_y_continuous() +
@@ -389,8 +417,9 @@ p.forecast.c <- ggplot(data = data.frame(X1 = dates.all[2160:2281],
         legend.direction = "horizontal", legend.background = element_blank()) +
   p.th +
   labs(x = "", y = "Spotpris i DKK/MWh", title = "", color = "")
-p.forecast.c
-ps$p[[i]] <- p.forecast.c ; ps$names[i] <- "ModC/plotForecastModC" ; ps$var[i] <- "p.forecast.c" ; ps$h[i] <- 3.8; ps$w[i] <- 9
+# p.forecast.c
+ps$p[[i]] <- p.forecast.c ; ps$names[i] <- "ModC/plotForecastModC" ; 
+ps$var[i] <- "p.forecast.c" ; ps$h[i] <- 3.8; ps$w[i] <- 9
 i <- i + 1
 
 # Q-Q plot af sæsonrensede priser
@@ -408,13 +437,18 @@ p.qq.res.c <- ggplot(data.frame(x = quantiles$x, y = quantiles$y), aes(x = x, y 
   labs(x = "Standard normal teoretisk fraktil", y = "Standardiserede residualer") +
   theme(legend.position="none") +
   p.th
-p.qq.res.c
-ps$p[[i]] <- p.qq.res.c; ps$names[i] <- "ModC/plotQqResC" ; ps$var[i] <- "p.qq.res.c"; ps$h[i] <- 3; ps$w[i] <- 9/2
+# p.qq.res.c
+ps$p[[i]] <- p.qq.res.c; ps$names[i] <- "ModC/plotQqResC" ; ps$var[i] <- "p.qq.res.c"; 
+ps$h[i] <- 3; ps$w[i] <- 9/2
 i <- i + 1
 
 # ACF residualer Model A
-p.acf.res.c <- ggplot(data.frame(X1 = acf(res.is.c, lag.max = 2190 , plot = FALSE)$lag[2:31],
-                                 X2 = acf(res.is.c, lag.max = 2190 , plot = FALSE)$acf[2:31]), 
+p.acf.res.c <- ggplot(data.frame(X1 = acf(res.is.c, 
+                                          lag.max = 2190 , 
+                                          plot = FALSE)$lag[2:31],
+                                 X2 = acf(res.is.c, 
+                                          lag.max = 2190 , 
+                                          plot = FALSE)$acf[2:31]), 
                       aes(x = X1, y = X2)) +
   geom_hline(aes(yintercept =  0, size = sz$l)) +
   geom_segment(aes(xend = X1, yend = 0), color = colors[1]) +
@@ -424,8 +458,9 @@ p.acf.res.c <- ggplot(data.frame(X1 = acf(res.is.c, lag.max = 2190 , plot = FALS
              color = colors[2], linetype = "dotted") +
   labs(x = "Lag", y = "ACF") +
   p.th
-p.acf.res.c
-ps$p[[i]] <- p.acf.res.c ; ps$names[i] <- "ModC/plotACFModC" ; ps$var[i] <- "p.acf.res.c" ; ps$h[i] <- 3; ps$w[i] <- 9/2 
+# p.acf.res.c
+ps$p[[i]] <- p.acf.res.c ; ps$names[i] <- "ModC/plotACFModC" ; 
+ps$var[i] <- "p.acf.res.c" ; ps$h[i] <- 3; ps$w[i] <- 9/2 
 i <- i + 1
 
 # Histogram for residualer Model C
@@ -439,8 +474,9 @@ p.hist.res.c <- ggplot(data.frame(X2 = res.is.c),
   labs(x = "Residualer", y = "Tæthed") +
   scale_x_continuous() +
   p.th
-p.hist.res.c
-ps$p[[i]] <- p.hist.res.c ; ps$names[i] <- "ModC/plotHistResC" ; ps$var[i] <- "p.hist.res.c"; ps$h[i] <- 3; ps$w[i] <- 9/2
+# p.hist.res.c
+ps$p[[i]] <- p.hist.res.c ; ps$names[i] <- "ModC/plotHistResC" ; 
+ps$var[i] <- "p.hist.res.c"; ps$h[i] <- 3; ps$w[i] <- 9/2
 i <- i + 1
 
 # Ljung-Box residualer Model C
@@ -460,18 +496,44 @@ p.lbox.res.c <- ggplot(data.frame(X1 = which.lag,
   labs(x = "Lag", y = "P-værdi") +
   coord_cartesian(ylim=c(0,1)) +
   p.th
-p.lbox.res.c
-ps$p[[i]] <- p.lbox.res.c ; ps$names[i] <- "ModC/plotLboxResC" ; ps$var[i] <- "p.lbox.res.c" ; ps$h[i] <- 3; ps$w[i] <- 9/2
+# p.lbox.res.c
+ps$p[[i]] <- p.lbox.res.c ; ps$names[i] <- "ModC/plotLboxResC" ; 
+ps$var[i] <- "p.lbox.res.c" ; ps$h[i] <- 3; ps$w[i] <- 9/2
 i <- i + 1
 
+
+### ¤¤ Forside ¤¤ ### -------------------------------------------------------------------
+p.forside <- ggplot(data = data.frame(X1 = dates.all[2193:2281],
+                         X2 = c(DK1$D, OOS$D)[2193:2281] ), 
+       aes(x = X1, y = X2) ) +
+  geom_line(aes(size = sz$l),col = colors[2]) + 
+  geom_line(data = data.frame(X1 = dates.all[2193:2281], 
+                              X2 = x.pred.oos.b[2193:2281]), 
+            aes(size = sz$l), col = colors[1]) +
+  geom_ribbon(aes(ymin = x.pred.oos.b[2193:2281] - pred.inter.b[2193:2281], 
+                  ymax = x.pred.oos.b[2193:2281] + pred.inter.b[2193:2281]), 
+              fill = colors[6], alpha = 0.2, color = colors[6], size = sz$l) +
+  scale_x_date(date_labels = "%b %y", breaks = pretty(dates.all[2193:2281], n = 3)) +
+  scale_y_continuous() +
+  theme(axis.title.x = element_blank(),
+        axis.text.x  = element_blank(),
+        axis.ticks.x = element_blank(),
+        axis.title.y = element_blank(),
+        axis.text.y  = element_blank(),
+        axis.ticks.y = element_blank()) +
+  p.th +
+  labs(x = "", y = "Spotpris i DKK/MWh", title = "", color = "")
+# p.forside
+ps$p[[i]] <- p.forside ; ps$names[i] <- "plotForside" ; ps$var[i] <- "p.forside" ; 
+ps$h[i] <- 5; ps$w[i] <- 9
+i <- i + 1
 ### ¤¤ Gemmer plots ¤¤ ### --------------------------------------------------------------
 data.frame(names = ps$names , var = ps$var , w = ps$w , h = ps$h)  
 
 wanted.plots <- 1:length(ps$names)
-#wanted.plots <- 18
+# wanted.plots <- 26
 
-save.plots = FALSE
-wid <- 9/2
+save.plots = TRUE
 
 if(save.plots == TRUE){
   for(j in wanted.plots){

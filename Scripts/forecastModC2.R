@@ -35,7 +35,7 @@ logLike <- function(theta){
       (1+exp(beta[1] + beta[2]*datW.pred[i] + beta[3]*datW[i-1]))
     
     eta[1] <- dnorm(DK1$D[i+1], mean = (1-alpha1)*DK1$D[i], sd = sigma1)
-    eta[2] <- dnorm(DK1$D[i+1], mean = (-mu2 + DK1$D[i]), sd = sigma2)
+    eta[2] <- dnorm(DK1$D[i+1], mean = (mu2 + DK1$D[i]), sd = sigma2)
     eta[3] <- dnorm(DK1$D[i+1], mean = ((1-alpha3)*DK1$D[i]), sd = sigma3)
     
     like[i] <- p*xi[1]*eta[1] + (1-p)*xi[1]*eta[2] + xi[2]*eta[3] + xi[3]*eta[1]
@@ -52,7 +52,7 @@ logLike <- function(theta){
   return(-likesum)
 }
 
-theta0 <- c(33,90,75,0.3,0.6,   4,   2,    1, 0.1) # Startværdier for parametre til optim
+theta0 <- c(33,90,75,0.3,0.6,  -4,   2,    1, 0.1) # Startværdier for parametre til optim
 lB     <- c( 0, 0, 0,0  ,0  ,-500,-100, -100, -100) # Nedre grænse for parametre
 uB     <- c(100,100,100,0.99999,0.99999,500,100,100, 100) # Øvre grænse for parametre
 
@@ -99,7 +99,7 @@ for (l in 3:slut.is) {
                     xi[3]*(1 - alpha3)*dat[l-1]
   
   eta[1] <- dnorm(dat[l], mean = (1-alpha1)*dat[l-1], sd = sigma1)
-  eta[2] <- dnorm(dat[l], mean = (-mu2 + dat[l-1]), sd = sigma2)
+  eta[2] <- dnorm(dat[l], mean = (mu2 + dat[l-1]), sd = sigma2)
   eta[3] <- dnorm(dat[l], mean = ((1-alpha3)*dat[l-1]), sd = sigma3)
   
   like <- p.is[l]*xi[1]*eta[1] + (1-p.is[l])*xi[1]*eta[2] + xi[2]*eta[3] + xi[3]*eta[1]
@@ -145,7 +145,7 @@ logLike.oos <- function(theta){
     xi.temp <- xi
     
     eta[1] <- dnorm(dat[i+1], mean = (1-alpha1)*dat[i],   sd = sigma1)
-    eta[2] <- dnorm(dat[i+1], mean = (-mu2 + dat[i]),     sd = sigma2)
+    eta[2] <- dnorm(dat[i+1], mean = (mu2 + dat[i]),     sd = sigma2)
     eta[3] <- dnorm(dat[i+1], mean = ((1-alpha3)*dat[i]), sd = sigma3)
     
     like[i] <- p*xi[1]*eta[1] + (1-p)*xi[1]*eta[2]+ xi[2]*eta[3] + xi[3]*eta[1]
@@ -191,7 +191,7 @@ for (l in start.oos:slut.oos) {
   pred.inter.c[l] <- xi[1]*sigma1 + xi[2]*sigma2 + xi[3]*sigma3
   
   eta[1] <- dnorm(dat[l], mean = (1-alpha1)*dat[l-1], sd = sigma1)
-  eta[2] <- dnorm(dat[l], mean = (-mu2 + dat[l-1]), sd = sigma2)
+  eta[2] <- dnorm(dat[l], mean = (mu2 + dat[l-1]), sd = sigma2)
   eta[3] <- dnorm(dat[l], mean = ((1-alpha3)*dat[l-1]), sd = sigma3)
   
   like <- p[l-slut.is]*xi[1]*eta[1] + (1-p[l-slut.is])*xi[1]*eta[2] + 

@@ -40,7 +40,7 @@ logLike <- function(theta){
 
     eta[1] <- dnorm(dat[i], mean = ((1-alpha1)*dat[i-1]+omega01*datW.pred[i-1] + 
                                     omega11*datW[i-2]), sd = sigma1)
-    eta[2] <- dnorm(dat[i], mean = (-mu2 + dat[i-1]+omega02*datW.pred[i-1] + 
+    eta[2] <- dnorm(dat[i], mean = (mu2 + dat[i-1]+omega02*datW.pred[i-1] + 
                                     omega12*datW[i-2]), sd = sigma2)
     eta[3] <- dnorm(dat[i], mean = ((1-alpha3)*dat[i-1]+omega03*datW.pred[i-1]), 
                     sd = sigma3)
@@ -131,7 +131,7 @@ for (l in 3:slut.is) {
   
   eta[1] <- dnorm(dat[l], mean = ((1-alpha1)*dat[l-1]+omega01*datW.pred[l-1] + 
                                   omega11*datW[l-2]), sd = sigma1)
-  eta[2] <- dnorm(dat[l], mean = (-mu2 + dat[l-1]+omega02*datW.pred[l-1]+ 
+  eta[2] <- dnorm(dat[l], mean = (mu2 + dat[l-1]+omega02*datW.pred[l-1]+ 
                                   omega12*datW[l-2]), sd = sigma2)
   eta[3] <- dnorm(dat[l], mean = ((1-alpha3)*dat[l-1]+omega03*datW.pred[l-1]), 
                   sd = sigma3)
@@ -182,7 +182,7 @@ logLike.oos <- function(theta){
     
     eta[1] <- dnorm(dat[l], mean = ((1-alpha1)*dat[l-1]+omega01*datW.pred[l-1] + 
                                     omega11*datW[l-2]), sd = sigma1)
-    eta[2] <- dnorm(dat[l], mean = (-mu2 + dat[l-1]+omega02*datW.pred[l-1]+ 
+    eta[2] <- dnorm(dat[l], mean = (mu2 + dat[l-1]+omega02*datW.pred[l-1]+ 
                                     omega12*datW[l-2]), sd = sigma2)
     eta[3] <- dnorm(dat[l], mean = ((1-alpha3)*dat[l-1]+omega03*datW.pred[l-1]), 
                     sd = sigma3)
@@ -250,7 +250,7 @@ for (l in start.oos:slut.oos) {
   
   eta[1] <- dnorm(dat[l], mean = ((1-alpha1)*dat[l-1]+omega01*datW.pred[l-1] + 
                                   omega11*datW[l-2]), sd = sigma1)
-  eta[2] <- dnorm(dat[l], mean = (-mu2 + dat[l-1]+omega02*datW.pred[l-1]+ 
+  eta[2] <- dnorm(dat[l], mean = (mu2 + dat[l-1]+omega02*datW.pred[l-1]+ 
                                   omega12*datW[l-2]), sd = sigma2)
   eta[3] <- dnorm(dat[l], mean = ((1-alpha3)*dat[l-1]+omega03*datW.pred[l-1]), 
                   sd = sigma3)

@@ -151,7 +151,6 @@ for (i in 1:2191) {
 wind.prog2019[2139,3] <- mean(wind.prog2019[2138,3],wind.prog2019[2140,3]) # Fjerner Na
 wind.prog2019Daily <- c()
 for (j in 0:(length(wind.prog2019[,2])/24 -1)) {
-#  wind2019Daily[j+1] <- mean(wind2019[((j*24 + 1):((j+1)*24)),3])
   wind.prog2019Daily[j+1] <- sum(wind.prog2019[((j*24 + 1):((j+1)*24)),3])
 }
 

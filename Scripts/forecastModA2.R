@@ -29,7 +29,7 @@ logLike <- function(theta){
     xi.temp <- xi
     
     eta[1] <- dnorm(DK1$D[i+1], mean = (1-alpha1)*DK1$D[i], sd = sigma1)
-    eta[2] <- dnorm(DK1$D[i+1], mean = (-mu2 + DK1$D[i]), sd = sigma2)
+    eta[2] <- dnorm(DK1$D[i+1], mean = (mu2 + DK1$D[i]), sd = sigma2)
     eta[3] <- dnorm(DK1$D[i+1], mean = ((1-alpha3)*DK1$D[i]), sd = sigma3)
     
     like[i] <- p*xi[1]*eta[1] + (1-p)*xi[1]*eta[2]+ xi[2]*eta[3] + xi[3]*eta[1]
@@ -84,12 +84,13 @@ eta <- numeric(3)
 x.pred.is.a <- c() # Tom vektor til at indsætte de forecasted værdier for OOS
 
 for (l in 3:slut.is) {
-  x.pred.is.a[l] <- xi[1]*(1 - alpha1)*dat[l-1] + xi[2]*(dat[l-1] + mu2) + 
+  x.pred.is.a[l] <- xi[1]*(1 - alpha1)*dat[l-1] + 
+                    xi[2]*(dat[l-1] + mu2) + 
                     xi[3]*(1 - alpha3)*dat[l-1]
   
   eta[1] <- dnorm(dat[l], mean = (1-alpha1)*dat[l-1], sd = sigma1)
-  eta[2] <- dnorm(dat[l], mean = (-mu2 + dat[l-1]), sd = sigma2)
-  eta[3] <- dnorm(dat[l], mean = ((1-alpha3)*dat[l-1]), sd = sigma3)
+  eta[2] <- dnorm(dat[l], mean = (mu2 + dat[l-1]), sd = sigma2)
+  eta[3] <- dnorm(dat[l], mean = (1-alpha3)*dat[l-1], sd = sigma3)
   
   like <- p*xi[1]*eta[1] + (1-p)*xi[1]*eta[2] + xi[2]*eta[3] + xi[3]*eta[1]
   xi.temp <- xi
@@ -114,106 +115,106 @@ mae.is
 
 ### ¤¤ OOS mm ¤¤ ### --------------------------------------------------------------------
 
-logLike.oos <- function(theta){
-  sigma1 <- theta[1]
-  sigma2 <- theta[2]
-  sigma3 <- theta[3]
-  alpha1 <- theta[4]
-  alpha3 <- theta[5]
-  p      <- theta[6]
-  mu2    <- theta[7]
-  
-  eta <- numeric(3)
-  like    <- c()
-  xi      <- numeric(3)
-  xi[1:3] <- 1/3
-  likesum <-  0
-  for (i in (1+l-slut.is):(l-1)) {
-    xi.temp <- xi
-    
-    eta[1] <- dnorm(dat[i+1], mean = (1-alpha1)*dat[i],   sd = sigma1)
-    eta[2] <- dnorm(dat[i+1], mean = (-mu2 + dat[i]),     sd = sigma2)
-    eta[3] <- dnorm(dat[i+1], mean = ((1-alpha3)*dat[i]), sd = sigma3)
-    
-    like[i] <- p*xi[1]*eta[1] + (1-p)*xi[1]*eta[2]+ xi[2]*eta[3] + xi[3]*eta[1]
-    
-    xi[1] <- (p*xi.temp[1]*eta[1] + xi.temp[3]*eta[1])/like[i]
-    
-    xi[2] <- ((1-p)*xi.temp[1]*eta[2])/like[i]
-    
-    xi[3] <- xi.temp[2]*eta[3]/like[i]
-  }
-  
-  likesum <- sum(log(like), na.rm = TRUE)
-  
-  return(-likesum)
-}
-
-sigma1 <- 33 
-sigma2 <- 90
-sigma3 <- 75
-alpha1 <- 0.3 
-alpha3 <- 0.6
-p      <- 0.9
-mu2    <- 7
-
-
-eta <- numeric(3)
-
-x.pred.oos.a <- c() # Tom vektor til at indsætte de forecasted værdier for OOS
-pred.inter.a <- c()
-
-lB     <- c(0,0,0,0,0,0.000001,-100) # Nedre grænse for parametre
-uB     <- c(200,200,200,0.99999,0.99999,0.99999,100) # Øvre grænse for parametre
-
-for (l in start.oos:slut.oos) {
-  
-  theta0 <- c(sigma1, sigma2, sigma2, alpha1, alpha3, p, mu2)
-  #theta0 <- c(33,90,75,0.3,0.6,0.9,7)
-  
-  MRS <- optim(theta0, logLike.oos, lower = lB, upper = uB, method = "L-BFGS-B",
-               control = list(trace = FALSE, maxit = 500), hessian = FALSE)
-  
-  sigma1 <- MRS$par[1] 
-  sigma2 <- MRS$par[2]
-  sigma3 <- MRS$par[3]
-  alpha1 <- MRS$par[4] 
-  alpha3 <- MRS$par[5]
-  p      <- MRS$par[6]
-  mu2    <- MRS$par[7]
-  
-  x.pred.oos.a[l] <- xi[1]*(1 - alpha1)*dat[l-1] + xi[2]*(dat[l-1] + mu2) + 
-    xi[3]*(1 - alpha3)*dat[l-1]
-  pred.inter.a[l] <- xi[1]*sigma1 + xi[2]*sigma2 + xi[3]*sigma3
-  
-  eta[1] <- dnorm(dat[l], mean = (1-alpha1)*dat[l-1], sd = sigma1)
-  eta[2] <- dnorm(dat[l], mean = (-mu2 + dat[l-1]), sd = sigma2)
-  eta[3] <- dnorm(dat[l], mean = ((1-alpha3)*dat[l-1]), sd = sigma3)
-  
-  like <- p*xi[1]*eta[1] + (1-p)*xi[1]*eta[2] + xi[2]*eta[3] + xi[3]*eta[1]
-  xi.temp <- xi
-  
-  xi[1] <- (p*xi.temp[1]*eta[1] + xi.temp[3]*eta[1])/like
-  
-  xi[2] <- ((1-p)*xi.temp[1]*eta[2])/like
-  
-  xi[3] <- xi.temp[2]*eta[3]/like
-  
-  print(l-slut.is)
-}
-
-plot(dat[2100:slut.oos], type = "l", main = "Uden sæson (OOS)")
-lines(x.pred.oos.a[2100:slut.oos], col = "red")
-
-plot(OOS$A, type = "l", main = "Med sæson (OOS)")
-lines(x.pred.oos.a[start.oos:slut.oos] + OOS$s.pred, col = "red")
-
-rmse.oos.a <- sqrt(1/(slut.oos-start.oos+1)*sum((dat[(start.oos+1):slut.oos] - 
-                                              x.pred.oos.a[(start.oos+1):slut.oos])^2))
-rmse.oos.a
-
-mae.oos  <- mean(abs(dat[start.oos:slut.oos] - x.pred.oos.a[start.oos:slut.oos]))
-mae.oos
+# logLike.oos <- function(theta){
+#   sigma1 <- theta[1]
+#   sigma2 <- theta[2]
+#   sigma3 <- theta[3]
+#   alpha1 <- theta[4]
+#   alpha3 <- theta[5]
+#   p      <- theta[6]
+#   mu2    <- theta[7]
+#   
+#   eta <- numeric(3)
+#   like    <- c()
+#   xi      <- numeric(3)
+#   xi[1:3] <- 1/3
+#   likesum <-  0
+#   for (i in (1+l-slut.is):(l-1)) {
+#     xi.temp <- xi
+#     
+#     eta[1] <- dnorm(dat[i+1], mean = (1-alpha1)*dat[i],   sd = sigma1)
+#     eta[2] <- dnorm(dat[i+1], mean = (mu2 + dat[i]),     sd = sigma2)
+#     eta[3] <- dnorm(dat[i+1], mean = ((1-alpha3)*dat[i]), sd = sigma3)
+#     
+#     like[i] <- p*xi[1]*eta[1] + (1-p)*xi[1]*eta[2]+ xi[2]*eta[3] + xi[3]*eta[1]
+#     
+#     xi[1] <- (p*xi.temp[1]*eta[1] + xi.temp[3]*eta[1])/like[i]
+#     
+#     xi[2] <- ((1-p)*xi.temp[1]*eta[2])/like[i]
+#     
+#     xi[3] <- xi.temp[2]*eta[3]/like[i]
+#   }
+#   
+#   likesum <- sum(log(like), na.rm = TRUE)
+#   
+#   return(-likesum)
+# }
+# 
+# sigma1 <- 33 
+# sigma2 <- 90
+# sigma3 <- 75
+# alpha1 <- 0.3 
+# alpha3 <- 0.6
+# p      <- 0.9
+# mu2    <- 7
+# 
+# 
+# eta <- numeric(3)
+# 
+# x.pred.oos.a <- c() # Tom vektor til at indsætte de forecasted værdier for OOS
+# pred.inter.a <- c()
+# 
+# lB     <- c(0,0,0,0,0,0.000001,-100) # Nedre grænse for parametre
+# uB     <- c(200,200,200,0.99999,0.99999,0.99999,100) # Øvre grænse for parametre
+# 
+# for (l in start.oos:slut.oos) {
+#   
+#   theta0 <- c(sigma1, sigma2, sigma2, alpha1, alpha3, p, mu2)
+#   #theta0 <- c(33,90,75,0.3,0.6,0.9,7)
+#   
+#   MRS <- optim(theta0, logLike.oos, lower = lB, upper = uB, method = "L-BFGS-B",
+#                control = list(trace = FALSE, maxit = 500), hessian = FALSE)
+#   
+#   sigma1 <- MRS$par[1] 
+#   sigma2 <- MRS$par[2]
+#   sigma3 <- MRS$par[3]
+#   alpha1 <- MRS$par[4] 
+#   alpha3 <- MRS$par[5]
+#   p      <- MRS$par[6]
+#   mu2    <- MRS$par[7]
+#   
+#   x.pred.oos.a[l] <- xi[1]*(1 - alpha1)*dat[l-1] + xi[2]*(dat[l-1] + mu2) + 
+#     xi[3]*(1 - alpha3)*dat[l-1]
+#   pred.inter.a[l] <- xi[1]*sigma1 + xi[2]*sigma2 + xi[3]*sigma3
+#   
+#   eta[1] <- dnorm(dat[l], mean = (1-alpha1)*dat[l-1], sd = sigma1)
+#   eta[2] <- dnorm(dat[l], mean = (mu2 + dat[l-1]), sd = sigma2)
+#   eta[3] <- dnorm(dat[l], mean = ((1-alpha3)*dat[l-1]), sd = sigma3)
+#   
+#   like <- p*xi[1]*eta[1] + (1-p)*xi[1]*eta[2] + xi[2]*eta[3] + xi[3]*eta[1]
+#   xi.temp <- xi
+#   
+#   xi[1] <- (p*xi.temp[1]*eta[1] + xi.temp[3]*eta[1])/like
+#   
+#   xi[2] <- ((1-p)*xi.temp[1]*eta[2])/like
+#   
+#   xi[3] <- xi.temp[2]*eta[3]/like
+#   
+#   print(l-slut.is)
+# }
+# 
+# plot(dat[2100:slut.oos], type = "l", main = "Uden sæson (OOS)")
+# lines(x.pred.oos.a[2100:slut.oos], col = "red")
+# 
+# plot(OOS$A, type = "l", main = "Med sæson (OOS)")
+# lines(x.pred.oos.a[start.oos:slut.oos] + OOS$s.pred, col = "red")
+# 
+# rmse.oos.a <- sqrt(1/(slut.oos-start.oos+1)*sum((dat[(start.oos+1):slut.oos] - 
+#                                               x.pred.oos.a[(start.oos+1):slut.oos])^2))
+# rmse.oos.a
+# 
+# mae.oos  <- mean(abs(dat[start.oos:slut.oos] - x.pred.oos.a[start.oos:slut.oos]))
+# mae.oos
 ### ¤¤ Pred.inter mm ¤¤ ### -------------------------------------------------------------
 pred.inter.a <- 1.96 * pred.inter.a
 

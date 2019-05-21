@@ -64,7 +64,7 @@ sigma2  <-  63
 sigma3  <-  56
 alpha1  <-   0.2 
 alpha3  <-   0.4
-mu2     <-  10
+mu2     <-  -15
 p       <-   0.95
 omega01 <- -21
 omega02 <- -97

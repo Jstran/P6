@@ -98,18 +98,18 @@ se <- sqrt(diag(solve(MRS$hessian))) # Standard error
 AIC <- 2*(length(MRS$par) - MRS$value)
 AIC
 
-data.frame("alpha1"  = c(alpha1, se[4], alpha1/se[4]), 
-           "alpha3"  = c(alpha3, se[5], alpha3/se[5]), 
-           "mu2"     = c(mu2, se[6], mu2/se[6]), 
-           "sigma1"  = c(sigma1, se[1], sigma1/se[1]), 
-           "sigma2"  = c(sigma2, se[2], sigma2/se[2]), 
-           "sigma3"  = c(sigma3, se[3], sigma3/se[3]), 
-           "p"       = c(p,se[7], p/se[7]), 
-           "omega01" = c(omega01,se[8], omega01/se[8]),
-           "omega02" = c(omega02,se[9], omega02/se[9]), 
-           "omega03" = c(omega03,se[10], omega03/se[10]), 
-           "omega11" = c(omega11,se[11], omega11/se[11]), 
-           "omega12" = c(omega12,se[12], omega12/se[12]))
+est.b <- data.frame("alpha1"  = c(alpha1, se[4], alpha1/se[4]), 
+                    "alpha3"  = c(alpha3, se[5], alpha3/se[5]), 
+                    "mu2"     = c(mu2, se[6], mu2/se[6]), 
+                    "sigma1"  = c(sigma1, se[1], sigma1/se[1]), 
+                    "sigma2"  = c(sigma2, se[2], sigma2/se[2]), 
+                    "sigma3"  = c(sigma3, se[3], sigma3/se[3]), 
+                    "p"       = c(p,se[7], p/se[7]), 
+                    "omega01" = c(omega01,se[8], omega01/se[8]),
+                    "omega02" = c(omega02,se[9], omega02/se[9]), 
+                    "omega03" = c(omega03,se[10], omega03/se[10]), 
+                    "omega11" = c(omega11,se[11], omega11/se[11]), 
+                    "omega12" = c(omega12,se[12], omega12/se[12]))
 
 ### ¤¤ IS mm ¤¤ ### ---------------------------------------------------------------------
 xi <- c()
@@ -292,4 +292,5 @@ res.is.b <- DK1$D[3:slut.is] - x.pred.is.b
 
 ### ¤¤ Gemmer workspace ¤¤ ### ----------------------------------------------------------
 save(x.pred.is.b, x.pred.oos.b, rmse.is.b, rmse.oos.b, pred.inter.b, res.is.b, res.oos.b,
+     est.b,
      file = "./Workspaces/forecastModB.Rdata")

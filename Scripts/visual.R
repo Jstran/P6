@@ -502,6 +502,57 @@ ps$var[i] <- "p.lbox.res.c" ; ps$h[i] <- 3; ps$w[i] <- 9/2
 i <- i + 1
 
 
+### ¤¤ Signifikanstest for A, B og C ¤¤ ### ---------------------------------------------
+
+sign.val <- c(0.1 , 0.05 , 0.01)
+
+
+est.a.crit <- rbind(est.a , rep(1,ncol(est.a)))
+for(k in 1:3){
+  for(l in 1:ncol(est.a) ){
+    if( -abs(est.a.crit[3,l]) < qnorm(sign.val[k]/2) ){
+      est.a.crit[4,l] <- sign.val[k]
+    }
+  }
+} ; est.a.crit
+
+est.b.crit <- rbind(est.b , rep(1,ncol(est.b)))
+for(k in 1:3){
+  for(l in 1:ncol(est.b) ){
+    if( -abs(est.b.crit[3,l]) < qnorm(sign.val[k]/2) ){
+      est.b.crit[4,l] <- sign.val[k]
+    }
+  }
+} ; est.b.crit
+
+est.c.crit <- rbind(est.c , rep(1,ncol(est.c)))
+for(k in 1:3){
+  for(l in 1:ncol(est.c) ){
+    if( -abs(est.c.crit[3,l]) < qnorm(sign.val[k]/2) ){
+      est.c.crit[4,l] <- sign.val[k]
+    }
+  }
+} ; est.c.crit
+
+### ¤¤ Procent out of bounds i forecast for A, B og C ¤¤ ### ----------------------------
+
+inter <- 2192:2281
+DK1OOS <- c(DK1$D , OOS$D)[inter]
+
+ymin  <- x.pred.oos.a[inter] - pred.inter.a[inter] 
+ymax  <- x.pred.oos.a[inter] + pred.inter.a[inter]
+aout <- sum( as.numeric( (DK1OOS > ymax) | (DK1OOS < ymin) ) )/length(inter)*100
+
+ymin  <- x.pred.oos.b[inter] - pred.inter.b[inter] 
+ymax  <- x.pred.oos.b[inter] + pred.inter.b[inter]
+bout <- sum( as.numeric( (DK1OOS > ymax) | (DK1OOS < ymin) ) )/length(inter)*100
+
+ymin  <- x.pred.oos.c[inter] - pred.inter.c[inter] 
+ymax  <- x.pred.oos.c[inter] + pred.inter.c[inter]
+cout <- sum( as.numeric( (DK1OOS > ymax) | (DK1OOS < ymin) ) )/length(inter)*100
+
+data.frame(a.outside = aout , b.outside = bout , c.outside = cout)
+
 ### ¤¤ Forside ¤¤ ### -------------------------------------------------------------------
 p.forside <- ggplot(data = data.frame(X1 = dates.all[2193:2281],
                          X2 = c(DK1$D, OOS$D)[2193:2281] ), 
@@ -544,19 +595,5 @@ if(save.plots == TRUE){
 }
 ### ¤¤ Det vilde vesten ¤¤ ### ----------------------------------------------------------
 
-inter <- 2192:2281
-DK1OOS <- c(DK1$D , OOS$D)[inter]
 
-ymin  <- x.pred.oos.a[inter] - pred.inter.a[inter] 
-ymax  <- x.pred.oos.a[inter] + pred.inter.a[inter]
-aout <- sum( as.numeric( (DK1OOS > ymax) | (DK1OOS < ymin) ) )/length(inter)*100
 
-ymin  <- x.pred.oos.b[inter] - pred.inter.b[inter] 
-ymax  <- x.pred.oos.b[inter] + pred.inter.b[inter]
-bout <- sum( as.numeric( (DK1OOS > ymax) | (DK1OOS < ymin) ) )/length(inter)*100
-
-ymin  <- x.pred.oos.c[inter] - pred.inter.c[inter] 
-ymax  <- x.pred.oos.c[inter] + pred.inter.c[inter]
-cout <- sum( as.numeric( (DK1OOS > ymax) | (DK1OOS < ymin) ) )/length(inter)*100
-
-data.frame(a.outside = aout , b.outside = bout , c.outside = cout)

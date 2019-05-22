@@ -52,7 +52,7 @@ logLike <- function(theta){
   return(-likesum)
 }
 
-theta0 <- c(33,90,75,0.3,0.6,  -8,   2,    1, 0.1) # Startværdier for parametre til optim
+theta0 <- c(33,90,75,0.3,0.6,  -8,   2,    1, 0.7) # Startværdier for parametre til optim
 lB     <- c( 0, 0, 0,0  ,0  ,-500,-100, -100, -100) # Nedre grænse for parametre
 uB     <- c(100,100,100,0.99999,0.99999,500,100,100, 100) # Øvre grænse for parametre
 

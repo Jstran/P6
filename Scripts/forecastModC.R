@@ -52,7 +52,7 @@ logLike <- function(theta){
   return(-likesum)
 }
 
-theta0 <- c(33,90,75,0.3,0.6,  -4,   2,    1, 0.1) # Startværdier for parametre til optim
+theta0 <- c(33,90,75,0.3,0.6,  -8,   2,    1, 0.1) # Startværdier for parametre til optim
 lB     <- c( 0, 0, 0,0  ,0  ,-500,-100, -100, -100) # Nedre grænse for parametre
 uB     <- c(100,100,100,0.99999,0.99999,500,100,100, 100) # Øvre grænse for parametre
 
@@ -69,8 +69,8 @@ beta   <- MRS$par[7:9]
 
 
 se <- sqrt(diag(solve(MRS$hessian))) # Standard error
-AIC <- 2*(length(MRS$par) - MRS$value)
-AIC
+AIC.c <- 2*(length(MRS$par) - MRS$value)
+AIC.c
 
 est.c <- data.frame("alpha1" = c(alpha1, se[4], MRS$par[4]/se[4]), 
                     "alpha3" = c(alpha3, se[5], MRS$par[5]/se[5]), 
@@ -229,5 +229,5 @@ res.oos.c <- OOS$D - x.pred.oos.c[start.oos:slut.oos]
 
 ### ¤¤ Gemmer workspace ¤¤ ### ----------------------------------------------------------
 save(x.pred.is.c, x.pred.oos.c, rmse.is.c, rmse.oos.c, pred.inter.c, res.is.c, res.oos.c,
-     est.c,
+     est.c, AIC.c,
      file = "./Workspaces/forecastModC.Rdata")

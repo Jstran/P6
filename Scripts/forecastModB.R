@@ -95,8 +95,8 @@ omega12 <- MRS$par[12]
 
 
 se <- sqrt(diag(solve(MRS$hessian))) # Standard error
-AIC <- 2*(length(MRS$par) - MRS$value)
-AIC
+AIC.b <- 2*(length(MRS$par) - MRS$value)
+AIC.b
 
 est.b <- data.frame("alpha1"  = c(alpha1, se[4], alpha1/se[4]), 
                     "alpha3"  = c(alpha3, se[5], alpha3/se[5]), 
@@ -292,5 +292,5 @@ res.is.b <- DK1$D[3:slut.is] - x.pred.is.b
 
 ### ¤¤ Gemmer workspace ¤¤ ### ----------------------------------------------------------
 save(x.pred.is.b, x.pred.oos.b, rmse.is.b, rmse.oos.b, pred.inter.b, res.is.b, res.oos.b,
-     est.b,
+     est.b, AIC.b,
      file = "./Workspaces/forecastModB.Rdata")

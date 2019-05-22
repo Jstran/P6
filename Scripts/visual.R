@@ -554,17 +554,17 @@ cout <- sum( as.numeric( (DK1OOS > ymax) | (DK1OOS < ymin) ) )/length(inter)*100
 data.frame(a.outside = aout , b.outside = bout , c.outside = cout)
 
 ### ¤¤ Forside ¤¤ ### -------------------------------------------------------------------
-p.forside <- ggplot(data = data.frame(X1 = dates.all[2193:2281],
-                         X2 = c(DK1$D, OOS$D)[2193:2281] ), 
+p.forside <- ggplot(data = data.frame(X1 = dates.all[2194:2281],
+                         X2 = c(DK1$D, OOS$D)[2194:2281] ), 
        aes(x = X1, y = X2) ) +
   geom_line(aes(size = sz$l),col = colors[2]) + 
-  geom_line(data = data.frame(X1 = dates.all[2193:2281], 
-                              X2 = x.pred.oos.b[2193:2281]), 
+  geom_line(data = data.frame(X1 = dates.all[2194:2281], 
+                              X2 = x.pred.oos.b[2194:2281]), 
             aes(size = sz$l), col = colors[1]) +
-  geom_ribbon(aes(ymin = x.pred.oos.b[2193:2281] - pred.inter.b[2193:2281], 
-                  ymax = x.pred.oos.b[2193:2281] + pred.inter.b[2193:2281]), 
+  geom_ribbon(aes(ymin = x.pred.oos.b[2194:2281] - pred.inter.b[2194:2281], 
+                  ymax = x.pred.oos.b[2194:2281] + pred.inter.b[2194:2281]), 
               fill = colors[6], alpha = 0.2, color = colors[6], size = sz$l) +
-  scale_x_date(date_labels = "%b %y", breaks = pretty(dates.all[2193:2281], n = 3)) +
+  scale_x_date(date_labels = "%b %y", breaks = pretty(dates.all[2194:2281], n = 3)) +
   scale_y_continuous() +
   theme(axis.title.x = element_blank(),
         axis.text.x  = element_blank(),
@@ -581,8 +581,8 @@ i <- i + 1
 ### ¤¤ Gemmer plots ¤¤ ### --------------------------------------------------------------
 data.frame(names = ps$names , var = ps$var , w = ps$w , h = ps$h)  
 
-wanted.plots <- 1:length(ps$names)
-# wanted.plots <- 26
+# wanted.plots <- 1:length(ps$names)
+wanted.plots <- 26
 
 save.plots = TRUE
 

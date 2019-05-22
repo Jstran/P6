@@ -58,7 +58,7 @@ p.hist <- ggplot(data.frame(X2 = DK1$D),
                                   mean = mean(DK1$D), 
                                   sd = sd(DK1$D))*length(DK1$D)*24.1}, 
                  color = colors[2], size = sz$l) +
-  labs(x = "Sæsonrensede pris i DKK/MWh", y = "Tæthed") +
+  labs(x = "Sæsonkorrigeret pris i DKK/MWh", y = "Tæthed") +
   scale_x_continuous() +
   p.th
 #p.hist
@@ -79,7 +79,7 @@ p.qq <- ggplot(data.frame(x = quantiles$x, y = quantiles$y), aes(x = x, y = y))+
         geom_abline(slope = slope, intercept = int, linetype = "dashed", col = colors[2],
                     size = sz$l) + 
         labs(x = "Standard normal teoretisk fraktil", 
-             y = "Standardiseret sæsonrensede priser") +
+             y = "Standardiseret sæsonkorrigeret pris") +
         theme(legend.position="none") +
         p.th
 #p.qq    
@@ -531,7 +531,7 @@ i <- i + 1
 data.frame(names = ps$names , var = ps$var , w = ps$w , h = ps$h)  
 
 # wanted.plots <- 1:length(ps$names)
-wanted.plots <- 26
+wanted.plots <- 4
 
 save.plots = TRUE
 

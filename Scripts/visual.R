@@ -568,9 +568,9 @@ data.frame(a.outside = aout , b.outside = bout , c.outside = cout)
 yminvar <- x.pred.oos.b[2194:2281] - pred.inter.b[2194:2281] 
 ymaxvar <- x.pred.oos.b[2194:2281] + pred.inter.b[2194:2281]
 fppred  <- x.pred.oos.b[2194:2281]
-yminvar[1:22] <- NA
-ymaxvar[1:22] <- NA
-fppred[1:22]  <- NA
+yminvar[1:21] <- NA
+ymaxvar[1:21] <- NA
+fppred[1:21]  <- NA
 
 p.forside <- ggplot(data = data.frame(X1 = dates.all[2194:2281],
                          X2 = c(DK1$D, OOS$D)[2194:2281] ), 
@@ -599,8 +599,8 @@ i <- i + 1
 ### ¤¤ Gemmer plots ¤¤ ### --------------------------------------------------------------
 data.frame(names = ps$names , var = ps$var , w = ps$w , h = ps$h)  
 
-wanted.plots <- 1:length(ps$names)
-# wanted.plots <- 4
+# wanted.plots <- 1:length(ps$names)
+wanted.plots <- 26
 
 save.plots = TRUE
 

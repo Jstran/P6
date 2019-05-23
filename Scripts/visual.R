@@ -58,7 +58,7 @@ p.hist <- ggplot(data.frame(X2 = DK1$D),
                                   mean = mean(DK1$D), 
                                   sd = sd(DK1$D))*length(DK1$D)*24.1}, 
                  color = colors[2], size = sz$l) +
-  labs(x = "Sæsonrensede pris i DKK/MWh", y = "Tæthed") +
+  labs(x = "Sæsonkorrigeret pris i DKK/MWh", y = "Tæthed") +
   scale_x_continuous() +
   p.th
 #p.hist
@@ -79,7 +79,7 @@ p.qq <- ggplot(data.frame(x = quantiles$x, y = quantiles$y), aes(x = x, y = y))+
         geom_abline(slope = slope, intercept = int, linetype = "dashed", col = colors[2],
                     size = sz$l) + 
         labs(x = "Standard normal teoretisk fraktil", 
-             y = "Standardiseret sæsonrensede priser") +
+             y = "Standardiseret sæsonkorrigeret pris") +
         theme(legend.position="none") +
         p.th
 #p.qq    
@@ -177,21 +177,24 @@ i <- i + 1
 
 ### ¤¤ Model A ¤¤ ### -------------------------------------------------------------
 
-p.forecast.a <- ggplot(data.frame(X1 = dates.all[2160:2281],
-                                  X2 = c(DK1$D, OOS$D)[2160:2281] ), 
-                     aes(x = X1, y = X2) ) +
-  geom_line(aes(col = "Sæsonkorrigerede observationer", size = sz$l)) + 
+x.pred.oos.a.s <- x.pred.oos.a[2192:2281] + s.pred.oos
+nas <- rep(NaN, 32)
+
+p.forecast.a <- ggplot(data = data.frame(X1 = dates.all[2160:2281],
+                                         X2 = c(DK1$A, OOS$A)[2160:2281] ), 
+                       aes(x = X1, y = X2) ) +
+  geom_line(aes(col = "Observerede spotpriser", size = sz$l)) + 
   geom_line(data = data.frame(X1 = dates.all[2192:2281], 
-                              X2 = x.pred.oos.a[2192:2281]), 
-            aes(col = "Sæsonkorrigerede forecast", size = sz$l)) +
-  geom_ribbon(aes(ymin = x.pred.oos.a[2160:2281] - pred.inter.a[2160:2281], 
-                  ymax = x.pred.oos.a[2160:2281] + pred.inter.a[2160:2281]), 
-                  fill = colors[6], alpha = 0.2, color = colors[6], size = sz$l) +
+                              X2 = x.pred.oos.a.s), 
+            aes(col = "Forecastede spotpriser", size = sz$l)) +
+  geom_ribbon(aes(ymin = c(nas,x.pred.oos.a.s) - pred.inter.a[2160:2281], 
+                  ymax = c(nas,x.pred.oos.a.s) + pred.inter.a[2160:2281]), 
+              fill = colors[6], alpha = 0.2, color = colors[6], size = sz$l) +
   scale_color_manual(values = c(colors[2], colors[1])) +
   scale_x_date(date_labels = "%b %y", breaks = pretty(dates.all[2160:2281], n = 6)) +
   scale_y_continuous() +
   theme(legend.position = "top" , legend.justification = "left" , 
-  legend.direction = "horizontal", legend.background = element_blank()) +
+        legend.direction = "horizontal", legend.background = element_blank()) +
   p.th +
   labs(x = "", y = "Spotpris i DKK/MWh", title = "", color = "")
 # p.forecast.a
@@ -297,15 +300,19 @@ ps$p[[i]] <- p.ccf ; ps$names[i] <- "ModB/plotCCF" ; ps$var[i] <- "p.ccf" ;
 ps$h[i] <- 3; ps$w[i] <- 9
 i <- i + 1
 
+
+x.pred.oos.b.s <- x.pred.oos.b[2192:2281] + s.pred.oos
+nas <- rep(NaN, 32)
+
 p.forecast.b <- ggplot(data = data.frame(X1 = dates.all[2160:2281],
-                                         X2 = c(DK1$D, OOS$D)[2160:2281] ), 
+                                         X2 = c(DK1$A, OOS$A)[2160:2281] ), 
                        aes(x = X1, y = X2) ) +
-  geom_line(aes(col = "Sæsonkorrigerede observationer", size = sz$l)) + 
+  geom_line(aes(col = "Observerede spotpriser", size = sz$l)) + 
   geom_line(data = data.frame(X1 = dates.all[2192:2281], 
-                              X2 = x.pred.oos.b[2192:2281]), 
-            aes(col = "Sæsonkorrigerede forecast", size = sz$l)) +
-  geom_ribbon(aes(ymin = x.pred.oos.b[2160:2281] - pred.inter.b[2160:2281], 
-                  ymax = x.pred.oos.b[2160:2281] + pred.inter.b[2160:2281]), 
+                              X2 = x.pred.oos.b.s), 
+            aes(col = "Forecastede spotpriser", size = sz$l)) +
+  geom_ribbon(aes(ymin = c(nas,x.pred.oos.b.s) - pred.inter.b[2160:2281], 
+                  ymax = c(nas,x.pred.oos.b.s) + pred.inter.b[2160:2281]), 
               fill = colors[6], alpha = 0.2, color = colors[6], size = sz$l) +
   scale_color_manual(values = c(colors[2], colors[1])) +
   scale_x_date(date_labels = "%b %y", breaks = pretty(dates.all[2160:2281], n = 6)) +
@@ -314,8 +321,8 @@ p.forecast.b <- ggplot(data = data.frame(X1 = dates.all[2160:2281],
         legend.direction = "horizontal", legend.background = element_blank()) +
   p.th +
   labs(x = "", y = "Spotpris i DKK/MWh", title = "", color = "")
-# p.forecast.b
-ps$p[[i]] <- p.forecast.b ; ps$names[i] <- "ModB/plotForecastModB" ; 
+p.forecast.b
+ps$p[[i]] <- p.forecast.b ; ps$names[i] <- "ModB/plotForecastModB" ;
 ps$var[i] <- "p.forecast.b" ; ps$h[i] <- 3.8; ps$w[i] <- 9
 i <- i + 1
 
@@ -400,15 +407,18 @@ i <- i + 1
 
 ### ¤¤ Model C ¤¤ ### -------------------------------------------------------------
 
+x.pred.oos.c.s <- x.pred.oos.c[2192:2281] + s.pred.oos
+nas <- rep(NaN, 32)
+
 p.forecast.c <- ggplot(data.frame(X1 = dates.all[2160:2281],
-                                  X2 = c(DK1$D, OOS$D)[2160:2281] ), 
+                                  X2 = c(DK1$A, OOS$A)[2160:2281] ), 
                        aes(x = X1, y = X2) ) +
-  geom_line(aes(col = "Sæsonkorrigerede observationer", size = sz$l)) + 
+  geom_line(aes(col = "Observerede spotpriser", size = sz$l)) + 
   geom_line(data = data.frame(X1 = dates.all[2192:2281], 
-                              X2 = x.pred.oos.c[2192:2281]), 
-            aes(col = "Sæsonkorrigerede forecast", size = sz$l)) +
-  geom_ribbon(aes(ymin = x.pred.oos.c[2160:2281] - pred.inter.c[2160:2281], 
-                  ymax = x.pred.oos.c[2160:2281] + pred.inter.c[2160:2281]), 
+                              X2 = x.pred.oos.c.s), 
+            aes(col = "Forecastede spotpriser", size = sz$l)) +
+  geom_ribbon(aes(ymin = c(nas,x.pred.oos.c.s) - pred.inter.c[2160:2281], 
+                  ymax = c(nas,x.pred.oos.c.s) + pred.inter.c[2160:2281]), 
               fill = colors[6], alpha = 0.2, color = colors[6], size = sz$l) +
   scale_color_manual(values = c(colors[2], colors[1])) +
   scale_x_date(date_labels = "%b %y", breaks = pretty(dates.all[2160:2281], n = 6)) +
@@ -417,7 +427,7 @@ p.forecast.c <- ggplot(data.frame(X1 = dates.all[2160:2281],
         legend.direction = "horizontal", legend.background = element_blank()) +
   p.th +
   labs(x = "", y = "Spotpris i DKK/MWh", title = "", color = "")
-# p.forecast.c
+p.forecast.c
 ps$p[[i]] <- p.forecast.c ; ps$names[i] <- "ModC/plotForecastModC" ; 
 ps$var[i] <- "p.forecast.c" ; ps$h[i] <- 3.8; ps$w[i] <- 9
 i <- i + 1
@@ -589,8 +599,8 @@ i <- i + 1
 ### ¤¤ Gemmer plots ¤¤ ### --------------------------------------------------------------
 data.frame(names = ps$names , var = ps$var , w = ps$w , h = ps$h)  
 
-# wanted.plots <- 1:length(ps$names)
-wanted.plots <- 26
+wanted.plots <- 1:length(ps$names)
+# wanted.plots <- 4
 
 save.plots = TRUE
 

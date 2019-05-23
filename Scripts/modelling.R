@@ -148,7 +148,7 @@ abline(h = 0.05, col = "red")
 
 ### ¤¤ Gemmer workspace ¤¤ ### ----------------------------------------------------------
 
-save(t , s.lm, s.pred, DK1, OOS, w.arma.res, dk1.d.prew,
+save(t , s.lm, s.pred, DK1, OOS, w.arma.res, dk1.d.prew, s.pred.oos,
      file = "./Workspaces/modelling.Rdata")
 
 ### ¤¤ Det vilde vesten ¤¤ ### ----------------------------------------------------------

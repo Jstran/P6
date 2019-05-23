@@ -554,15 +554,23 @@ cout <- sum( as.numeric( (DK1OOS > ymax) | (DK1OOS < ymin) ) )/length(inter)*100
 data.frame(a.outside = aout , b.outside = bout , c.outside = cout)
 
 ### ¤¤ Forside ¤¤ ### -------------------------------------------------------------------
+
+yminvar <- x.pred.oos.b[2194:2281] - pred.inter.b[2194:2281] 
+ymaxvar <- x.pred.oos.b[2194:2281] + pred.inter.b[2194:2281]
+fppred  <- x.pred.oos.b[2194:2281]
+yminvar[1:22] <- NA
+ymaxvar[1:22] <- NA
+fppred[1:22]  <- NA
+
 p.forside <- ggplot(data = data.frame(X1 = dates.all[2194:2281],
                          X2 = c(DK1$D, OOS$D)[2194:2281] ), 
        aes(x = X1, y = X2) ) +
-  geom_line(aes(size = sz$l),col = colors[2]) + 
+  geom_line(aes(size = sz$l),col = colors[1]) + 
   geom_line(data = data.frame(X1 = dates.all[2194:2281], 
-                              X2 = x.pred.oos.b[2194:2281]), 
-            aes(size = sz$l), col = colors[1]) +
-  geom_ribbon(aes(ymin = x.pred.oos.b[2194:2281] - pred.inter.b[2194:2281], 
-                  ymax = x.pred.oos.b[2194:2281] + pred.inter.b[2194:2281]), 
+                              X2 = fppred), 
+            aes(size = sz$l), col = colors[2]) +
+  geom_ribbon(aes(ymin = yminvar, 
+                  ymax = ymaxvar),
               fill = colors[6], alpha = 0.2, color = colors[6], size = sz$l) +
   scale_x_date(date_labels = "%b %y", breaks = pretty(dates.all[2194:2281], n = 3)) +
   scale_y_continuous() +
@@ -574,7 +582,7 @@ p.forside <- ggplot(data = data.frame(X1 = dates.all[2194:2281],
         axis.ticks.y = element_blank()) +
   p.th +
   labs(x = "", y = "Spotpris i DKK/MWh", title = "", color = "")
-# p.forside
+ p.forside
 ps$p[[i]] <- p.forside ; ps$names[i] <- "plotForside" ; ps$var[i] <- "p.forside" ; 
 ps$h[i] <- 5; ps$w[i] <- 9
 i <- i + 1

@@ -84,9 +84,9 @@ eta <- numeric(3)
 x.pred.is.a <- c() # Tom vektor til at indsætte de forecasted værdier for OOS
 
 for (l in 3:slut.is) {
-  x.pred.is.a[l] <- xi[1]*(1 - alpha1)*dat[l-1] + 
-                    xi[2]*(dat[l-1] + mu2) + 
-                    xi[3]*(1 - alpha3)*dat[l-1]
+  x.pred.is.a[l] <- (xi[1]*p+xi[3])*(1 - alpha1)*dat[l-1] + 
+                    ((1-p)*xi[1])*(dat[l-1] + mu2) + 
+                    xi[2]*(1 - alpha3)*dat[l-1]
   
   eta[1] <- dnorm(dat[l], mean = (1-alpha1)*dat[l-1], sd = sigma1)
   eta[2] <- dnorm(dat[l], mean = (mu2 + dat[l-1]), sd = sigma2)
@@ -183,8 +183,9 @@ for (l in start.oos:slut.oos) {
   p      <- MRS$par[6]
   mu2    <- MRS$par[7]
 
-  x.pred.oos.a[l] <- xi[1]*(1 - alpha1)*dat[l-1] + xi[2]*(dat[l-1] + mu2) +
-    xi[3]*(1 - alpha3)*dat[l-1]
+  x.pred.oos.a[l] <- (xi[1]*p+xi[3])*(1 - alpha1)*dat[l-1] + 
+                     ((1-p)*xi[1])*(dat[l-1] + mu2) + 
+                     xi[2]*(1 - alpha3)*dat[l-1]
   pred.inter.a[l] <- xi[1]*sigma1 + xi[2]*sigma2 + xi[3]*sigma3
 
   eta[1] <- dnorm(dat[l], mean = (1-alpha1)*dat[l-1], sd = sigma1)

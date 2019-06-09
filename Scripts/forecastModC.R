@@ -95,8 +95,9 @@ for (l in 3:slut.is) {
   p.is[l] <- (exp(beta[1] + beta[2]*datW.pred[l-1] + beta[3]*datW[l-2])/
              (1 + exp(beta[1] + beta[2]*datW.pred[l-1]+ beta[3]*datW[l-2])))
   
-  x.pred.is.c[l] <- xi[1]*(1 - alpha1)*dat[l-1] + xi[2]*(dat[l-1] + mu2) + 
-                    xi[3]*(1 - alpha3)*dat[l-1]
+  x.pred.is.c[l] <- (xi[1]*p.is[l]+xi[3])*(1 - alpha1)*dat[l-1] + 
+                    ((1-p.is[l])*xi[1])*(dat[l-1] + mu2) + 
+                    xi[2]*(1 - alpha3)*dat[l-1]
   
   eta[1] <- dnorm(dat[l], mean = (1-alpha1)*dat[l-1], sd = sigma1)
   eta[2] <- dnorm(dat[l], mean = (mu2 + dat[l-1]), sd = sigma2)
@@ -187,8 +188,9 @@ for (l in start.oos:slut.oos) {
   p[l-slut.is] <- (exp(beta[1] + beta[2]*datW.pred[l-1]+ beta[3]*datW[l-2])/
                   (1 + exp(beta[1] + beta[2]*datW.pred[l-1]+ beta[3]*datW[l-2])))
   
-  x.pred.oos.c[l] <- xi[1]*(1 - alpha1)*dat[l-1] + xi[2]*(dat[l-1] + mu2) + 
-                     xi[3]*(1 - alpha3)*dat[l-1]
+  x.pred.oos.c[l] <-  (xi[1]*p[l-slut.is]+xi[3])*(1 - alpha1)*dat[l-1] + 
+                      ((1-p[l-slut.is])*xi[1])*(dat[l-1] + mu2) + 
+                      xi[2]*(1 - alpha3)*dat[l-1]
   pred.inter.c[l] <- xi[1]*sigma1 + xi[2]*sigma2 + xi[3]*sigma3
   
   eta[1] <- dnorm(dat[l], mean = (1-alpha1)*dat[l-1], sd = sigma1)

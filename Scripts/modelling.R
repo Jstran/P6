@@ -51,8 +51,8 @@ df <- data.frame(DK1 = DK1$A , t = t , sat = DK1$sat , sun = DK1$sun , hol = DK1
                  sin24 = sin((24*pc)*t) , cos24 = cos((24*pc)*t) )
 
 s.lm <- lm(DK1 ~ t + I(t^2) + 
-                 sin2 + cos2 + sin8 + cos8 + sin24 + cos24 +
-                 sat + sun + hol , data = df)
+             sin2 + cos2 + sin8 + cos8 + sin24 + cos24 +
+             sat + sun + hol , data = df)
 
 s.pred  <- predict(s.lm)
 
@@ -68,10 +68,10 @@ sat <- DK1$sat
 sun <- DK1$sun
 hol <- DK1$hol
 s.gls <- gls(A ~ t + I(t^2) +
-             sin((2*pi/365.25 )*t)  +  cos((2*pi/365.25 )*t) +
-             sin((8*pi/365.25 )*t)  +  cos((8*pi/365.25 )*t) +
-             sin((24*pi/365.25 )*t) + cos((24*pi/365.25 )*t) +
-             sat + sun + hol, weights = varPower())
+               sin((2*pi/365.25 )*t)  +  cos((2*pi/365.25 )*t) +
+               sin((8*pi/365.25 )*t)  +  cos((8*pi/365.25 )*t) +
+               sin((24*pi/365.25 )*t) + cos((24*pi/365.25 )*t) +
+               sat + sun + hol, weights = varPower())
 
 summary(s.gls)
 
@@ -152,4 +152,3 @@ save(t , s.lm, s.pred, DK1, OOS, w.arma.res, dk1.d.prew, s.pred.oos,
      file = "./Workspaces/modelling.Rdata")
 
 ### ¤¤ Det vilde vesten ¤¤ ### ----------------------------------------------------------
-

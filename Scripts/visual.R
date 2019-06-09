@@ -197,8 +197,8 @@ p.forecast.a <- ggplot(data = data.frame(X1 = dates.all[2160:2281],
         legend.direction = "horizontal", legend.background = element_blank()) +
   p.th +
   labs(x = "", y = "Spotpris i DKK/MWh", title = "", color = "")
-# p.forecast.a
-ps$p[[i]] <- p.forecast.a ; ps$names[i] <- "ModA/plotForecastModA" ; 
+p.forecast.a
+# ps$p[[i]] <- p.forecast.a ; ps$names[i] <- "ModA/plotForecastModA" ; 
 ps$var[i] <- "p.forecast.a" ; ps$h[i] <- 3.8; ps$w[i] <- 9
 i <- i + 1
 
@@ -213,7 +213,7 @@ p.hist.res.a <- ggplot(data.frame(X2 = res.is.a),
   labs(x = "Residualer", y = "Tæthed") +
   scale_x_continuous() +
   p.th
-p.hist.res.a
+# p.hist.res.a
 ps$p[[i]] <- p.hist.res.a ; ps$names[i] <- "ModA/plotHistResA" ; 
 ps$var[i] <- "p.hist.res.a"; ps$h[i] <- 3; ps$w[i] <- 9/2
 i <- i + 1
@@ -233,7 +233,7 @@ p.qq.res.a <- ggplot(data.frame(x = quantiles$x, y = quantiles$y), aes(x = x, y 
   labs(x = "Standard normal teoretisk fraktil", y = "Standardiserede residualer") +
   theme(legend.position="none") +
   p.th
-p.qq.res.a
+# p.qq.res.a
 ps$p[[i]] <- p.qq.res.a; ps$names[i] <- "ModA/plotQqResA" ; ps$var[i] <- "p.qq.res.a"; 
 ps$h[i] <- 3; ps$w[i] <- 9/2
 i <- i + 1
@@ -254,7 +254,7 @@ p.acf.res.a <- ggplot(data.frame(X1 = acf(res.is.a,
              color = colors[2], linetype = "dotted") +
   labs(x = "Lag", y = "ACF") +
   p.th
-p.acf.res.a
+# p.acf.res.a
 ps$p[[i]] <- p.acf.res.a ; ps$names[i] <- "ModA/plotACFModA" ; 
 ps$var[i] <- "p.acf.res.a" ; ps$h[i] <- 3; ps$w[i] <- 9/2
 i <- i + 1
@@ -276,7 +276,7 @@ p.lbox.res.a <- ggplot(data.frame(X1 = which.lag,
   labs(x = "Lag", y = "P-værdi") +
   coord_cartesian(ylim=c(0,1)) +
   p.th
-p.lbox.res.a
+# p.lbox.res.a
 ps$p[[i]] <- p.lbox.res.a ; ps$names[i] <- "ModA/plotLboxResA" ; 
 ps$var[i] <- "p.lbox.res.a" ; ps$h[i] <- 3; ps$w[i] <- 9/2
 i <- i + 1
@@ -321,7 +321,7 @@ p.forecast.b <- ggplot(data = data.frame(X1 = dates.all[2160:2281],
         legend.direction = "horizontal", legend.background = element_blank()) +
   p.th +
   labs(x = "", y = "Spotpris i DKK/MWh", title = "", color = "")
-p.forecast.b
+# p.forecast.b
 ps$p[[i]] <- p.forecast.b ; ps$names[i] <- "ModB/plotForecastModB" ;
 ps$var[i] <- "p.forecast.b" ; ps$h[i] <- 3.8; ps$w[i] <- 9
 i <- i + 1
@@ -567,10 +567,10 @@ data.frame(a.outside = aout , b.outside = bout , c.outside = cout)
 p.forside <- ggplot(data = data.frame(X1 = dates.all[2194:2281],
                          X2 = c(DK1$D, OOS$D)[2194:2281] ), 
        aes(x = X1, y = X2) ) +
-  geom_line(aes(size = sz$l),col = colors[2]) + 
+  geom_line(aes(size = sz$l),col = colors[1]) + 
   geom_line(data = data.frame(X1 = dates.all[2194:2281], 
                               X2 = x.pred.oos.b[2194:2281]), 
-            aes(size = sz$l), col = colors[1]) +
+            aes(size = sz$l), col = colors[2]) +
   geom_ribbon(aes(ymin = x.pred.oos.b[2194:2281] - pred.inter.b[2194:2281], 
                   ymax = x.pred.oos.b[2194:2281] + pred.inter.b[2194:2281]), 
               fill = colors[6], alpha = 0.2, color = colors[6], size = sz$l) +
